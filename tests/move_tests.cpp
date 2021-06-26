@@ -303,7 +303,7 @@ void testEnPassantReverse()
       EnPassant m{Relocation{Pb, f4, e3}};
       m.move(pos);
       m.reverse(pos);
-      
+
       VERIFY(pos == originalPos, caseLabel);
    }
 }
@@ -339,6 +339,21 @@ void testPromotionMove()
       VERIFY(pos.locations(Rb)[0] == h1, caseLabel);
       VERIFY(pos.locations(Pb).empty(), caseLabel);
    }
+   {
+      const std::string caseLabel =
+         "Promotion::move promote black pawn to queen with taking";
+
+      Position pos{"bh2 Bwg1"};
+      Promotion m{Relocation{"bh2g1"}, Qb, Bw};
+      m.move(pos);
+
+      VERIFY(pos[h2] == std::nullopt, caseLabel);
+      VERIFY(pos[g1] == Qb, caseLabel);
+      VERIFY(pos.locations(Qb).size() == 1, caseLabel);
+      VERIFY(pos.locations(Qb)[0] == g1, caseLabel);
+      VERIFY(pos.locations(Pb).empty(), caseLabel);
+      VERIFY(pos.locations(Bw).empty(), caseLabel);
+   }
 }
 
 
@@ -361,6 +376,18 @@ void testPromotionReverse()
       const Position originalPos{"bh2"};
       Position pos = originalPos;
       Promotion m{Relocation{"bh2h1"}, Rb};
+      m.move(pos);
+      m.reverse(pos);
+
+      VERIFY(pos == originalPos, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Promotion::reverse promote black pawn to queen with taking";
+
+      const Position originalPos{"bh2 Bwg1"};
+      Position pos = originalPos;
+      Promotion m{Relocation{"bh2g1"}, Qb, Bw};
       m.move(pos);
       m.reverse(pos);
 

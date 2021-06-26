@@ -146,6 +146,7 @@ class Promotion
 {
  public:
    Promotion(const Relocation& pawn, Piece promotedTo);
+   Promotion(const Relocation& pawn, Piece promotedTo, Piece taken);
 
    void move(Position& pos) const;
    void reverse(Position& pos) const;
@@ -153,7 +154,7 @@ class Promotion
  private:
    Placement m_movedPawn;
    Placement m_promoted;
-   // todo - handle taking during promotion
+   std::optional<Piece> m_taken;
 };
 
 
@@ -162,8 +163,15 @@ inline Promotion::Promotion(const Relocation& pawn, Piece promotedTo)
 {
 }
 
+inline Promotion::Promotion(const Relocation& pawn, Piece promotedTo, Piece taken)
+: m_movedPawn{pawn.placement()}, m_promoted{promotedTo, pawn.to()}, m_taken{taken}
+{
+}
+
 inline void Promotion::move(Position& pos) const
 {
+   if (m_taken)
+      pos.remove(Placement{*m_taken, m_promoted.at()});
    pos.remove(m_movedPawn);
    pos.add(m_promoted);
 }
@@ -171,6 +179,8 @@ inline void Promotion::move(Position& pos) const
 inline void Promotion::reverse(Position& pos) const
 {
    pos.remove(m_promoted);
+   if (m_taken)
+      pos.add(Placement{*m_taken, m_promoted.at()});
    pos.add(m_movedPawn);
 }
 
