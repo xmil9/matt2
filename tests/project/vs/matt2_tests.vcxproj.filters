@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\main.cpp" />
+    <ClCompile Include="..\..\piece_tests.cpp" />
+    <ClCompile Include="..\..\test_util.cpp" />
+    <ClCompile Include="..\..\square_tests.cpp" />
+    <ClCompile Include="..\..\move_tests.cpp" />
+    <ClCompile Include="..\..\position_tests.cpp" />
+    <ClCompile Include="..\..\placement_tests.cpp" />
+    <ClCompile Include="..\..\relocation_tests.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\piece_tests.h" />
+    <ClInclude Include="..\..\test_util.h" />
+    <ClInclude Include="..\..\square_tests.h" />
+    <ClInclude Include="..\..\move_tests.h" />
+    <ClInclude Include="..\..\position_tests.h" />
+    <ClInclude Include="..\..\placement_tests.h" />
+    <ClInclude Include="..\..\relocation_tests.h" />
+  </ItemGroup>
+</Project>

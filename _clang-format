@@ -1,0 +1,19 @@
+BasedOnStyle: LLVM
+UseTab: Never
+IndentWidth: 3
+ConstructorInitializerIndentWidth: 0
+ContinuationIndentWidth: 3
+BreakBeforeBraces: Allman
+BreakConstructorInitializers: BeforeColon
+#AlwaysBreakTemplateDeclarations: yes
+AllowShortIfStatementsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: InlineOnly
+#AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: false
+IndentCaseLabels: false
+ColumnLimit: 90
+SortIncludes: false
+MaxEmptyLinesToKeep: 2
+# Force pointers to the type.
+DerivePointerAlignment: false
+PointerAlignment: Left
