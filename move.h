@@ -15,6 +15,9 @@ namespace matt2
 {
 ///////////////////
 
+// Executes a "normal" chess move where a piece is relocated and optionally
+// takes a piece on the target square.
+// Does not validate that the move is legal.
 class BasicMove
 {
  public:
@@ -65,6 +68,8 @@ constexpr Queenside_t Queenside;
 // clang-format on
 
 
+// Executes a castling move.
+// Does not validate that the move is legal.
 class Castling
 {
  public:
@@ -107,6 +112,8 @@ inline void Castling::reverse(Position& pos) const
 
 ///////////////////
 
+// Executes an en-passant move.
+// Does not validate that the move is legal.
 class EnPassant
 {
  public:
@@ -142,6 +149,8 @@ inline void EnPassant::reverse(Position& pos) const
 
 ///////////////////
 
+// Executes a move that promotes a pawn.
+// Does not validate that the move is legal.
 class Promotion
 {
  public:
@@ -187,6 +196,7 @@ inline void Promotion::reverse(Position& pos) const
 
 ///////////////////
 
+// Any of the possible move types.
 using Move = std::variant<BasicMove, Castling, EnPassant, Promotion>;
 
 
