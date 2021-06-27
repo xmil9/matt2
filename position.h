@@ -83,13 +83,12 @@ class Position
       bool operator!=(const PiecePlacements& other) const;
 
     private:
-      // todo - handle up to 9 queens and 10 rooks, bishops, knights because of promotions
+      TypePlacements<10> m_rooks;
+      TypePlacements<10> m_bishops;
+      TypePlacements<10> m_knights;
+      TypePlacements<9> m_queens;
       TypePlacements<8> m_pawns;
-      TypePlacements<2> m_rooks;
-      TypePlacements<2> m_bishops;
-      TypePlacements<2> m_knights;
       std::optional<Square> m_king;
-      std::optional<Square> m_queen;
    };
 
  private:
@@ -148,9 +147,9 @@ inline bool Position::operator!=(const Position& other) const
 
 inline bool Position::PiecePlacements::operator==(const PiecePlacements& other) const
 {
-   return m_pawns == other.m_pawns && m_rooks == other.m_rooks &&
-          m_bishops == other.m_bishops && m_knights == other.m_knights &&
-          m_king == other.m_king && m_queen == other.m_queen;
+   return m_rooks == other.m_rooks && m_bishops == other.m_bishops &&
+          m_knights == other.m_knights && m_queens == other.m_queens &&
+          m_pawns == other.m_pawns && m_king == other.m_king;
 }
 
 

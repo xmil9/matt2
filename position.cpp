@@ -84,7 +84,7 @@ void Position::PiecePlacements::add(const Placement& placement)
    }
    else if (isQueen(piece))
    {
-      m_queen = at;
+      m_queens.add(at);
    }
    else if (isRook(piece))
    {
@@ -117,7 +117,7 @@ void Position::PiecePlacements::remove(const Placement& placement)
    }
    else if (isQueen(piece))
    {
-      m_queen = std::nullopt;
+      m_queens.remove(at);
    }
    else if (isRook(piece))
    {
@@ -150,7 +150,7 @@ void Position::PiecePlacements::move(const Placement& from, Square to)
    }
    else if (isQueen(piece))
    {
-      m_queen = to;
+      m_queens.move(at, to);
    }
    else if (isRook(piece))
    {
@@ -181,8 +181,7 @@ std::vector<Square> Position::PiecePlacements::locations(Piece piece) const
    }
    else if (isQueen(piece))
    {
-      if (m_queen.has_value())
-         return {*m_queen};
+      return m_queens.locations();
    }
    else if (isRook(piece))
    {
