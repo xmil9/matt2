@@ -354,6 +354,32 @@ void testPromotionMove()
       VERIFY(pos.locations(Pb).empty(), caseLabel);
       VERIFY(pos.locations(Bw).empty(), caseLabel);
    }
+   {
+      const std::string caseLabel =
+         "Promotion::move promote with multiple queens";
+
+      Position pos{"Qbd7 Qba4 bf2"};
+      Promotion m{Relocation{"bf2f1"}, Qb};
+      m.move(pos);
+
+      VERIFY(pos[f2] == std::nullopt, caseLabel);
+      VERIFY(pos[f1] == Qb, caseLabel);
+      VERIFY(pos.locations(Qb).size() == 3, caseLabel);
+      VERIFY(pos.locations(Pb).empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Promotion::move promote with max rooks";
+
+      Position pos{"Rwa4 Rwb4 Rwc4 Rwd4 Rwe4 Rwf4 Rwg4 Rwh4 Rwb2 wh7"};
+      Promotion m{Relocation{"wh7h8"}, Rw};
+      m.move(pos);
+
+      VERIFY(pos[h7] == std::nullopt, caseLabel);
+      VERIFY(pos[h8] == Rw, caseLabel);
+      VERIFY(pos.locations(Rw).size() == 10, caseLabel);
+      VERIFY(pos.locations(Pb).empty(), caseLabel);
+   }
 }
 
 
@@ -388,6 +414,30 @@ void testPromotionReverse()
       const Position originalPos{"bh2 Bwg1"};
       Position pos = originalPos;
       Promotion m{Relocation{"bh2g1"}, Qb, Bw};
+      m.move(pos);
+      m.reverse(pos);
+
+      VERIFY(pos == originalPos, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Promotion::reverse for promotion with multiple queens";
+
+      const Position originalPos{"Qbd7 Qba4 bf2"};
+      Position pos = originalPos;
+      Promotion m{Relocation{"bf2f1"}, Qb};
+      m.move(pos);
+      m.reverse(pos);
+
+      VERIFY(pos == originalPos, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Promotion::reverse for promotion with max rooks";
+
+      const Position originalPos{"Rwa4 Rwb4 Rwc4 Rwd4 Rwe4 Rwf4 Rwg4 Rwh4 Rwb2 wh7"};
+      Position pos = originalPos;
+      Promotion m{Relocation{"wh7h8"}, Rw};
       m.move(pos);
       m.reverse(pos);
 
