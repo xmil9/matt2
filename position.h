@@ -54,7 +54,7 @@ class Position
    using Count = unsigned char;
 
    // Placements for pieces of a type, e.g. rooks, pawns.
-   template <std::size_t N> class TypePlacements
+   template <std::size_t N> class PiecePlacements
    {
     public:
       void add(Square at);
@@ -62,8 +62,8 @@ class Position
       void move(Square from, Square to);
       std::vector<Square> locations() const;
 
-      bool operator==(const TypePlacements& other) const;
-      bool operator!=(const TypePlacements& other) const;
+      bool operator==(const PiecePlacements& other) const;
+      bool operator!=(const PiecePlacements& other) const;
 
     private:
       std::array<Square, N> m_locations = {static_cast<Square>(0)};
@@ -71,7 +71,7 @@ class Position
    };
 
    // Placements of all pieces of one color.
-   class PiecePlacements
+   class ColorPlacements
    {
     public:
       void add(const Placement& placement);
@@ -79,15 +79,15 @@ class Position
       void move(const Placement& from, Square to);
       std::vector<Square> locations(Piece piece) const;
 
-      bool operator==(const PiecePlacements& other) const;
-      bool operator!=(const PiecePlacements& other) const;
+      bool operator==(const ColorPlacements& other) const;
+      bool operator!=(const ColorPlacements& other) const;
 
     private:
-      TypePlacements<10> m_rooks;
-      TypePlacements<10> m_bishops;
-      TypePlacements<10> m_knights;
-      TypePlacements<9> m_queens;
-      TypePlacements<8> m_pawns;
+      PiecePlacements<10> m_rooks;
+      PiecePlacements<10> m_bishops;
+      PiecePlacements<10> m_knights;
+      PiecePlacements<9> m_queens;
+      PiecePlacements<8> m_pawns;
       std::optional<Square> m_king;
    };
 
@@ -95,8 +95,8 @@ class Position
    void populate(std::string_view placements);
 
    // Returns placements of pieces with the same color as a given piece.
-   PiecePlacements& colorPieces(Piece piece);
-   const PiecePlacements& colorPieces(Piece piece) const;
+   ColorPlacements& colorPieces(Piece piece);
+   const ColorPlacements& colorPieces(Piece piece) const;
 
    static std::size_t toIdx(Square at) { return static_cast<std::size_t>(at); }
    static std::size_t toColorIdx(Piece piece) { return isWhite(piece) ? White : Black; }
@@ -105,7 +105,7 @@ class Position
    // Board indexed by squares with information what piece is located there.
    std::array<std::optional<Piece>, 64> m_board;
    // Locations of each piece separated by color.
-   std::array<PiecePlacements, 2> m_pieces;
+   std::array<ColorPlacements, 2> m_pieces;
 };
 
 
@@ -118,13 +118,13 @@ inline std::vector<Square> Position::locations(Piece piece) const
 }
 
 
-inline Position::PiecePlacements& Position::colorPieces(Piece piece)
+inline Position::ColorPlacements& Position::colorPieces(Piece piece)
 {
    return m_pieces[toColorIdx(piece)];
 }
 
 
-inline const Position::PiecePlacements& Position::colorPieces(Piece piece) const
+inline const Position::ColorPlacements& Position::colorPieces(Piece piece) const
 {
    return m_pieces[toColorIdx(piece)];
 }
@@ -145,7 +145,7 @@ inline bool Position::operator!=(const Position& other) const
 ///////////////////
 // Implementation of Position::PiecePlacements.
 
-inline bool Position::PiecePlacements::operator==(const PiecePlacements& other) const
+inline bool Position::ColorPlacements::operator==(const ColorPlacements& other) const
 {
    return m_rooks == other.m_rooks && m_bishops == other.m_bishops &&
           m_knights == other.m_knights && m_queens == other.m_queens &&
@@ -153,7 +153,7 @@ inline bool Position::PiecePlacements::operator==(const PiecePlacements& other) 
 }
 
 
-inline bool Position::PiecePlacements::operator!=(const PiecePlacements& other) const
+inline bool Position::ColorPlacements::operator!=(const ColorPlacements& other) const
 {
    return !(*this == other);
 }
@@ -162,14 +162,14 @@ inline bool Position::PiecePlacements::operator!=(const PiecePlacements& other) 
 ///////////////////
 // Implementation of Position::TypePlacements.
 
-template <std::size_t N> void Position::TypePlacements<N>::add(Square at)
+template <std::size_t N> void Position::PiecePlacements<N>::add(Square at)
 {
    assert(m_numPieces < m_locations.max_size());
    m_locations[m_numPieces++] = at;
 }
 
 
-template <std::size_t N> void Position::TypePlacements<N>::remove(Square at)
+template <std::size_t N> void Position::PiecePlacements<N>::remove(Square at)
 {
    for (std::size_t i = 0; i < m_numPieces; ++i)
    {
@@ -183,7 +183,7 @@ template <std::size_t N> void Position::TypePlacements<N>::remove(Square at)
 }
 
 
-template <std::size_t N> void Position::TypePlacements<N>::move(Square from, Square to)
+template <std::size_t N> void Position::PiecePlacements<N>::move(Square from, Square to)
 {
    for (std::size_t i = 0; i < m_numPieces; ++i)
       if (m_locations[i] == from)
@@ -192,7 +192,7 @@ template <std::size_t N> void Position::TypePlacements<N>::move(Square from, Squ
 
 
 template <std::size_t N>
-std::vector<Square> Position::TypePlacements<N>::locations() const
+std::vector<Square> Position::PiecePlacements<N>::locations() const
 {
    std::vector<Square> locs;
    locs.reserve(m_numPieces);
@@ -205,7 +205,7 @@ std::vector<Square> Position::TypePlacements<N>::locations() const
 
 
 template <std::size_t N>
-bool Position::TypePlacements<N>::operator==(const TypePlacements& other) const
+bool Position::PiecePlacements<N>::operator==(const PiecePlacements& other) const
 {
    if (m_numPieces != other.m_numPieces)
       return false;
@@ -217,7 +217,7 @@ bool Position::TypePlacements<N>::operator==(const TypePlacements& other) const
 
 
 template <std::size_t N>
-bool Position::TypePlacements<N>::operator!=(const TypePlacements& other) const
+bool Position::PiecePlacements<N>::operator!=(const PiecePlacements& other) const
 {
    return !(*this == other);
 }

@@ -73,7 +73,7 @@ void Position::move(const Relocation& relocation)
 
 ///////////////////
 
-void Position::PiecePlacements::add(const Placement& placement)
+void Position::ColorPlacements::add(const Placement& placement)
 {
    const Piece& piece = placement.piece();
    const Square& at = placement.at();
@@ -106,7 +106,7 @@ void Position::PiecePlacements::add(const Placement& placement)
 }
 
 
-void Position::PiecePlacements::remove(const Placement& placement)
+void Position::ColorPlacements::remove(const Placement& placement)
 {
    const Piece& piece = placement.piece();
    const Square& at = placement.at();
@@ -139,7 +139,7 @@ void Position::PiecePlacements::remove(const Placement& placement)
 }
 
 
-void Position::PiecePlacements::move(const Placement& from, Square to)
+void Position::ColorPlacements::move(const Placement& from, Square to)
 {
    const Piece& piece = from.piece();
    const Square& at = from.at();
@@ -172,7 +172,7 @@ void Position::PiecePlacements::move(const Placement& from, Square to)
 }
 
 
-std::vector<Square> Position::PiecePlacements::locations(Piece piece) const
+std::vector<Square> Position::ColorPlacements::locations(Piece piece) const
 {
    if (isKing(piece))
    {
