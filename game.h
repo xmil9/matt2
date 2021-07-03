@@ -21,6 +21,7 @@ class Game
 
    const Position& forward();
    const Position& backward();
+   const Position& calcMove();
 
  private:
    // Current position.
@@ -30,5 +31,19 @@ class Game
    // Index of move that leads to current position.
    std::size_t m_currMove = 0;
 };
+
+
+inline const Position& Game::forward()
+{
+   makeMove(m_currPos, m_moves[++m_currMove]);
+   return m_currPos;
+}
+
+
+inline const Position& Game::backward()
+{
+   reverseMove(m_currPos, m_moves[m_currMove--]);
+   return m_currPos;
+}
 
 } // namespace matt2

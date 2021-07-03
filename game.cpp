@@ -9,17 +9,10 @@ namespace matt2
 {
 ///////////////////
 
-const Position& Game::forward()
+const Position& Game::calcMove()
 {
-   makeMove(m_currPos, m_moves[++m_currMove]);
-   return m_currPos;
-}
-
-
-const Position& Game::backward()
-{
-   reverseMove(m_currPos, m_moves[m_currMove--]);
-   return m_currPos;
+   // todo - implement
+   return StartPos;
 }
 
 } // namespace matt2
