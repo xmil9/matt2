@@ -30,6 +30,11 @@ constexpr File fg = File::fg;
 constexpr File fh = File::fh;
 
 
+inline bool isValid(File f, int offset)
+{
+   return static_cast<unsigned char>(f) + offset <= static_cast<unsigned char>(fh);
+}
+
 inline File operator+(File f, int inc)
 {
    const auto res = static_cast<File>(static_cast<unsigned char>(f) + inc);
@@ -65,6 +70,11 @@ constexpr Rank r6 = Rank::r6;
 constexpr Rank r7 = Rank::r7;
 constexpr Rank r8 = Rank::r8;
 
+
+inline bool isValid(Rank r, int offset)
+{
+   return static_cast<unsigned char>(r) + offset <= static_cast<unsigned char>(r8);
+}
 
 inline Rank operator+(Rank r, int inc)
 {
@@ -201,5 +211,24 @@ inline Square operator++(Square& sq)
    return sq;
 }
 
+
+///////////////////
+
+struct Offset
+{
+   int df = 0;
+   int dr = 0;
+};
+
+
+inline bool isOnBoard(Square sq, Offset off)
+{
+   return isValid(file(sq), off.df) && isValid(rank(sq), off.dr);
+}
+
+inline Square operator+(Square sq, Offset off)
+{
+   return makeSquare(file(sq) + off.df, rank(sq) + off.dr);
+}
 
 } // namespace matt2

@@ -57,6 +57,11 @@ class Position
    PlacementIterator begin(Color side) const;
    PlacementIterator end(Color side) const;
 
+   double score() const { return 100.; }
+
+   std::optional<File> enPassantFile() const { return m_enPassantFile; }
+   void setEnPassantFile(std::optional<File> file) { m_enPassantFile = file; }
+
  private:
    // Array indices for piece locations of each color.
    static constexpr std::size_t White = 0;
@@ -120,6 +125,7 @@ class Position
    static std::size_t toColorIdx(Color side);
 
  private:
+   std::optional<File> m_enPassantFile;
    // Board indexed by squares with information what piece is located there.
    std::array<std::optional<Piece>, 64> m_board;
    // Locations of each piece separated by color.

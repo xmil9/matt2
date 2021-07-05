@@ -21,7 +21,10 @@ class Game
 
    const Position& forward();
    const Position& backward();
-   const Position& calcMove();
+   const Position& calcNextMove(Color side);
+
+ private:
+   void apply(Move& m);
 
  private:
    // Current position.
@@ -38,7 +41,6 @@ inline const Position& Game::forward()
    makeMove(m_currPos, m_moves[++m_currMove]);
    return m_currPos;
 }
-
 
 inline const Position& Game::backward()
 {

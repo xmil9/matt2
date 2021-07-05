@@ -8,11 +8,13 @@
     <ClInclude Include="..\..\game.h" />
     <ClInclude Include="..\..\placement.h" />
     <ClInclude Include="..\..\relocation.h" />
+    <ClInclude Include="..\..\rules.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\position.cpp" />
     <ClCompile Include="..\..\piece.cpp" />
     <ClCompile Include="..\..\square.cpp" />
     <ClCompile Include="..\..\game.cpp" />
+    <ClCompile Include="..\..\rules.cpp" />
   </ItemGroup>
 </Project>
