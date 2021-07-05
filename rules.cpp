@@ -63,7 +63,7 @@ void collectPromotions(Piece pawn, Square at, Square to, std::optional<Piece> ta
                        std::vector<Move>& moves)
 {
    // Add move for each possible promotion.
-   // Note that the moves validity has already been verified.
+   // Note that validity of the moves has already been verified.
    using Promotions_t = std::array<Piece, 4>;
    static constexpr Promotions_t WhitePromotions = { Qw, Rw, Bw, Nw }; 
    static constexpr Promotions_t BlackPromotions = { Qb, Rb, Bb, Nb }; 
