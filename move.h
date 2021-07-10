@@ -99,8 +99,8 @@ constexpr Queenside_t Queenside;
 class Castling : public BaseMove
 {
  public:
-   Castling(Kingside_t, Color color);
-   Castling(Queenside_t, Color color);
+   Castling(Kingside_t, Color side);
+   Castling(Queenside_t, Color side);
 
    void move(Position& pos);
    void reverse(Position& pos);
@@ -112,15 +112,15 @@ class Castling : public BaseMove
 };
 
 
-inline Castling::Castling(Kingside_t, Color color)
-: m_king{color == Color::White ? Relocation{Kw, e1, g1} : Relocation{Kb, e8, g8}},
-  m_rook{color == Color::White ? Relocation{Rw, h1, f1} : Relocation{Rb, h8, f8}}
+inline Castling::Castling(Kingside_t, Color side)
+: m_king{side == Color::White ? Relocation{Kw, e1, g1} : Relocation{Kb, e8, g8}},
+  m_rook{side == Color::White ? Relocation{Rw, h1, f1} : Relocation{Rb, h8, f8}}
 {
 }
 
-inline Castling::Castling(Queenside_t, Color color)
-: m_king{color == Color::White ? Relocation{Kw, e1, c1} : Relocation{Kb, e8, c8}},
-  m_rook{color == Color::White ? Relocation{Rw, a1, d1} : Relocation{Rb, a8, d8}}
+inline Castling::Castling(Queenside_t, Color side)
+: m_king{side == Color::White ? Relocation{Kw, e1, c1} : Relocation{Kb, e8, c8}},
+  m_rook{side == Color::White ? Relocation{Rw, a1, d1} : Relocation{Rb, a8, d8}}
 {
 }
 

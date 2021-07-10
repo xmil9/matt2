@@ -65,9 +65,9 @@ void collectPromotions(Piece pawn, Square at, Square to, std::optional<Piece> ta
    // Add move for each possible promotion.
    // Note that validity of the moves has already been verified.
    using Promotions_t = std::array<Piece, 4>;
-   static constexpr Promotions_t WhitePromotions = { Qw, Rw, Bw, Nw }; 
-   static constexpr Promotions_t BlackPromotions = { Qb, Rb, Bb, Nb }; 
-   
+   static constexpr Promotions_t WhitePromotions = {Qw, Rw, Bw, Nw};
+   static constexpr Promotions_t BlackPromotions = {Qb, Rb, Bb, Nb};
+
    const Relocation movement{pawn, at, to};
 
    const Promotions_t& promotions = isWhite(pawn) ? WhitePromotions : BlackPromotions;
@@ -131,10 +131,99 @@ void collectDiagonalPawnMove(Piece pawn, Square at, const Position& pos, Offset 
 }
 
 
+///////////////////
+
+template <std::size_t N>
+void collectOffsetSquares(Piece /*piece*/, Square at, const Position& /*pos*/,
+                          const std::array<Offset, N>& offsets,
+                          std::vector<Square>& squares)
+{
+   for (const auto& off : offsets)
+      if (isOnBoard(at, off))
+         squares.push_back(at + off);
+}
+
+
+template <std::size_t N>
+void collectDirectionalSquares(Piece /*piece*/, Square at, const Position& pos,
+                               const std::array<Offset, N>& directions,
+                               std::vector<Square>& squares)
+{
+   for (const auto& off : directions)
+   {
+      Square to = at;
+      std::optional<Piece> destPiece;
+
+      // Keep moving into direction until the board ends or another piece is in
+      // the way.
+      while (isOnBoard(to, off) && !destPiece)
+      {
+         to = to + off;
+         destPiece = pos[to];
+         if (!destPiece)
+            squares.push_back(to);
+      }
+   }
+}
+
+
+///////////////////
+
 bool isPawnOnInitialRank(Piece pawn, Square at)
 {
    const Rank initialRank = isWhite(pawn) ? r2 : r7;
    return rank(at) == initialRank;
+}
+
+
+bool areCastlingSquaresOccupied(Color side, bool onKingside, const Position& pos)
+{
+   // Squares between king and rook that cannot be occupied for each castling type.
+   // Note that these are not the same as the squares that cannot be attacked for
+   // castling.
+   static const std::vector<Square> WhiteKingside = {f1, g1};
+   static const std::vector<Square> WhiteQueenside = {b1, c1, d1};
+   static const std::vector<Square> BlackKingside = {f8, g8};
+   static const std::vector<Square> BlackQueenside = {b8, c8, d8};
+
+   const std::vector<Square>& squares =
+      side == Color::White ? (onKingside ? WhiteKingside : WhiteQueenside)
+                           : (onKingside ? BlackKingside : BlackQueenside);
+
+   for (Square sq : squares)
+      if (pos[sq].has_value())
+         return true;
+   return false;
+}
+
+
+bool areCastlingSquaresAttacked(Color side, bool onKingside, const Position& pos)
+{
+   // Squares that castling king moves across for each castling type.
+   // Note that these are not the same as the squares that cannot be occupied for
+   // castling.
+   static const std::vector<Square> WhiteKingside = {e1, f1, g1};
+   static const std::vector<Square> WhiteQueenside = {c1, d1, e1};
+   static const std::vector<Square> BlackKingside = {e8, f8, g8};
+   static const std::vector<Square> BlackQueenside = {c8, d8, e8};
+
+   const std::vector<Square>& squares =
+      side == Color::White ? (onKingside ? WhiteKingside : WhiteQueenside)
+                           : (onKingside ? BlackKingside : BlackQueenside);
+   const Color opponent = !side;
+
+   for (auto sq : squares)
+      if (pos.canAttack(sq, opponent))
+         return true;
+   return false;
+}
+
+
+bool canCastle(Color side, bool onKingside, const Position& pos)
+{
+   return !pos.hasKingMoved(side) && !pos.hasRookMoved(side, onKingside) &&
+          !areCastlingSquaresOccupied(side, onKingside, pos) &&
+          !areCastlingSquaresAttacked(side, onKingside, pos);
 }
 
 } // namespace
@@ -221,6 +310,83 @@ void collectPawnMoves(Piece pawn, Square at, const Position& pos,
    collectDiagonalPawnMove(pawn, at, pos, diagonalRight, moves);
    const Offset diagonalLeft{-1, forward.dr};
    collectDiagonalPawnMove(pawn, at, pos, diagonalLeft, moves);
+}
+
+
+void collectCastlingMoves(Color side, const Position& pos, std::vector<Move>& moves)
+{
+   if (canCastle(side, true, pos))
+      moves.push_back(Castling{Kingside, side});
+   if (canCastle(side, false, pos))
+      moves.push_back(Castling{Queenside, side});
+}
+
+
+void collectEnPassantMoves(Color /*side*/, const Position& /*pos*/,
+                           std::vector<Move>& /*moves*/)
+{
+   // todo
+}
+
+
+///////////////////
+
+void collectAttackedByKing(Piece king, Square at, const Position& pos,
+                           std::vector<Square>& attacked)
+{
+   assert(isKing(king));
+   static constexpr std::array<Offset, 8> Offsets{
+      Offset{1, 1}, {1, 0}, {1, -1}, {0, 1}, {0, -1}, {-1, 1}, {-1, 0}, {-1, -1}};
+   collectOffsetSquares(king, at, pos, Offsets, attacked);
+}
+
+
+void collectAttackedByQueen(Piece queen, Square at, const Position& pos,
+                            std::vector<Square>& attacks)
+{
+   assert(isQueen(queen));
+   static constexpr std::array<Offset, 8> Directions{
+      Offset{1, 1}, {1, 0}, {1, -1}, {0, 1}, {0, -1}, {-1, 1}, {-1, 0}, {-1, -1}};
+   collectDirectionalSquares(queen, at, pos, Directions, attacks);
+}
+
+
+void collectAttackedByRook(Piece rook, Square at, const Position& pos,
+                           std::vector<Square>& attacks)
+{
+   assert(isRook(rook));
+   static constexpr std::array<Offset, 4> Directions{
+      Offset{1, 0}, {0, 1}, {0, -1}, {-1, 0}};
+   collectDirectionalSquares(rook, at, pos, Directions, attacks);
+}
+
+
+void collectAttackedByBishop(Piece bishop, Square at, const Position& pos,
+                             std::vector<Square>& attacks)
+{
+   assert(isBishop(bishop));
+   static constexpr std::array<Offset, 4> Directions{
+      Offset{1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+   collectDirectionalSquares(bishop, at, pos, Directions, attacks);
+}
+
+
+void collectAttackedByKnight(Piece knight, Square at, const Position& pos,
+                             std::vector<Square>& attacks)
+{
+   assert(isKnight(knight));
+   static constexpr std::array<Offset, 8> Offsets{
+      Offset{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
+   collectOffsetSquares(knight, at, pos, Offsets, attacks);
+}
+
+
+void collectAttackedByPawn(Piece pawn, Square at, const Position& pos,
+                           std::vector<Square>& attacks)
+{
+   assert(isPawn(pawn));
+   static constexpr std::array<Offset, 2> Offsets{Offset{1, 1}, {1, -1}};
+   collectOffsetSquares(pawn, at, pos, Offsets, attacks);
 }
 
 } // namespace matt2

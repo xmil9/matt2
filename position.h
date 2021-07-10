@@ -62,6 +62,12 @@ class Position
    std::optional<File> enPassantFile() const { return m_enPassantFile; }
    void setEnPassantFile(std::optional<File> file) { m_enPassantFile = file; }
 
+   bool hasKingMoved(Color side) const;
+   bool hasRookMoved(Color side, bool onKingside) const;
+
+   bool canAttack(Square sq, Color side) const;
+   bool canAttack(Square sq, const Placement& placement) const;
+
  private:
    // Array indices for piece locations of each color.
    static constexpr std::size_t White = 0;
@@ -98,17 +104,29 @@ class Position
       std::vector<Square> locations(Piece piece) const;
       std::size_t count() const;
       Square placement(std::size_t idx) const;
+      bool hasKingMoved() const { return m_hasKingMoved; }
+      bool hasRookMoved(bool onKingside) const;
 
       bool operator==(const ColorPlacements& other) const;
       bool operator!=(const ColorPlacements& other) const;
 
     private:
+      void initKingMovedFlag(Color side, Square at);
+      void initRookMovedFlag(Color side);
+      void updateRookMovedFlag(Square from);
+
+    private:
+      // Flags needed to check if castling is allowed.
+      bool m_hasKingMoved = false;
+      bool m_hasKingsideRookMoved = false;
+      bool m_hasQueensideRookMoved = false;
+      // Placements of pieces.
+      std::optional<Square> m_king;
+      PiecePlacements<8> m_pawns;
+      PiecePlacements<9> m_queens;
       PiecePlacements<10> m_rooks;
       PiecePlacements<10> m_bishops;
       PiecePlacements<10> m_knights;
-      PiecePlacements<9> m_queens;
-      PiecePlacements<8> m_pawns;
-      std::optional<Square> m_king;
    };
 
  private:
@@ -125,6 +143,8 @@ class Position
    static std::size_t toColorIdx(Color side);
 
  private:
+   // File on which a pawn moved two squares forward from its starting location during the
+   // last turn.
    std::optional<File> m_enPassantFile;
    // Board indexed by squares with information what piece is located there.
    std::array<std::optional<Piece>, 64> m_board;
@@ -139,6 +159,16 @@ class Position
 inline std::vector<Square> Position::locations(Piece piece) const
 {
    return pieces(color(piece)).locations(piece);
+}
+
+inline bool Position::hasKingMoved(Color side) const
+{
+   return m_pieces[Position::toColorIdx(side)].hasKingMoved();
+}
+
+inline bool Position::hasRookMoved(Color side, bool onKingside) const
+{
+   return m_pieces[Position::toColorIdx(side)].hasRookMoved(onKingside);
 }
 
 inline Square Position::piece(Color side, std::size_t idx) const
@@ -182,38 +212,9 @@ inline std::size_t Position::ColorPlacements::count() const
 }
 
 
-inline Square Position::ColorPlacements::placement(std::size_t idx) const
+inline bool Position::ColorPlacements::hasRookMoved(bool onKingside) const
 {
-   std::size_t numPieces = m_rooks.count();
-   if (idx < numPieces)
-      return m_rooks[idx];
-   idx -= numPieces;
-
-   numPieces = m_bishops.count();
-   if (idx < numPieces)
-      return m_bishops[idx];
-   idx -= numPieces;
-
-   numPieces = m_knights.count();
-   if (idx < numPieces)
-      return m_knights[idx];
-   idx -= numPieces;
-
-   numPieces = m_queens.count();
-   if (idx < numPieces)
-      return m_queens[idx];
-   idx -= numPieces;
-
-   numPieces = m_pawns.count();
-   if (idx < numPieces)
-      return m_pawns[idx];
-   idx -= numPieces;
-
-   numPieces = m_king.has_value() ? 1 : 0;
-   if (idx < numPieces)
-      return *m_king;
-
-   throw std::out_of_range("Invalid index for placement in position.");
+   return onKingside ? m_hasKingsideRookMoved : m_hasQueensideRookMoved;
 }
 
 
@@ -228,6 +229,12 @@ inline bool Position::ColorPlacements::operator==(const ColorPlacements& other) 
 inline bool Position::ColorPlacements::operator!=(const ColorPlacements& other) const
 {
    return !(*this == other);
+}
+
+
+inline void Position::ColorPlacements::initKingMovedFlag(Color side, Square at)
+{
+   m_hasKingMoved = side == Color::White ? (at == e1) : (at == e8);
 }
 
 

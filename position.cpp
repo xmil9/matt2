@@ -3,6 +3,7 @@
 // MIT license
 //
 #include "position.h"
+#include "rules.h"
 #include <cassert>
 #include <vector>
 
@@ -71,6 +72,44 @@ void Position::move(const Relocation& relocation)
 }
 
 
+bool Position::canAttack(Square sq, Color side) const
+{
+   for (auto it = begin(side), endIt = end(side); it != endIt; ++it)
+      if (canAttack(sq, *it))
+         return true;
+   return false;
+}
+
+
+bool Position::canAttack(Square sq, const Placement& placement) const
+{
+   const auto& piece = placement.piece();
+   const auto& at = placement.at();
+
+   // todo - cache the attacked squares and inval cache after each move
+   std::vector<Square> attacked;
+   // Reserve some space to avoid too many allocations.
+   attacked.reserve(100);
+
+   if (isKing(piece))
+      collectAttackedByKing(piece, at, *this, attacked);
+   else if (isQueen(piece))
+      collectAttackedByQueen(piece, at, *this, attacked);
+   else if (isRook(piece))
+      collectAttackedByRook(piece, at, *this, attacked);
+   else if (isBishop(piece))
+      collectAttackedByBishop(piece, at, *this, attacked);
+   else if (isKnight(piece))
+      collectAttackedByKnight(piece, at, *this, attacked);
+   else if (isPawn(piece))
+      collectAttackedByPawn(piece, at, *this, attacked);
+   else
+      throw std::runtime_error("Unknown piece.");
+
+   return std::find(std::begin(attacked), std::end(attacked), sq) != std::end(attacked);
+}
+
+
 ///////////////////
 
 void Position::ColorPlacements::add(const Placement& placement)
@@ -81,6 +120,7 @@ void Position::ColorPlacements::add(const Placement& placement)
    if (isKing(piece))
    {
       m_king = at;
+      initKingMovedFlag(color(piece), at);
    }
    else if (isQueen(piece))
    {
@@ -89,6 +129,7 @@ void Position::ColorPlacements::add(const Placement& placement)
    else if (isRook(piece))
    {
       m_rooks.add(at);
+      initRookMovedFlag(color(piece));
    }
    else if (isBishop(piece))
    {
@@ -114,6 +155,7 @@ void Position::ColorPlacements::remove(const Placement& placement)
    if (isKing(piece))
    {
       m_king = std::nullopt;
+      m_hasKingMoved = true;
    }
    else if (isQueen(piece))
    {
@@ -122,6 +164,7 @@ void Position::ColorPlacements::remove(const Placement& placement)
    else if (isRook(piece))
    {
       m_rooks.remove(at);
+      updateRookMovedFlag(at);
    }
    else if (isBishop(piece))
    {
@@ -147,6 +190,7 @@ void Position::ColorPlacements::move(const Placement& from, Square to)
    if (isKing(piece))
    {
       m_king = to;
+      m_hasKingMoved = true;
    }
    else if (isQueen(piece))
    {
@@ -155,6 +199,7 @@ void Position::ColorPlacements::move(const Placement& from, Square to)
    else if (isRook(piece))
    {
       m_rooks.move(at, to);
+      updateRookMovedFlag(at);
    }
    else if (isBishop(piece))
    {
@@ -201,6 +246,69 @@ std::vector<Square> Position::ColorPlacements::locations(Piece piece) const
    }
 
    return {};
+}
+
+
+Square Position::ColorPlacements::placement(std::size_t idx) const
+{
+   std::size_t numPieces = m_rooks.count();
+   if (idx < numPieces)
+      return m_rooks[idx];
+   idx -= numPieces;
+
+   numPieces = m_bishops.count();
+   if (idx < numPieces)
+      return m_bishops[idx];
+   idx -= numPieces;
+
+   numPieces = m_knights.count();
+   if (idx < numPieces)
+      return m_knights[idx];
+   idx -= numPieces;
+
+   numPieces = m_queens.count();
+   if (idx < numPieces)
+      return m_queens[idx];
+   idx -= numPieces;
+
+   numPieces = m_pawns.count();
+   if (idx < numPieces)
+      return m_pawns[idx];
+   idx -= numPieces;
+
+   numPieces = m_king.has_value() ? 1 : 0;
+   if (idx < numPieces)
+      return *m_king;
+
+   throw std::out_of_range("Invalid index for placement in position.");
+}
+
+
+void Position::ColorPlacements::initRookMovedFlag(Color side)
+{
+   const Square kingsideLoc = side == Color::White ? h1 : h8;
+   const Square queensideLoc = side == Color::White ? a1 : a8;
+
+   // Init flags for both rooks based on the current state of the position.
+   m_hasKingsideRookMoved = true;
+   m_hasQueensideRookMoved = true;
+
+   for (std::size_t i = 0; i < m_rooks.count(); ++i)
+   {
+      if (m_rooks[i] == kingsideLoc)
+         m_hasKingsideRookMoved = false;
+      if (m_rooks[i] == queensideLoc)
+         m_hasQueensideRookMoved = false;
+   }
+}
+
+
+void Position::ColorPlacements::updateRookMovedFlag(Square from)
+{
+   if (!m_hasKingsideRookMoved && file(from) == fh)
+      m_hasKingsideRookMoved = true;
+   if (!m_hasQueensideRookMoved && file(from) == fa)
+      m_hasQueensideRookMoved = true;
 }
 
 
