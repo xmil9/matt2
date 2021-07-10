@@ -322,12 +322,35 @@ void collectCastlingMoves(Color side, const Position& pos, std::vector<Move>& mo
 }
 
 
-void collectEnPassantMoves(Color /*side*/, const Position& /*pos*/,
-                           std::vector<Move>& /*moves*/)
+void collectEnPassantMoves(Color side, const Position& pos, std::vector<Move>& moves)
 {
-   // todo
-}
+   // Did oppenent make move that allows en-passant?
+   if (const auto epFile = pos.enPassantFile(); epFile.has_value())
+   {
+      const auto fromRank = side == Color::White ? r5 : r4;
+      const auto toRank = side == Color::White ? r6 : r3;
+      Square to = makeSquare(*epFile, toRank);
 
+      // Try both neighboring files.
+      static constexpr std::array<int, 2> FileOffsets = {-1, 1};
+      for (int off : FileOffsets)
+      {
+         // Is the neighboring file on the board?
+         if (isValid(*epFile, off))
+         {
+            const Square from = makeSquare(*epFile + off, fromRank);
+
+            // Is a pawn of matching color on the right square to make an en-passent
+            // move?
+            if (const auto piece = pos[from];
+                piece.has_value() && isPawn(*piece) && color(*piece) == side)
+            {
+               moves.push_back(EnPassant{Relocation(*piece, from, to)});
+            }
+         }
+      }
+   }
+}
 
 ///////////////////
 
