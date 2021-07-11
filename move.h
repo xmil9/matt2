@@ -15,14 +15,33 @@ namespace matt2
 {
 ///////////////////
 
-class BaseMove
+class ReversibleState
 {
  protected:
-   BaseMove() = default;
+   ReversibleState() = default;
 
+   void setState(std::optional<File> enPassantFile, Position& pos);
+   void resetState(Position& pos);
+
+ private:
    // State of position before move is made. Needed to reverse moves.
    std::optional<File> m_prevEnPassantFile;
 };
+
+
+inline void ReversibleState::setState(std::optional<File> enPassantFile, Position& pos)
+{
+   // Remember the position's previous state, so that we can reset it.
+   m_prevEnPassantFile = pos.enPassantFile();
+
+   // Set the state caused by this move as the position's new state.
+   pos.setEnPassantFile(enPassantFile);
+}
+
+inline void ReversibleState::resetState(Position& pos)
+{
+   pos.setEnPassantFile(m_prevEnPassantFile);
+}
 
 
 ///////////////////
@@ -35,10 +54,11 @@ constexpr EnabesEnPassant_t EnabesEnPassant;
 // Executes a "normal" chess move where a piece is relocated and optionally
 // takes a piece on the target square.
 // Does not validate that the move is legal.
-class BasicMove : public BaseMove
+class BasicMove : public ReversibleState
 {
  public:
    explicit BasicMove(const Relocation& moved, std::optional<Piece> taken = std::nullopt);
+   // Ctor for moves that allow opponent to use en-passant rule as next move.
    BasicMove(const Relocation& moved, EnabesEnPassant_t);
 
    void move(Position& pos);
@@ -69,8 +89,7 @@ inline void BasicMove::move(Position& pos)
       pos.remove(Placement{*m_taken, m_moved.to()});
    pos.move(m_moved);
 
-   m_prevEnPassantFile = pos.enPassantFile();
-   pos.setEnPassantFile(m_enPassantFile);
+   setState(m_enPassantFile, pos);
 }
 
 inline void BasicMove::reverse(Position& pos)
@@ -79,7 +98,7 @@ inline void BasicMove::reverse(Position& pos)
    if (m_taken)
       pos.add(Placement{*m_taken, m_moved.to()});
 
-   pos.setEnPassantFile(m_prevEnPassantFile);
+   resetState(pos);
 }
 
 
@@ -96,7 +115,7 @@ constexpr Queenside_t Queenside;
 
 // Executes a castling move.
 // Does not validate that the move is legal.
-class Castling : public BaseMove
+class Castling : public ReversibleState
 {
  public:
    Castling(Kingside_t, Color side);
@@ -129,8 +148,7 @@ inline void Castling::move(Position& pos)
    pos.move(m_king);
    pos.move(m_rook);
 
-   m_prevEnPassantFile = pos.enPassantFile();
-   pos.setEnPassantFile(m_prevEnPassantFile);
+   setState(std::nullopt, pos);
 }
 
 inline void Castling::reverse(Position& pos)
@@ -138,7 +156,7 @@ inline void Castling::reverse(Position& pos)
    pos.move(m_rook.reverse());
    pos.move(m_king.reverse());
 
-   pos.setEnPassantFile(m_prevEnPassantFile);
+   resetState(pos);
 }
 
 
@@ -146,7 +164,7 @@ inline void Castling::reverse(Position& pos)
 
 // Executes an en-passant move.
 // Does not validate that the move is legal.
-class EnPassant : public BaseMove
+class EnPassant : public ReversibleState
 {
  public:
    EnPassant(const Relocation& pawn);
@@ -172,8 +190,7 @@ inline void EnPassant::move(Position& pos)
    pos.move(m_movedPawn);
    pos.remove(m_takenPawn);
 
-   m_prevEnPassantFile = pos.enPassantFile();
-   pos.setEnPassantFile(m_prevEnPassantFile);
+   setState(std::nullopt, pos);
 }
 
 inline void EnPassant::reverse(Position& pos)
@@ -181,7 +198,7 @@ inline void EnPassant::reverse(Position& pos)
    pos.move(m_movedPawn.reverse());
    pos.add(m_takenPawn);
 
-   pos.setEnPassantFile(m_prevEnPassantFile);
+   resetState(pos);
 }
 
 
@@ -189,7 +206,7 @@ inline void EnPassant::reverse(Position& pos)
 
 // Executes a move that promotes a pawn.
 // Does not validate that the move is legal.
-class Promotion : public BaseMove
+class Promotion : public ReversibleState
 {
  public:
    Promotion(const Relocation& pawn, Piece promotedTo,
@@ -219,8 +236,7 @@ inline void Promotion::move(Position& pos)
    pos.remove(m_movedPawn);
    pos.add(m_promoted);
 
-   m_prevEnPassantFile = pos.enPassantFile();
-   pos.setEnPassantFile(m_prevEnPassantFile);
+   setState(std::nullopt, pos);
 }
 
 inline void Promotion::reverse(Position& pos)
@@ -230,7 +246,7 @@ inline void Promotion::reverse(Position& pos)
       pos.add(Placement{*m_taken, m_promoted.at()});
    pos.add(m_movedPawn);
 
-   pos.setEnPassantFile(m_prevEnPassantFile);
+   resetState(pos);
 }
 
 
