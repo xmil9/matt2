@@ -116,17 +116,17 @@ class Position
       void updateRookMovedFlag(Square from);
 
     private:
+      // Placements of pieces.
+      PiecePlacements<10> m_rooks;
+      PiecePlacements<10> m_bishops;
+      PiecePlacements<10> m_knights;
+      PiecePlacements<9> m_queens;
+      PiecePlacements<8> m_pawns;
+      std::optional<Square> m_king;
       // Flags needed to check if castling is allowed.
       bool m_hasKingMoved = false;
       bool m_hasKingsideRookMoved = false;
       bool m_hasQueensideRookMoved = false;
-      // Placements of pieces.
-      std::optional<Square> m_king;
-      PiecePlacements<8> m_pawns;
-      PiecePlacements<9> m_queens;
-      PiecePlacements<10> m_rooks;
-      PiecePlacements<10> m_bishops;
-      PiecePlacements<10> m_knights;
    };
 
  private:
@@ -143,13 +143,13 @@ class Position
    static std::size_t toColorIdx(Color side);
 
  private:
-   // File on which a pawn moved two squares forward from its starting location during the
-   // last turn.
-   std::optional<File> m_enPassantFile;
    // Board indexed by squares with information what piece is located there.
    std::array<std::optional<Piece>, 64> m_board;
    // Locations of each piece separated by color.
    std::array<ColorPlacements, 2> m_pieces;
+   // File on which a pawn moved two squares forward from its starting location during the
+   // last turn.
+   std::optional<File> m_enPassantFile;
 };
 
 
