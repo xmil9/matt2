@@ -14,6 +14,34 @@ namespace
 {
 ///////////////////
 
+void testFileIsValid()
+{
+   {
+      const std::string caseLabel = "isValid(File, int)";
+
+      VERIFY(!isValid(fa, -2), caseLabel);
+      VERIFY(!isValid(fa, -1), caseLabel);
+      VERIFY(isValid(fa, 0), caseLabel);
+      VERIFY(isValid(fa, 1), caseLabel);
+      VERIFY(isValid(fa, 2), caseLabel);
+      VERIFY(isValid(fa, 3), caseLabel);
+      VERIFY(isValid(fa, 4), caseLabel);
+      VERIFY(isValid(fa, 5), caseLabel);
+      VERIFY(isValid(fa, 6), caseLabel);
+      VERIFY(isValid(fa, 7), caseLabel);
+      VERIFY(!isValid(fa, 8), caseLabel);
+      VERIFY(!isValid(fa, 9), caseLabel);
+
+      VERIFY(!isValid(fh, -8), caseLabel);
+      VERIFY(isValid(fh, -2), caseLabel);
+      VERIFY(isValid(fh, -1), caseLabel);
+      VERIFY(isValid(fh, 0), caseLabel);
+      VERIFY(!isValid(fh, 1), caseLabel);
+      VERIFY(!isValid(fh, 2), caseLabel);
+   }
+}
+
+
 void testFileIncrementOperator()
 {
    {
@@ -63,6 +91,34 @@ void testFileDecrementOperator()
 
 
 ///////////////////
+
+void testRankIsValid()
+{
+   {
+      const std::string caseLabel = "isValid(Rank, int)";
+
+      VERIFY(!isValid(r1, -2), caseLabel);
+      VERIFY(!isValid(r1, -1), caseLabel);
+      VERIFY(isValid(r1, 0), caseLabel);
+      VERIFY(isValid(r1, 1), caseLabel);
+      VERIFY(isValid(r1, 2), caseLabel);
+      VERIFY(isValid(r1, 3), caseLabel);
+      VERIFY(isValid(r1, 4), caseLabel);
+      VERIFY(isValid(r1, 5), caseLabel);
+      VERIFY(isValid(r1, 6), caseLabel);
+      VERIFY(isValid(r1, 7), caseLabel);
+      VERIFY(!isValid(r1, 8), caseLabel);
+      VERIFY(!isValid(r1, 9), caseLabel);
+
+      VERIFY(!isValid(r8, -8), caseLabel);
+      VERIFY(isValid(r8, -2), caseLabel);
+      VERIFY(isValid(r8, -1), caseLabel);
+      VERIFY(isValid(r8, 0), caseLabel);
+      VERIFY(!isValid(r8, 1), caseLabel);
+      VERIFY(!isValid(r8, 2), caseLabel);
+   }
+}
+
 
 void testRankIncrementOperator()
 {
@@ -419,6 +475,80 @@ void testSquareIncrementOperator()
    }
 }
 
+
+///////////////////
+
+void testOffsetIsOnBoard()
+{
+   {
+      const std::string caseLabel = "isOnBoard(Square, Offset)";
+
+      VERIFY(!isOnBoard(a1, {-1, 0}), caseLabel);
+      VERIFY(isOnBoard(a1, {0, 0}), caseLabel);
+      VERIFY(isOnBoard(a1, {1, 0}), caseLabel);
+      VERIFY(isOnBoard(a1, {2, 0}), caseLabel);
+      VERIFY(isOnBoard(a1, {3, 0}), caseLabel);
+      VERIFY(isOnBoard(a1, {4, 0}), caseLabel);
+      VERIFY(isOnBoard(a1, {5, 0}), caseLabel);
+      VERIFY(isOnBoard(a1, {6, 0}), caseLabel);
+      VERIFY(isOnBoard(a1, {7, 0}), caseLabel);
+      VERIFY(!isOnBoard(a1, {8, 0}), caseLabel);
+
+      VERIFY(!isOnBoard(h8, {-8, 0}), caseLabel);
+      VERIFY(isOnBoard(h8, {-7, 0}), caseLabel);
+      VERIFY(isOnBoard(h8, {-6, 0}), caseLabel);
+      VERIFY(isOnBoard(h8, {-5, 0}), caseLabel);
+      VERIFY(isOnBoard(h8, {-4, 0}), caseLabel);
+      VERIFY(isOnBoard(h8, {-3, 0}), caseLabel);
+      VERIFY(isOnBoard(h8, {-2, 0}), caseLabel);
+      VERIFY(isOnBoard(h8, {-1, 0}), caseLabel);
+      VERIFY(isOnBoard(h8, {0, 0}), caseLabel);
+      VERIFY(!isOnBoard(h8, {1, 0}), caseLabel);
+
+      VERIFY(!isOnBoard(a1, {0, -1}), caseLabel);
+      VERIFY(isOnBoard(a1, {0, 0}), caseLabel);
+      VERIFY(isOnBoard(a1, {0, 1}), caseLabel);
+      VERIFY(isOnBoard(a1, {0, 2}), caseLabel);
+      VERIFY(isOnBoard(a1, {0, 3}), caseLabel);
+      VERIFY(isOnBoard(a1, {0, 4}), caseLabel);
+      VERIFY(isOnBoard(a1, {0, 5}), caseLabel);
+      VERIFY(isOnBoard(a1, {0, 6}), caseLabel);
+      VERIFY(isOnBoard(a1, {0, 7}), caseLabel);
+      VERIFY(!isOnBoard(a1, {0, 8}), caseLabel);
+
+      VERIFY(!isOnBoard(h8, {0, -8}), caseLabel);
+      VERIFY(isOnBoard(h8, {0, -7}), caseLabel);
+      VERIFY(isOnBoard(h8, {0, -6}), caseLabel);
+      VERIFY(isOnBoard(h8, {0, -5}), caseLabel);
+      VERIFY(isOnBoard(h8, {0, -4}), caseLabel);
+      VERIFY(isOnBoard(h8, {0, -3}), caseLabel);
+      VERIFY(isOnBoard(h8, {0, -2}), caseLabel);
+      VERIFY(isOnBoard(h8, {0, -1}), caseLabel);
+      VERIFY(isOnBoard(h8, {0, 0}), caseLabel);
+      VERIFY(!isOnBoard(h8, {0, 1}), caseLabel);
+
+
+      VERIFY(!isOnBoard(d4, {-3, -3}), caseLabel);
+      VERIFY(!isOnBoard(d4, {3, 3}), caseLabel);
+      VERIFY(!isOnBoard(d4, {-4, 1}), caseLabel);
+      VERIFY(!isOnBoard(d4, {5, 2}), caseLabel);
+      VERIFY(!isOnBoard(d4, {2, -4}), caseLabel);
+      VERIFY(!isOnBoard(d4, {1, 5}), caseLabel);
+   }
+}
+
+
+void testOffsetAdditionToSquare()
+{
+   {
+      const std::string caseLabel = "operator+(Square, Offset)";
+
+      VERIFY((b2 + Offset{1, 3}) == c5, caseLabel);
+      VERIFY((c4 + Offset{-2, -3}) == a1, caseLabel);
+      VERIFY((c4 + Offset{0, 0}) == c4, caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -426,6 +556,7 @@ void testSquareIncrementOperator()
 
 void testFile()
 {
+   testFileIsValid();
    testFileIncrementOperator();
    testFileDecrementOperator();
 }
@@ -433,6 +564,7 @@ void testFile()
 
 void testRank()
 {
+   testRankIsValid();
    testRankIncrementOperator();
    testRankDecrementOperator();
 }
@@ -445,4 +577,11 @@ void testSquare()
    testGettingFileOfSquare();
    testGettingRankOfSquare();
    testSquareIncrementOperator();
+}
+
+
+void testOffset()
+{
+   testOffsetIsOnBoard();
+   testOffsetAdditionToSquare();
 }

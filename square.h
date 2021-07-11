@@ -32,20 +32,21 @@ constexpr File fh = File::fh;
 
 inline bool isValid(File f, int offset)
 {
-   return static_cast<unsigned char>(f) + offset <= static_cast<unsigned char>(fh);
+   const int val = static_cast<int>(f) + offset;
+   return static_cast<int>(fa) <= val && val <= static_cast<int>(fh);
 }
 
 inline File operator+(File f, int inc)
 {
+   assert(isValid(f, inc));
    const auto res = static_cast<File>(static_cast<unsigned char>(f) + inc);
-   assert(res <= fh);
    return res;
 }
 
 inline File operator-(File f, int dec)
 {
+   assert(isValid(f, -dec));
    const auto res = static_cast<File>(static_cast<unsigned char>(f) - dec);
-   assert(res <= fh);
    return res;
 }
 
@@ -73,7 +74,8 @@ constexpr Rank r8 = Rank::r8;
 
 inline bool isValid(Rank r, int offset)
 {
-   return static_cast<unsigned char>(r) + offset <= static_cast<unsigned char>(r8);
+   const int val = static_cast<int>(r) + offset;
+   return static_cast<int>(r1) <= val && val <= static_cast<int>(r8);
 }
 
 inline Rank operator+(Rank r, int inc)
