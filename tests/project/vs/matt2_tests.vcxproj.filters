@@ -9,6 +9,7 @@
     <ClCompile Include="..\..\position_tests.cpp" />
     <ClCompile Include="..\..\placement_tests.cpp" />
     <ClCompile Include="..\..\relocation_tests.cpp" />
+    <ClCompile Include="..\..\rules_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\piece_tests.h" />
@@ -18,5 +19,6 @@
     <ClInclude Include="..\..\position_tests.h" />
     <ClInclude Include="..\..\placement_tests.h" />
     <ClInclude Include="..\..\relocation_tests.h" />
+    <ClInclude Include="..\..\rules_tests.h" />
   </ItemGroup>
 </Project>
