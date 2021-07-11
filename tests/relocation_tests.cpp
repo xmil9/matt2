@@ -95,6 +95,39 @@ void testRelocationNotationCtor()
 }
 
 
+void testRelocationPiece()
+{
+   {
+      const std::string caseLabel = "Relocation::piece()";
+
+      VERIFY(Relocation(Rb, a8, f8).piece() == Rb, caseLabel);
+      VERIFY(Relocation(Kw, b4, c3).piece() == Kw, caseLabel);
+   }
+}
+
+
+void testRelocationFrom()
+{
+   {
+      const std::string caseLabel = "Relocation::from()";
+
+      VERIFY(Relocation(Rb, a8, f8).from() == a8, caseLabel);
+      VERIFY(Relocation(Kw, b4, c3).from() == b4, caseLabel);
+   }
+}
+
+
+void testRelocationTo()
+{
+   {
+      const std::string caseLabel = "Relocation::to()";
+
+      VERIFY(Relocation(Rb, a8, f8).to() == f8, caseLabel);
+      VERIFY(Relocation(Kw, b4, c3).to() == c3, caseLabel);
+   }
+}
+
+
 void testRelocationEquality()
 {
    {
@@ -160,6 +193,17 @@ void testRelocationInequality()
    }
 }
 
+
+void testRelocationReverse()
+{
+   {
+      const std::string caseLabel = "Relocation::reverse";
+
+      VERIFY(Relocation(Kw, b4, c3).reverse() == Relocation(Kw, c3, b4), caseLabel);
+      VERIFY(Relocation(Rb, a8, f8).reverse() == Relocation(Rb, f8, a8), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -168,6 +212,10 @@ void testRelocationInequality()
 void testRelocation()
 {
    testRelocationNotationCtor();
+   testRelocationPiece();
+   testRelocationFrom();
+   testRelocationTo();
    testRelocationEquality();
    testRelocationInequality();
+   testRelocationReverse();
 }
