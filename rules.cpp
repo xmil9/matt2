@@ -102,7 +102,7 @@ bool collectForwardPawnMove(Piece pawn, Square at, const Position& pos, Offset f
       {
          // Moving by two squares allows opponent to use en-passant rule in the
          // next move.
-         moves.push_back(BasicMove{Relocation{pawn, at, to}, EnabesEnPassant});
+         moves.push_back(BasicMove{Relocation{pawn, at, to}, EnablesEnPassant});
       }
 
       moveCollected = true;

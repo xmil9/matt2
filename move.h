@@ -47,8 +47,8 @@ inline void ReversibleState::resetState(Position& pos)
 ///////////////////
 
 // clang-format off
-struct EnabesEnPassant_t {};
-constexpr EnabesEnPassant_t EnabesEnPassant;
+struct EnablesEnPassant_t {};
+constexpr EnablesEnPassant_t EnablesEnPassant;
 // clang-format on
 
 // Executes a "normal" chess move where a piece is relocated and optionally
@@ -59,7 +59,7 @@ class BasicMove : public ReversibleState
  public:
    explicit BasicMove(const Relocation& moved, std::optional<Piece> taken = std::nullopt);
    // Ctor for moves that allow opponent to use en-passant rule as next move.
-   BasicMove(const Relocation& moved, EnabesEnPassant_t);
+   BasicMove(const Relocation& moved, EnablesEnPassant_t);
 
    void move(Position& pos);
    void reverse(Position& pos);
@@ -78,7 +78,7 @@ inline BasicMove::BasicMove(const Relocation& moved, std::optional<Piece> taken)
 {
 }
 
-inline BasicMove::BasicMove(const Relocation& moved, EnabesEnPassant_t)
+inline BasicMove::BasicMove(const Relocation& moved, EnablesEnPassant_t)
 : m_enPassantFile{file(moved.from())}, m_moved{moved}
 {
 }
