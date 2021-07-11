@@ -66,10 +66,10 @@ class BasicMove : public ReversibleState
    std::optional<File> enPassantFile() const { return m_enPassantFile; }
 
  private:
+   Relocation m_moved;
+   std::optional<Piece> m_taken;
    // File that this move enables en-passant on.
    std::optional<File> m_enPassantFile;
-   std::optional<Piece> m_taken;
-   Relocation m_moved;
 };
 
 
@@ -123,7 +123,6 @@ class Castling : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
-   bool enablesEnPassant() const { return false; }
 
  private:
    Relocation m_king;
@@ -171,7 +170,6 @@ class EnPassant : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
-   bool enablesEnPassant() const { return false; }
 
  private:
    Relocation m_movedPawn;
@@ -214,7 +212,6 @@ class Promotion : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
-   bool enablesEnPassant() const { return false; }
 
  private:
    Placement m_movedPawn;

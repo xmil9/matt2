@@ -193,7 +193,8 @@ inline std::size_t Position::toColorIdx(Color side)
 
 inline bool Position::operator==(const Position& other) const
 {
-   return m_board == other.m_board && m_pieces == other.m_pieces;
+   return m_board == other.m_board && m_pieces == other.m_pieces &&
+          m_enPassantFile == other.m_enPassantFile;
 }
 
 inline bool Position::operator!=(const Position& other) const

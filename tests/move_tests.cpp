@@ -15,6 +15,32 @@ namespace
 {
 ///////////////////
 
+void testBasicMoveMainCtor()
+{
+   {
+      const std::string caseLabel = "BasicMove main ctor.";
+
+      Position pos{"Kba1 wf2"};
+      BasicMove m{Relocation{"wf2f3"}};
+      
+      VERIFY(m.enPassantFile() == std::nullopt, caseLabel);
+   }
+}
+
+
+void testBasicMoveEnPassantCtor()
+{
+   {
+      const std::string caseLabel = "BasicMove ctor for en-passant.";
+
+      Position pos{"Kba1 wf2"};
+      BasicMove m{Relocation{"wf2f4"}, EnablesEnPassant};
+      
+      VERIFY(m.enPassantFile() == ff, caseLabel);
+   }
+}
+
+
 void testBasicMoveMove()
 {
    {
@@ -27,6 +53,7 @@ void testBasicMoveMove()
       VERIFY(pos[c3] == Rb, caseLabel);
       VERIFY(pos.locations(Rb).size() == 1, caseLabel);
       VERIFY(pos.locations(Rb)[0] == c3, caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
       // Verify uninvolved pieces.
       VERIFY(pos[a1] == Kb, caseLabel);
       VERIFY(pos[h8] == Kw, caseLabel);
@@ -43,6 +70,22 @@ void testBasicMoveMove()
       VERIFY(pos.locations(Rb).size() == 1, caseLabel);
       VERIFY(pos.locations(Rb)[0] == h3, caseLabel);
       VERIFY(pos.locations(Pw).empty(), caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
+      // Verify uninvolved pieces.
+      VERIFY(pos[a1] == Kb, caseLabel);
+      VERIFY(pos[h8] == Kw, caseLabel);
+   }
+   {
+      const std::string caseLabel = "BasicMove::move with en-passant";
+
+      Position pos{"Kba1 Kwh8 wg2"};
+      BasicMove m{Relocation{"wg2g4"}, EnablesEnPassant};
+      m.move(pos);
+
+      VERIFY(pos[g4] == Pw, caseLabel);
+      VERIFY(pos.locations(Pw).size() == 1, caseLabel);
+      VERIFY(pos.locations(Pw)[0] == g4, caseLabel);
+      VERIFY(pos.enPassantFile() == fg, caseLabel);
       // Verify uninvolved pieces.
       VERIFY(pos[a1] == Kb, caseLabel);
       VERIFY(pos[h8] == Kw, caseLabel);
@@ -74,6 +117,17 @@ void testBasicMoveReverse()
 
       VERIFY(pos == originalPos, caseLabel);
    }
+   {
+      const std::string caseLabel = "BasicMove::reverse with en-passant";
+
+      Position originalPos{"Kba1 Kwh8 wg2"};
+      Position pos = originalPos;
+      BasicMove m{Relocation{"wg2g4"}, EnablesEnPassant};
+      m.move(pos);
+      m.reverse(pos);
+
+      VERIFY(pos == originalPos, caseLabel);
+   }
 }
 
 
@@ -94,6 +148,7 @@ void testCastlingMove()
       VERIFY(pos[f8] == Rb, caseLabel);
       VERIFY(pos.locations(Rb).size() == 1, caseLabel);
       VERIFY(pos.locations(Rb)[0] == f8, caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
    {
       const std::string caseLabel = "Castling::move for castling white king-side";
@@ -108,6 +163,7 @@ void testCastlingMove()
       VERIFY(pos[f1] == Rw, caseLabel);
       VERIFY(pos.locations(Rw).size() == 1, caseLabel);
       VERIFY(pos.locations(Rw)[0] == f1, caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
    {
       const std::string caseLabel = "Castling::move for castling black queen-side";
@@ -122,6 +178,7 @@ void testCastlingMove()
       VERIFY(pos[d8] == Rb, caseLabel);
       VERIFY(pos.locations(Rb).size() == 1, caseLabel);
       VERIFY(pos.locations(Rb)[0] == d8, caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
    {
       const std::string caseLabel = "Castling::move for castling white queen-side";
@@ -136,6 +193,7 @@ void testCastlingMove()
       VERIFY(pos[d1] == Rw, caseLabel);
       VERIFY(pos.locations(Rw).size() == 1, caseLabel);
       VERIFY(pos.locations(Rw)[0] == d1, caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
 }
 
@@ -207,6 +265,7 @@ void testEnPassantMove()
       VERIFY(pos.locations(Pw)[0] == e6, caseLabel);
       VERIFY(pos[e5] == std::nullopt, caseLabel);
       VERIFY(pos.locations(Pb).empty(), caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
    {
       const std::string caseLabel = "EnPassant::move white pawn to lower file";
@@ -222,6 +281,7 @@ void testEnPassantMove()
       VERIFY(pos.locations(Pw)[0] == g6, caseLabel);
       VERIFY(pos[g5] == std::nullopt, caseLabel);
       VERIFY(pos.locations(Pb).empty(), caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
    {
       const std::string caseLabel = "EnPassant::move black pawn to higher file";
@@ -237,6 +297,7 @@ void testEnPassantMove()
       VERIFY(pos.locations(Pb)[0] == b3, caseLabel);
       VERIFY(pos[b4] == std::nullopt, caseLabel);
       VERIFY(pos.locations(Pw).empty(), caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
    {
       const std::string caseLabel = "EnPassant::move black pawn to lower file";
@@ -252,6 +313,7 @@ void testEnPassantMove()
       VERIFY(pos.locations(Pb)[0] == e3, caseLabel);
       VERIFY(pos[e4] == std::nullopt, caseLabel);
       VERIFY(pos.locations(Pw).empty(), caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
 }
 
@@ -325,6 +387,7 @@ void testPromotionMove()
       VERIFY(pos.locations(Qw).size() == 1, caseLabel);
       VERIFY(pos.locations(Qw)[0] == c8, caseLabel);
       VERIFY(pos.locations(Pw).empty(), caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
    {
       const std::string caseLabel = "Promotion::move promote black pawn to rook";
@@ -338,6 +401,7 @@ void testPromotionMove()
       VERIFY(pos.locations(Rb).size() == 1, caseLabel);
       VERIFY(pos.locations(Rb)[0] == h1, caseLabel);
       VERIFY(pos.locations(Pb).empty(), caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
    {
       const std::string caseLabel =
@@ -353,6 +417,7 @@ void testPromotionMove()
       VERIFY(pos.locations(Qb)[0] == g1, caseLabel);
       VERIFY(pos.locations(Pb).empty(), caseLabel);
       VERIFY(pos.locations(Bw).empty(), caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
    {
       const std::string caseLabel =
@@ -366,6 +431,7 @@ void testPromotionMove()
       VERIFY(pos[f1] == Qb, caseLabel);
       VERIFY(pos.locations(Qb).size() == 3, caseLabel);
       VERIFY(pos.locations(Pb).empty(), caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
    {
       const std::string caseLabel =
@@ -379,6 +445,7 @@ void testPromotionMove()
       VERIFY(pos[h8] == Rw, caseLabel);
       VERIFY(pos.locations(Rw).size() == 10, caseLabel);
       VERIFY(pos.locations(Pb).empty(), caseLabel);
+      VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
 }
 
@@ -546,6 +613,8 @@ void testReverseMove()
 
 void testMoves()
 {
+   testBasicMoveMainCtor();
+   testBasicMoveEnPassantCtor();
    testBasicMoveMove();
    testBasicMoveReverse();
    testCastlingMove();
