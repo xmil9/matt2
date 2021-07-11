@@ -266,7 +266,28 @@ void testIsPawn()
 }
 
 
-void testIsWhite()
+void testPieceColor()
+{
+   {
+      const std::string caseLabel = "color(Piece)";
+
+      VERIFY(color(Kw) == Color::White, caseLabel);
+      VERIFY(color(Qw) == Color::White, caseLabel);
+      VERIFY(color(Rw) == Color::White, caseLabel);
+      VERIFY(color(Bw) == Color::White, caseLabel);
+      VERIFY(color(Nw) == Color::White, caseLabel);
+      VERIFY(color(Pw) == Color::White, caseLabel);
+      VERIFY(color(Kb) == Color::Black, caseLabel);
+      VERIFY(color(Qb) == Color::Black, caseLabel);
+      VERIFY(color(Rb) == Color::Black, caseLabel);
+      VERIFY(color(Bb) == Color::Black, caseLabel);
+      VERIFY(color(Nb) == Color::Black, caseLabel);
+      VERIFY(color(Pb) == Color::Black, caseLabel);
+   }
+}
+
+
+void testPieceIsWhite()
 {
    {
       const std::string caseLabel = "isWhite for white pieces";
@@ -291,7 +312,7 @@ void testIsWhite()
 }
 
 
-void testIsBlack()
+void testPieceIsBlack()
 {
    {
       const std::string caseLabel = "isBlack for black pieces";
@@ -316,7 +337,7 @@ void testIsBlack()
 }
 
 
-void testHaveSameColor()
+void testPieceHaveSameColor()
 {
    {
       const std::string caseLabel = "haveSameColor for pieces of same color";
@@ -363,7 +384,8 @@ void testPiece()
    testIsBishop();
    testIsKnight();
    testIsPawn();
-   testIsWhite();
-   testIsBlack();
-   testHaveSameColor();
+   testPieceColor();
+   testPieceIsWhite();
+   testPieceIsBlack();
+   testPieceHaveSameColor();
 }
