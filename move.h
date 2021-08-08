@@ -23,6 +23,11 @@ class ReversibleState
    void setState(std::optional<File> enPassantFile, Position& pos);
    void resetState(Position& pos);
 
+   friend bool operator==(const ReversibleState& a, const ReversibleState& b)
+   {
+      return a.m_prevEnPassantFile == b.m_prevEnPassantFile;
+   }
+
  private:
    // State of position before move is made. Needed to reverse moves.
    std::optional<File> m_prevEnPassantFile;
@@ -41,6 +46,11 @@ inline void ReversibleState::setState(std::optional<File> enPassantFile, Positio
 inline void ReversibleState::resetState(Position& pos)
 {
    pos.setEnPassantFile(m_prevEnPassantFile);
+}
+
+inline bool operator!=(const ReversibleState& a, const ReversibleState& b)
+{
+   return !(a == b);
 }
 
 
@@ -64,6 +74,13 @@ class BasicMove : public ReversibleState
    void move(Position& pos);
    void reverse(Position& pos);
    std::optional<File> enPassantFile() const { return m_enPassantFile; }
+
+   friend bool operator==(const BasicMove& a, const BasicMove& b)
+   {
+      return static_cast<ReversibleState>(a) == static_cast<ReversibleState>(b) &&
+             a.m_moved == b.m_moved && a.m_taken == b.m_taken &&
+             a.m_enPassantFile == b.m_enPassantFile;
+   }
 
  private:
    Relocation m_moved;
@@ -101,6 +118,11 @@ inline void BasicMove::reverse(Position& pos)
    resetState(pos);
 }
 
+inline bool operator!=(const BasicMove& a, const BasicMove& b)
+{
+   return !(a == b);
+}
+
 
 ///////////////////
 
@@ -123,6 +145,12 @@ class Castling : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
+
+   friend bool operator==(const Castling& a, const Castling& b)
+   {
+      return static_cast<ReversibleState>(a) == static_cast<ReversibleState>(b) &&
+             a.m_king == b.m_king && a.m_rook == b.m_rook;
+   }
 
  private:
    Relocation m_king;
@@ -158,6 +186,11 @@ inline void Castling::reverse(Position& pos)
    resetState(pos);
 }
 
+inline bool operator!=(const Castling& a, const Castling& b)
+{
+   return !(a == b);
+}
+
 
 ///////////////////
 
@@ -170,6 +203,12 @@ class EnPassant : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
+
+   friend bool operator==(const EnPassant& a, const EnPassant& b)
+   {
+      return static_cast<ReversibleState>(a) == static_cast<ReversibleState>(b) &&
+             a.m_movedPawn == b.m_movedPawn && a.m_takenPawn == b.m_takenPawn;
+   }
 
  private:
    Relocation m_movedPawn;
@@ -199,6 +238,11 @@ inline void EnPassant::reverse(Position& pos)
    resetState(pos);
 }
 
+inline bool operator!=(const EnPassant& a, const EnPassant& b)
+{
+   return !(a == b);
+}
+
 
 ///////////////////
 
@@ -212,6 +256,13 @@ class Promotion : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
+
+   friend bool operator==(const Promotion& a, const Promotion& b)
+   {
+      return static_cast<ReversibleState>(a) == static_cast<ReversibleState>(b) &&
+             a.m_movedPawn == b.m_movedPawn && a.m_promoted == b.m_promoted &&
+             a.m_taken == b.m_taken;
+   }
 
  private:
    Placement m_movedPawn;
@@ -244,6 +295,11 @@ inline void Promotion::reverse(Position& pos)
    pos.add(m_movedPawn);
 
    resetState(pos);
+}
+
+inline bool operator!=(const Promotion& a, const Promotion& b)
+{
+   return !(a == b);
 }
 
 
