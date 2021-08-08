@@ -22,7 +22,7 @@ void testBasicMoveMainCtor()
 
       Position pos{"Kba1 wf2"};
       BasicMove m{Relocation{"wf2f3"}};
-      
+
       VERIFY(m.enPassantFile() == std::nullopt, caseLabel);
    }
 }
@@ -35,7 +35,7 @@ void testBasicMoveEnPassantCtor()
 
       Position pos{"Kba1 wf2"};
       BasicMove m{Relocation{"wf2f4"}, EnablesEnPassant};
-      
+
       VERIFY(m.enPassantFile() == ff, caseLabel);
    }
 }
@@ -127,6 +127,64 @@ void testBasicMoveReverse()
       m.reverse(pos);
 
       VERIFY(pos == originalPos, caseLabel);
+   }
+}
+
+
+void testBasicMoveEquality()
+{
+   {
+      const std::string caseLabel = "BasicMove equality for equal moves";
+
+      VERIFY(BasicMove(Relocation(Qw, d7, d3)) == BasicMove(Relocation(Qw, d7, d3)),
+             caseLabel);
+      VERIFY(BasicMove(Relocation(Qw, d7, d3), Rb) ==
+                BasicMove(Relocation(Qw, d7, d3), Rb),
+             caseLabel);
+      VERIFY(BasicMove(Relocation(Pb, e7, e5), EnablesEnPassant) ==
+                BasicMove(Relocation(Pb, e7, e5), EnablesEnPassant),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "BasicMove equality for unequal moves";
+
+      VERIFY(!(BasicMove(Relocation(Qw, d7, d3)) == BasicMove(Relocation(Qw, d7, d4))),
+             caseLabel);
+      VERIFY(!(BasicMove(Relocation(Qw, d7, d3), Rb) ==
+               BasicMove(Relocation(Qw, d7, d3), Nb)),
+             caseLabel);
+      VERIFY(!(BasicMove(Relocation(Pb, e7, e5), EnablesEnPassant) ==
+               BasicMove(Relocation(Pb, e7, e5))),
+             caseLabel);
+   }
+}
+
+
+void testBasicMoveInequality()
+{
+   {
+      const std::string caseLabel = "BasicMove inequality for equal moves";
+
+      VERIFY(!(BasicMove(Relocation(Qw, d7, d3)) != BasicMove(Relocation(Qw, d7, d3))),
+             caseLabel);
+      VERIFY(!(BasicMove(Relocation(Qw, d7, d3), Rb) !=
+               BasicMove(Relocation(Qw, d7, d3), Rb)),
+             caseLabel);
+      VERIFY(!(BasicMove(Relocation(Pb, e7, e5), EnablesEnPassant) !=
+               BasicMove(Relocation(Pb, e7, e5), EnablesEnPassant)),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "BasicMove inequality for unequal moves";
+
+      VERIFY(BasicMove(Relocation(Qw, d7, d3)) != BasicMove(Relocation(Qw, d7, d4)),
+             caseLabel);
+      VERIFY(BasicMove(Relocation(Qw, d7, d3), Rb) !=
+                BasicMove(Relocation(Qw, d7, d3), Nb),
+             caseLabel);
+      VERIFY(BasicMove(Relocation(Pb, e7, e5), EnablesEnPassant) !=
+                BasicMove(Relocation(Pb, e7, e5)),
+             caseLabel);
    }
 }
 
@@ -243,6 +301,48 @@ void testCastlingReverse()
       m.reverse(pos);
 
       VERIFY(pos == originalPos, caseLabel);
+   }
+}
+
+
+void testCastlingEquality()
+{
+   {
+      const std::string caseLabel = "Castling equality for equal moves";
+
+      VERIFY(Castling(Kingside, Color::Black) == Castling(Kingside, Color::Black),
+             caseLabel);
+      VERIFY(Castling(Queenside, Color::White) == Castling(Queenside, Color::White),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "Castling equality for unequal moves";
+
+      VERIFY(!(Castling(Kingside, Color::Black) == Castling(Queenside, Color::Black)),
+             caseLabel);
+      VERIFY(!(Castling(Queenside, Color::White) == Castling(Queenside, Color::Black)),
+             caseLabel);
+   }
+}
+
+
+void testCastlingInequality()
+{
+   {
+      const std::string caseLabel = "Castling inequality for equal moves";
+
+      VERIFY(!(Castling(Kingside, Color::Black) != Castling(Kingside, Color::Black)),
+             caseLabel);
+      VERIFY(!(Castling(Queenside, Color::White) != Castling(Queenside, Color::White)),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "Castling inequality for unequal moves";
+
+      VERIFY(Castling(Kingside, Color::Black) != Castling(Queenside, Color::Black),
+             caseLabel);
+      VERIFY(Castling(Queenside, Color::White) != Castling(Queenside, Color::Black),
+             caseLabel);
    }
 }
 
@@ -371,6 +471,40 @@ void testEnPassantReverse()
 }
 
 
+void testEnPassantEquality()
+{
+   {
+      const std::string caseLabel = "EnPassant equality for equal moves";
+
+      VERIFY(EnPassant(Relocation(Pb, c4, d3)) == EnPassant(Relocation(Pb, c4, d3)),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "EnPassant equality for unequal moves";
+
+      VERIFY(!(EnPassant(Relocation(Pb, c4, b3)) == EnPassant(Relocation(Pb, c4, d3))),
+             caseLabel);
+   }
+}
+
+
+void testEnPassantInequality()
+{
+   {
+      const std::string caseLabel = "EnPassant inequality for equal moves";
+
+      VERIFY(!(EnPassant(Relocation(Pb, c4, d3)) != EnPassant(Relocation(Pb, c4, d3))),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "EnPassant inequality for unequal moves";
+
+      VERIFY(EnPassant(Relocation(Pb, c4, b3)) != EnPassant(Relocation(Pb, c4, d3)),
+             caseLabel);
+   }
+}
+
+
 ///////////////////
 
 void testPromotionMove()
@@ -420,8 +554,7 @@ void testPromotionMove()
       VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
    {
-      const std::string caseLabel =
-         "Promotion::move promote with multiple queens";
+      const std::string caseLabel = "Promotion::move promote with multiple queens";
 
       Position pos{"Qbd7 Qba4 bf2"};
       Promotion m{Relocation{"bf2f1"}, Qb};
@@ -434,8 +567,7 @@ void testPromotionMove()
       VERIFY(pos.enPassantFile() == std::nullopt, caseLabel);
    }
    {
-      const std::string caseLabel =
-         "Promotion::move promote with max rooks";
+      const std::string caseLabel = "Promotion::move promote with max rooks";
 
       Position pos{"Rwa4 Rwb4 Rwc4 Rwd4 Rwe4 Rwf4 Rwg4 Rwh4 Rwb2 wh7"};
       Promotion m{Relocation{"wh7h8"}, Rw};
@@ -499,8 +631,7 @@ void testPromotionReverse()
       VERIFY(pos == originalPos, caseLabel);
    }
    {
-      const std::string caseLabel =
-         "Promotion::reverse for promotion with max rooks";
+      const std::string caseLabel = "Promotion::reverse for promotion with max rooks";
 
       const Position originalPos{"Rwa4 Rwb4 Rwc4 Rwd4 Rwe4 Rwf4 Rwg4 Rwh4 Rwb2 wh7"};
       Position pos = originalPos;
@@ -512,6 +643,64 @@ void testPromotionReverse()
    }
 }
 
+
+void testPromotionEquality()
+{
+   {
+      const std::string caseLabel = "Promotion equality for equal moves";
+
+      VERIFY(Promotion(Relocation(Pb, c2, c1), Qb) ==
+                Promotion(Relocation(Pb, c2, c1), Qb),
+             caseLabel);
+      VERIFY(Promotion(Relocation(Pb, c2, d1), Qb, Bw) ==
+                Promotion(Relocation(Pb, c2, d1), Qb, Bw),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "Promotion equality for unequal moves";
+
+      VERIFY(!(Promotion(Relocation(Pb, d2, d1), Qb) ==
+               Promotion(Relocation(Pb, c2, c1), Qb)),
+             caseLabel);
+      VERIFY(!(Promotion(Relocation(Pb, c2, c1), Qb) ==
+               Promotion(Relocation(Pb, c2, c1), Rb)),
+             caseLabel);
+      VERIFY(!(Promotion(Relocation(Pb, c2, d1), Qb, Bw) ==
+               Promotion(Relocation(Pb, c2, d1), Qb, Nw)),
+             caseLabel);
+   }
+}
+
+
+void testPromotionInequality()
+{
+   {
+      const std::string caseLabel = "Promotion inequality for equal moves";
+
+      VERIFY(!(Promotion(Relocation(Pb, c2, c1), Qb) !=
+               Promotion(Relocation(Pb, c2, c1), Qb)),
+             caseLabel);
+      VERIFY(!(Promotion(Relocation(Pb, c2, d1), Qb, Bw) !=
+               Promotion(Relocation(Pb, c2, d1), Qb, Bw)),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "Promotion inequality for unequal moves";
+
+      VERIFY(Promotion(Relocation(Pb, d2, d1), Qb) !=
+                Promotion(Relocation(Pb, c2, c1), Qb),
+             caseLabel);
+      VERIFY(Promotion(Relocation(Pb, c2, c1), Qb) !=
+                Promotion(Relocation(Pb, c2, c1), Rb),
+             caseLabel);
+      VERIFY(Promotion(Relocation(Pb, c2, d1), Qb, Bw) !=
+                Promotion(Relocation(Pb, c2, d1), Qb, Nw),
+             caseLabel);
+   }
+}
+
+
+///////////////////
 
 void testMakeMove()
 {
@@ -617,12 +806,20 @@ void testMoves()
    testBasicMoveEnPassantCtor();
    testBasicMoveMove();
    testBasicMoveReverse();
+   testBasicMoveEquality();
+   testBasicMoveInequality();
    testCastlingMove();
    testCastlingReverse();
+   testCastlingEquality();
+   testCastlingInequality();
    testEnPassantMove();
    testEnPassantReverse();
+   testEnPassantEquality();
+   testEnPassantInequality();
    testPromotionMove();
    testPromotionReverse();
+   testPromotionEquality();
+   testPromotionInequality();
    testMakeMove();
    testReverseMove();
 }
