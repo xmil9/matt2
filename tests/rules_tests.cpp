@@ -226,6 +226,91 @@ void testCollectQueenMoves()
    }
 }
 
+
+void testCollectRookMoves()
+{
+   {
+      const std::string caseLabel = "collectRookMoves for all moves at d4";
+
+      std::vector<Move> moves;
+      collectRookMoves(Rw, d4, Position{"Rwd4"}, moves);
+
+      const std::vector<Square> destinations = {d5, d6, d7, d8, d3, d2, d1,
+                                                c4, b4, a4, e4, f4, g4, h4};
+      VERIFY(moves.size() == destinations.size(), caseLabel);
+      for (auto to : destinations)
+         VERIFY(contains(moves, BasicMove(Relocation(Rw, d4, to))), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectRookMoves for all moves at g6";
+
+      std::vector<Move> moves;
+      collectRookMoves(Rb, g6, Position{"Rbg6"}, moves);
+
+      const std::vector<Square> destinations = {g5, g4, g3, g2, g1, g7, g8,
+                                                f6, e6, d6, c6, b6, a6, h6};
+      VERIFY(moves.size() == destinations.size(), caseLabel);
+      for (auto to : destinations)
+         VERIFY(contains(moves, BasicMove(Relocation(Rb, g6, to))), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectRookMoves for all moves at a3 (side of board)";
+
+      std::vector<Move> moves;
+      collectRookMoves(Rb, a3, Position{"Rba3"}, moves);
+
+      const std::vector<Square> destinations = {a4, a5, a6, a7, a8, a1, a2,
+                                                b3, c3, d3, e3, f3, g3, h3};
+      VERIFY(moves.size() == destinations.size(), caseLabel);
+      for (auto to : destinations)
+         VERIFY(contains(moves, BasicMove(Relocation(Rb, a3, to))), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectRookMoves for all moves at h1 (corner)";
+
+      std::vector<Move> moves;
+      collectRookMoves(Rw, h1, Position{"Rwh1"}, moves);
+
+      const std::vector<Square> destinations = {h2, h3, h4, h5, h6, h7, h8,
+                                                g1, f1, e1, d1, c1, b1, a1};
+      VERIFY(moves.size() == destinations.size(), caseLabel);
+      for (auto to : destinations)
+         VERIFY(contains(moves, BasicMove(Relocation(Rw, h1, to))), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectRookMoves with horiz and vert pieces of same color";
+
+      std::vector<Move> moves;
+      collectRookMoves(Rw, d4, Position{"Rwd4 wd6 Bwb4"}, moves);
+
+      const std::vector<Square> destinations = {d5, d3, d2, d1, c4, e4, f4, g4, h4};
+      VERIFY(moves.size() == destinations.size(), caseLabel);
+      for (auto to : destinations)
+         VERIFY(contains(moves, BasicMove(Relocation(Rw, d4, to))), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectRookMoves with horiz and vert pieces of opposite color";
+
+      std::vector<Move> moves;
+      collectRookMoves(Rw, d4, Position{"Rwd4 bd6 Bbb4"}, moves);
+
+      const std::vector<Square> destinations = {d5, d3, d2, d1, c4, e4, f4, g4, h4};
+      std::vector<Move> expected;
+      std::transform(std::begin(destinations), std::end(destinations),
+                     std::back_inserter(expected),
+                     [](Square to) { return BasicMove(Relocation(Rw, d4, to)); });
+      expected.push_back(BasicMove(Relocation(Rw, d4, d6), Pb));
+      expected.push_back(BasicMove(Relocation(Rw, d4, b4), Bb));
+
+      VERIFY(moves.size() == expected.size(), caseLabel);
+      for (const auto& m : expected)
+         VERIFY(contains(moves, m), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -235,4 +320,5 @@ void testRules()
 {
    testCollectKingMoves();
    testCollectQueenMoves();
+   testCollectRookMoves();
 }
