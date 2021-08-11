@@ -311,6 +311,88 @@ void testCollectRookMoves()
    }
 }
 
+
+void testCollectBishopMoves()
+{
+   {
+      const std::string caseLabel = "collectBishopMoves for all moves at d4";
+
+      std::vector<Move> moves;
+      collectBishopMoves(Bw, d4, Position{"Bwd4"}, moves);
+
+      const std::vector<Square> destinations = {c5, b6, a7, e3, f2, g1, e5,
+                                                f6, g7, h8, c3, b2, a1};
+      VERIFY(moves.size() == destinations.size(), caseLabel);
+      for (auto to : destinations)
+         VERIFY(contains(moves, BasicMove(Relocation(Bw, d4, to))), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectBishopMoves for all moves at g6";
+
+      std::vector<Move> moves;
+      collectBishopMoves(Bb, g6, Position{"Bbg6"}, moves);
+
+      const std::vector<Square> destinations = {f7, e8, h5, h7, f5, e4, d3, c2, b1};
+      VERIFY(moves.size() == destinations.size(), caseLabel);
+      for (auto to : destinations)
+         VERIFY(contains(moves, BasicMove(Relocation(Bb, g6, to))), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectBishopMoves for all moves at a3 (side of board)";
+
+      std::vector<Move> moves;
+      collectBishopMoves(Bb, a3, Position{"Bba3"}, moves);
+
+      const std::vector<Square> destinations = {b2, c1, b4, c5, d6, e7, f8};
+      VERIFY(moves.size() == destinations.size(), caseLabel);
+      for (auto to : destinations)
+         VERIFY(contains(moves, BasicMove(Relocation(Bb, a3, to))), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectBishopMoves for all moves at h1 (corner)";
+
+      std::vector<Move> moves;
+      collectBishopMoves(Bw, h1, Position{"Bwh1"}, moves);
+
+      const std::vector<Square> destinations = {g2, f3, e4, d5, c6, b7, a8};
+      VERIFY(moves.size() == destinations.size(), caseLabel);
+      for (auto to : destinations)
+         VERIFY(contains(moves, BasicMove(Relocation(Bw, h1, to))), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectBishopMoves with diagonal pieces of same color";
+
+      std::vector<Move> moves;
+      collectBishopMoves(Bw, d4, Position{"Bwd4 wf6 Rwe3"}, moves);
+
+      const std::vector<Square> destinations = {c5, b6, a7, e5, c3, b2, a1};
+      VERIFY(moves.size() == destinations.size(), caseLabel);
+      for (auto to : destinations)
+         VERIFY(contains(moves, BasicMove(Relocation(Bw, d4, to))), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectBishopMoves with diagonal pieces of opposite color";
+
+      std::vector<Move> moves;
+      collectBishopMoves(Bw, d4, Position{"Bwd4 bf6 Rbe3"}, moves);
+
+      const std::vector<Square> destinations = {c5, b6, a7, e5, c3, b2, a1};
+      std::vector<Move> expected;
+      std::transform(std::begin(destinations), std::end(destinations),
+                     std::back_inserter(expected),
+                     [](Square to) { return BasicMove(Relocation(Bw, d4, to)); });
+      expected.push_back(BasicMove(Relocation(Bw, d4, f6), Pb));
+      expected.push_back(BasicMove(Relocation(Bw, d4, e3), Rb));
+
+      VERIFY(moves.size() == expected.size(), caseLabel);
+      for (const auto& m : expected)
+         VERIFY(contains(moves, m), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -321,4 +403,5 @@ void testRules()
    testCollectKingMoves();
    testCollectQueenMoves();
    testCollectRookMoves();
+   testCollectBishopMoves();
 }
