@@ -473,8 +473,7 @@ void testCollectKnightMoves()
          VERIFY(contains(moves, m), caseLabel);
    }
    {
-      const std::string caseLabel =
-         "collectKnightMoves - jumping over pieces";
+      const std::string caseLabel = "collectKnightMoves - jumping over pieces";
 
       std::vector<Move> moves;
       collectKnightMoves(Nw, h1, Position{"Nwh1 wg1 Rwg2 bh2"}, moves);
@@ -483,6 +482,125 @@ void testCollectKnightMoves()
       VERIFY(moves.size() == destinations.size(), caseLabel);
       for (auto to : destinations)
          VERIFY(contains(moves, BasicMove(Relocation(Nw, h1, to))), caseLabel);
+   }
+}
+
+
+void testCollectPawnMoves()
+{
+   {
+      const std::string caseLabel = "collectPawnMoves for moving forward by one square";
+
+      std::vector<Move> moves;
+      collectPawnMoves(Pw, d4, Position{"wd4"}, moves);
+
+      VERIFY(contains(moves, BasicMove(Relocation(Pw, d4, d5))), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectPawnMoves for moving forward by two squares";
+
+      std::vector<Move> moves;
+      collectPawnMoves(Pb, g7, Position{"bg7"}, moves);
+
+      VERIFY(contains(moves, BasicMove(Relocation(Pb, g7, g6))), caseLabel);
+      VERIFY(contains(moves, BasicMove(Relocation(Pb, g7, g5), EnablesEnPassant)),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectPawnMoves with piece of same color in front of pawn";
+
+      std::vector<Move> moves;
+      collectPawnMoves(Pw, d4, Position{"wd4 wd5"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectPawnMoves with piece of opposite color in front of pawn";
+
+      std::vector<Move> moves;
+      collectPawnMoves(Pw, d4, Position{"wd4 bd5"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectPawnMoves with piece of same color two "
+                                    "squares in front of pawn on initial rank";
+
+      std::vector<Move> moves;
+      collectPawnMoves(Pw, d2, Position{"wd2 wd4"}, moves);
+
+      // Should not move by two squares.
+      const std::vector<Square> destinations = {d3};
+      VERIFY(moves.size() == destinations.size(), caseLabel);
+      for (auto to : destinations)
+         VERIFY(contains(moves, BasicMove(Relocation(Pw, d2, to))), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectPawnMoves with piece of opposite color two "
+                                    "squares in front of pawn on initial rank";
+
+      std::vector<Move> moves;
+      collectPawnMoves(Pw, d2, Position{"wd2 bd4"}, moves);
+
+      // Should not move by two squares.
+      const std::vector<Square> destinations = {d3};
+      VERIFY(moves.size() == destinations.size(), caseLabel);
+      for (auto to : destinations)
+         VERIFY(contains(moves, BasicMove(Relocation(Pw, d2, to))), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectPawnMoves for taking dialgonal on lower file";
+
+      std::vector<Move> moves;
+      collectPawnMoves(Pb, d5, Position{"bd5 Rwc4"}, moves);
+
+      VERIFY(contains(moves, BasicMove(Relocation(Pb, d5, d4))), caseLabel);
+      VERIFY(contains(moves, BasicMove(Relocation(Pb, d5, c4), Rw)), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectPawnMoves for taking dialgonal on higher file";
+
+      std::vector<Move> moves;
+      collectPawnMoves(Pw, f3, Position{"wf3 bg4"}, moves);
+
+      VERIFY(contains(moves, BasicMove(Relocation(Pw, f3, f4))), caseLabel);
+      VERIFY(contains(moves, BasicMove(Relocation(Pw, f3, g4), Pb)), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectPawnMoves for forward promotion";
+
+      std::vector<Move> moves;
+      collectPawnMoves(Pw, f7, Position{"wf7"}, moves);
+
+      VERIFY(contains(moves, Promotion(Relocation(Pw, f7, f8), Qw)), caseLabel);
+      VERIFY(contains(moves, Promotion(Relocation(Pw, f7, f8), Rw)), caseLabel);
+      VERIFY(contains(moves, Promotion(Relocation(Pw, f7, f8), Bw)), caseLabel);
+      VERIFY(contains(moves, Promotion(Relocation(Pw, f7, f8), Nw)), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectPawnMoves for diagonal promotion to lower file";
+
+      std::vector<Move> moves;
+      collectPawnMoves(Pb, b2, Position{"bb2 Bwa1"}, moves);
+
+      VERIFY(contains(moves, Promotion(Relocation(Pb, b2, a1), Qb, Bw)), caseLabel);
+      VERIFY(contains(moves, Promotion(Relocation(Pb, b2, a1), Rb, Bw)), caseLabel);
+      VERIFY(contains(moves, Promotion(Relocation(Pb, b2, a1), Bb, Bw)), caseLabel);
+      VERIFY(contains(moves, Promotion(Relocation(Pb, b2, a1), Nb, Bw)), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectPawnMoves for diagonal promotion to higher file";
+
+      std::vector<Move> moves;
+      collectPawnMoves(Pb, b2, Position{"bb2 Bwc1"}, moves);
+
+      VERIFY(contains(moves, Promotion(Relocation(Pb, b2, c1), Qb, Bw)), caseLabel);
+      VERIFY(contains(moves, Promotion(Relocation(Pb, b2, c1), Rb, Bw)), caseLabel);
+      VERIFY(contains(moves, Promotion(Relocation(Pb, b2, c1), Bb, Bw)), caseLabel);
+      VERIFY(contains(moves, Promotion(Relocation(Pb, b2, c1), Nb, Bw)), caseLabel);
    }
 }
 
@@ -498,4 +616,5 @@ void testRules()
    testCollectRookMoves();
    testCollectBishopMoves();
    testCollectKnightMoves();
+   testCollectPawnMoves();
 }
