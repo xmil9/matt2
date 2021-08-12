@@ -3,6 +3,7 @@
 // MIT license
 //
 #include "rules.h"
+#include <cmath>
 
 using namespace matt2;
 
@@ -90,8 +91,8 @@ bool collectForwardPawnMove(Piece pawn, Square at, const Position& pos, Offset f
    auto destPiece = pos[to];
    if (!destPiece)
    {
-      assert(forward.dr == 1 || forward.dr == 2);
-      if (forward.dr == 1)
+      assert(std::abs(forward.dr) == 1 || std::abs(forward.dr) == 2);
+      if (std::abs(forward.dr) == 1)
       {
          if (isPromotion(pawn, to))
             collectPromotions(pawn, at, to, destPiece, moves);
