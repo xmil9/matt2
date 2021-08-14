@@ -689,8 +689,10 @@ void testCollectCastlingMoves()
 
       Position pos{"Kbe8 Rbh8"};
       // Move rook away and back.
-      pos.move(Relocation{"Rbh8h7"});
-      pos.move(Relocation{"Rbh7h8"});
+      Move rookAway{BasicMove{Relocation{"Rbh8h7"}}};
+      makeMove(pos, rookAway);
+      Move rookBack{BasicMove{Relocation{"Rbh7h8"}}};
+      makeMove(pos, rookBack);
 
       std::vector<Move> moves;
       collectCastlingMoves(Color::Black, pos, moves);
@@ -712,8 +714,10 @@ void testCollectCastlingMoves()
 
       Position pos{"Kwe1 Rwa1"};
       // Move king away and back.
-      pos.move(Relocation{"Kwe1e2"});
-      pos.move(Relocation{"Kwe2e1"});
+      Move kingAway{BasicMove{Relocation{"Kwe1e2"}}};
+      makeMove(pos, kingAway);
+      Move kingBack{BasicMove{Relocation{"Kwe2e1"}}};
+      makeMove(pos, kingBack);
 
       std::vector<Move> moves;
       collectCastlingMoves(Color::White, pos, moves);
@@ -880,6 +884,76 @@ void testCollectCastlingMoves()
    }
 }
 
+
+void testCollectEnPassantMoves()
+{
+   {
+      const std::string caseLabel =
+         "collectEnPassantMoves for black when it is not permitted";
+
+      Position pos{"be4 wd3"};
+      Move m = BasicMove{Relocation{"wd3d4"}};
+      makeMove(pos, m);
+
+      std::vector<Move> moves;
+      collectEnPassantMoves(Color::Black, pos, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectEnPassantMoves for black on lower file";
+
+      Position pos{"be4 wd2"};
+      Move m = BasicMove{Relocation{"wd2d4"}, EnablesEnPassant};
+      makeMove(pos, m);
+
+      std::vector<Move> moves;
+      collectEnPassantMoves(Color::Black, pos, moves);
+
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, EnPassant(Relocation(Pb, e4, d3))), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectEnPassantMoves for black on higher file";
+
+      Position pos{"be4 wf2"};
+      Move m = BasicMove{Relocation{"wf2f4"}, EnablesEnPassant};
+      makeMove(pos, m);
+
+      std::vector<Move> moves;
+      collectEnPassantMoves(Color::Black, pos, moves);
+
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, EnPassant(Relocation(Pb, e4, f3))), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectEnPassantMoves for white on lower file";
+
+      Position pos{"wg5 bf7"};
+      Move m = BasicMove{Relocation{"bf7f5"}, EnablesEnPassant};
+      makeMove(pos, m);
+
+      std::vector<Move> moves;
+      collectEnPassantMoves(Color::White, pos, moves);
+
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, EnPassant(Relocation(Pw, g5, f6))), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectEnPassantMoves for white on higher file";
+
+      Position pos{"wg5 bh7"};
+      Move m = BasicMove{Relocation{"bh7h5"}, EnablesEnPassant};
+      makeMove(pos, m);
+
+      std::vector<Move> moves;
+      collectEnPassantMoves(Color::White, pos, moves);
+
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, EnPassant(Relocation(Pw, g5, h6))), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -894,4 +968,5 @@ void testRules()
    testCollectKnightMoves();
    testCollectPawnMoves();
    testCollectCastlingMoves();
+   testCollectEnPassantMoves();
 }
