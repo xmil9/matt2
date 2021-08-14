@@ -235,7 +235,7 @@ inline bool Position::ColorPlacements::operator!=(const ColorPlacements& other) 
 
 inline void Position::ColorPlacements::initKingMovedFlag(Color side, Square at)
 {
-   m_hasKingMoved = side == Color::White ? (at == e1) : (at == e8);
+   m_hasKingMoved = side == Color::White ? (at != e1) : (at != e8);
 }
 
 
