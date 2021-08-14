@@ -220,9 +220,18 @@ bool areCastlingSquaresAttacked(Color side, bool onKingside, const Position& pos
 }
 
 
+bool haveCastlingRook(Color side, bool onKingside, const Position& pos)
+{
+   const Square rookSq = makeSquare(onKingside ? fh : fa, side == Color::White ? r1 : r8);
+   const auto piece = pos[rookSq];
+   return piece.has_value() && isRook(*piece) && color(*piece) == side;
+}
+
+
 bool canCastle(Color side, bool onKingside, const Position& pos)
 {
-   return !pos.hasKingMoved(side) && !pos.hasRookMoved(side, onKingside) &&
+   return !pos.hasKingMoved(side) && haveCastlingRook(side, onKingside, pos) &&
+          !pos.hasRookMoved(side, onKingside) &&
           !areCastlingSquaresOccupied(side, onKingside, pos) &&
           !areCastlingSquaresAttacked(side, onKingside, pos);
 }
