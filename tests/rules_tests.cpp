@@ -581,7 +581,8 @@ void testCollectPawnMoves()
       VERIFY(contains(moves, Promotion(Relocation(Pw, f7, f8), Nw)), caseLabel);
    }
    {
-      const std::string caseLabel = "collectPawnMoves for diagonal promotion to lower file";
+      const std::string caseLabel =
+         "collectPawnMoves for diagonal promotion to lower file";
 
       std::vector<Move> moves;
       collectPawnMoves(Pb, b2, Position{"bb2 Bwa1"}, moves);
@@ -592,7 +593,8 @@ void testCollectPawnMoves()
       VERIFY(contains(moves, Promotion(Relocation(Pb, b2, a1), Nb, Bw)), caseLabel);
    }
    {
-      const std::string caseLabel = "collectPawnMoves for diagonal promotion to higher file";
+      const std::string caseLabel =
+         "collectPawnMoves for diagonal promotion to higher file";
 
       std::vector<Move> moves;
       collectPawnMoves(Pb, b2, Position{"bb2 Bwc1"}, moves);
@@ -601,6 +603,280 @@ void testCollectPawnMoves()
       VERIFY(contains(moves, Promotion(Relocation(Pb, b2, c1), Rb, Bw)), caseLabel);
       VERIFY(contains(moves, Promotion(Relocation(Pb, b2, c1), Bb, Bw)), caseLabel);
       VERIFY(contains(moves, Promotion(Relocation(Pb, b2, c1), Nb, Bw)), caseLabel);
+   }
+}
+
+
+void testCollectCastlingMoves()
+{
+   {
+      const std::string caseLabel =
+         "collectCastlingMoves for white on king-side when castling is possible";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, Position{"Kwe1 Rwh1"}, moves);
+
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, Castling(Kingside, Color::White)), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectCastlingMoves for white on queen-side when castling is possible";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, Position{"Kwe1 Rwa1"}, moves);
+
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, Castling(Queenside, Color::White)), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectCastlingMoves for black on king-side when castling is possible";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe8 Rbh8"}, moves);
+
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, Castling(Kingside, Color::Black)), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectCastlingMoves for black on queen-side when castling is possible";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe8 Rba8"}, moves);
+
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, Castling(Queenside, Color::Black)), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves when both ways are possible";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe8 Rba8 Rbh8"}, moves);
+
+      VERIFY(moves.size() == 2, caseLabel);
+      VERIFY(contains(moves, Castling(Kingside, Color::Black)), caseLabel);
+      VERIFY(contains(moves, Castling(Queenside, Color::Black)), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves when there is no rook";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, Position{"Kwe1"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectCastlingMoves when there is another piece instead of the rook";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, Position{"Kwe1 Bwa1"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves when rook is of wrong color";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe8 Rwh8"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves when rook has moved";
+
+      Position pos{"Kbe8 Rbh8"};
+      // Move rook away and back.
+      pos.move(Relocation{"Rbh8h7"});
+      pos.move(Relocation{"Rbh7h8"});
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, pos, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectCastlingMoves when king is not on initial square";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe7 Rbh8"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectCastlingMoves when king is on initial square but has moved earlier";
+
+      Position pos{"Kwe1 Rwa1"};
+      // Move king away and back.
+      pos.move(Relocation{"Kwe1e2"});
+      pos.move(Relocation{"Kwe2e1"});
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, pos, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectCastlingMoves for white when intermediate square is occuppied";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, Position{"Kwe1 Bwc1 Rwa1"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectCastlingMoves for black when intermediate square is occuppied";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe8 Qwg8 Rbh8"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for white queen-side when "
+                                    "intermediate square d1 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, Position{"Kwe1 Rbd8 Rwa1"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for white queen-side when "
+                                    "intermediate square c1 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, Position{"Kwe1 Qbc4 Rwa1"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for white queen-side when "
+                                    "intermediate square b1 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, Position{"Kwe1 Rbb8 Rwa1"}, moves);
+
+      // The b1 square being attacked does not prevent castling because the king does
+      // not move across that square.
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, Castling(Queenside, Color::White)), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for white queen-side when "
+                                    "rook square a1 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, Position{"Kwe1 Rba8 Rwa1"}, moves);
+
+      // The rook being attacked does not prevent castling.
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, Castling(Queenside, Color::White)), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for white king-side when "
+                                    "intermediate square f1 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, Position{"Kwe1 Rbf8 Rwh1"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for white king-side when "
+                                    "intermediate square g1 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, Position{"Kwe1 Rbg4 Rwh1"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for white king-side when "
+                                    "rook square h1 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::White, Position{"Kwe1 Rbh8 Rwh1"}, moves);
+
+      // The rook being attacked does not prevent castling.
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, Castling(Kingside, Color::White)), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for black queen-side when "
+                                    "intermediate square d8 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe8 Rwd1 Rba8"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for black queen-side when "
+                                    "intermediate square c8 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe8 Qwc2 Rba8"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for black queen-side when "
+                                    "intermediate square b8 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe8 Rwb1 Rba8"}, moves);
+
+      // The b8 square being attacked does not prevent castling because the king does
+      // not move across that square.
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, Castling(Queenside, Color::Black)), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for black queen-side when "
+                                    "rook square a8 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe8 Rwa1 Rba8"}, moves);
+
+      // The rook being attacked does not prevent castling.
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, Castling(Queenside, Color::Black)), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for black king-side when "
+                                    "intermediate square f8 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe8 Rwf1 Rbh8"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for black king-side when "
+                                    "intermediate square g8 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe8 Rwg4 Rbh8"}, moves);
+
+      VERIFY(moves.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectCastlingMoves for black king-side when "
+                                    "rook square h8 is attacked";
+
+      std::vector<Move> moves;
+      collectCastlingMoves(Color::Black, Position{"Kbe8 Rwh1 Rbh8"}, moves);
+
+      // The rook being attacked does not prevent castling.
+      VERIFY(moves.size() == 1, caseLabel);
+      VERIFY(contains(moves, Castling(Kingside, Color::Black)), caseLabel);
    }
 }
 
@@ -617,4 +893,5 @@ void testRules()
    testCollectBishopMoves();
    testCollectKnightMoves();
    testCollectPawnMoves();
+   testCollectCastlingMoves();
 }
