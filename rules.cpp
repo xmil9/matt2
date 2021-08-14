@@ -200,9 +200,12 @@ bool areCastlingSquaresOccupied(Color side, bool onKingside, const Position& pos
 
 bool areCastlingSquaresAttacked(Color side, bool onKingside, const Position& pos)
 {
-   // Squares that castling king moves across for each castling type.
-   // Note that these are not the same as the squares that cannot be occupied for
-   // castling.
+   // Squares that castling king moves across for each castling type, including the king's
+   // initial square.
+   // Note that castling can still happen if the rook is attacked or moving across an
+   // attacked square (i.e. g1/g8 when castling queen-side).
+   // Note that these are not the same as the squares that cannot be
+   // occupied for castling.
    static const std::vector<Square> WhiteKingside = {e1, f1, g1};
    static const std::vector<Square> WhiteQueenside = {c1, d1, e1};
    static const std::vector<Square> BlackKingside = {e8, f8, g8};
