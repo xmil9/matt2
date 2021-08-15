@@ -732,7 +732,7 @@ void testCollectCastlingMoves()
    }
    {
       const std::string caseLabel =
-         "collectCastlingMoves for white when intermediate square is occuppied";
+         "collectCastlingMoves for white when intermediate square is occupied";
 
       std::vector<Move> moves;
       collectCastlingMoves(Color::White, Position{"Kwe1 Bwc1 Rwa1"}, moves);
@@ -741,7 +741,7 @@ void testCollectCastlingMoves()
    }
    {
       const std::string caseLabel =
-         "collectCastlingMoves for black when intermediate square is occuppied";
+         "collectCastlingMoves for black when intermediate square is occupied";
 
       std::vector<Move> moves;
       collectCastlingMoves(Color::Black, Position{"Kbe8 Qwg8 Rbh8"}, moves);
@@ -1008,6 +1008,30 @@ void testCollectAttackedByKing()
       collectAttackedByKing(Kw, h1, Position{"Kwh1"}, loc);
 
       static constexpr std::array<Square, 3> Expected = {g1, g2, h2};
+
+      VERIFY(loc.size() == Expected.size(), caseLabel);
+      for (Square sq : Expected)
+         VERIFY(contains(loc, sq), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectAttackedByKing when occupied by opponent";
+
+      std::vector<Square> loc;
+      collectAttackedByKing(Kb, b3, Position{"Kbb3 Bwc2"}, loc);
+
+      static constexpr std::array<Square, 8> Expected = {a2, b2, c2, a3, c3, a4, b4, c4};
+
+      VERIFY(loc.size() == Expected.size(), caseLabel);
+      for (Square sq : Expected)
+         VERIFY(contains(loc, sq), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectAttackedByKing when occupied by own piece";
+
+      std::vector<Square> loc;
+      collectAttackedByKing(Kb, b3, Position{"Kbb3 Bbc2"}, loc);
+
+      static constexpr std::array<Square, 7> Expected = {a2, b2, a3, c3, a4, b4, c4};
 
       VERIFY(loc.size() == Expected.size(), caseLabel);
       for (Square sq : Expected)
