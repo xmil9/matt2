@@ -4,6 +4,7 @@
 //
 #include "rules.h"
 #include <cmath>
+#include <functional>
 
 using namespace matt2;
 
@@ -134,35 +135,82 @@ void collectDiagonalPawnMove(Piece pawn, Square at, const Position& pos, Offset 
 
 ///////////////////
 
+enum class SquareFilterPolicy
+{
+   OnlyEmpty,
+   EmptyOrOpponent
+};
+
+using SquareFilterFn = std::function<bool(Square)>;
+
+SquareFilterFn makeEmptySquareFilter(const Position& pos)
+{
+   return [&pos](Square at) { return !pos[at]; };
+}
+
+SquareFilterFn makeEmptyOrOpponentSquareFilter(Color opponent, const Position& pos)
+{
+   return [opponent, &pos](Square at) {
+      const auto destPiece = pos[at];
+      return !destPiece || color(*destPiece) == opponent;
+   };
+}
+
+SquareFilterFn makeSquareFilter(SquareFilterPolicy policy, Piece piece,
+                                const Position& pos)
+{
+   switch (policy)
+   {
+   case SquareFilterPolicy::OnlyEmpty:
+      return makeEmptySquareFilter(pos);
+   case SquareFilterPolicy::EmptyOrOpponent:
+      return makeEmptyOrOpponentSquareFilter(!color(piece), pos);
+   default:
+      assert(false && "Unknown square filter policy.");
+      return {};
+   }
+}
+
+
+///////////////////
+
 template <std::size_t N>
-void collectOffsetSquares(Piece /*piece*/, Square at, const Position& /*pos*/,
-                          const std::array<Offset, N>& offsets,
+void collectOffsetSquares(Piece piece, Square at, const Position& pos,
+                          SquareFilterPolicy policy, const std::array<Offset, N>& offsets,
                           std::vector<Square>& squares)
 {
+   SquareFilterFn filterFn = makeSquareFilter(policy, piece, pos);
+
    for (const auto& off : offsets)
       if (isOnBoard(at, off))
-         squares.push_back(at + off);
+      {
+         const Square to = at + off;
+         if (filterFn(to))
+            squares.push_back(to);
+      }
 }
 
 
 template <std::size_t N>
-void collectDirectionalSquares(Piece /*piece*/, Square at, const Position& pos,
+void collectDirectionalSquares(Piece piece, Square at, const Position& pos,
+                               SquareFilterPolicy policy,
                                const std::array<Offset, N>& directions,
                                std::vector<Square>& squares)
 {
+   SquareFilterFn filterFn = makeSquareFilter(policy, piece, pos);
+
    for (const auto& off : directions)
    {
       Square to = at;
-      std::optional<Piece> destPiece;
 
       // Keep moving into direction until the board ends or another piece is in
       // the way.
-      while (isOnBoard(to, off) && !destPiece)
+      while (isOnBoard(to, off))
       {
          to = to + off;
-         destPiece = pos[to];
-         if (!destPiece)
-            squares.push_back(to);
+         if (!filterFn(to))
+            break;
+         squares.push_back(to);
       }
    }
 }
@@ -373,7 +421,8 @@ void collectAttackedByKing(Piece king, Square at, const Position& pos,
    assert(isKing(king));
    static constexpr std::array<Offset, 8> Offsets{
       Offset{1, 1}, {1, 0}, {1, -1}, {0, 1}, {0, -1}, {-1, 1}, {-1, 0}, {-1, -1}};
-   collectOffsetSquares(king, at, pos, Offsets, attacked);
+   collectOffsetSquares(king, at, pos, SquareFilterPolicy::EmptyOrOpponent, Offsets,
+                        attacked);
 }
 
 
@@ -383,7 +432,8 @@ void collectAttackedByQueen(Piece queen, Square at, const Position& pos,
    assert(isQueen(queen));
    static constexpr std::array<Offset, 8> Directions{
       Offset{1, 1}, {1, 0}, {1, -1}, {0, 1}, {0, -1}, {-1, 1}, {-1, 0}, {-1, -1}};
-   collectDirectionalSquares(queen, at, pos, Directions, attacks);
+   collectDirectionalSquares(queen, at, pos, SquareFilterPolicy::EmptyOrOpponent,
+                             Directions, attacks);
 }
 
 
@@ -393,7 +443,8 @@ void collectAttackedByRook(Piece rook, Square at, const Position& pos,
    assert(isRook(rook));
    static constexpr std::array<Offset, 4> Directions{
       Offset{1, 0}, {0, 1}, {0, -1}, {-1, 0}};
-   collectDirectionalSquares(rook, at, pos, Directions, attacks);
+   collectDirectionalSquares(rook, at, pos, SquareFilterPolicy::EmptyOrOpponent,
+                             Directions, attacks);
 }
 
 
@@ -403,7 +454,8 @@ void collectAttackedByBishop(Piece bishop, Square at, const Position& pos,
    assert(isBishop(bishop));
    static constexpr std::array<Offset, 4> Directions{
       Offset{1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
-   collectDirectionalSquares(bishop, at, pos, Directions, attacks);
+   collectDirectionalSquares(bishop, at, pos, SquareFilterPolicy::EmptyOrOpponent,
+                             Directions, attacks);
 }
 
 
@@ -413,7 +465,8 @@ void collectAttackedByKnight(Piece knight, Square at, const Position& pos,
    assert(isKnight(knight));
    static constexpr std::array<Offset, 8> Offsets{
       Offset{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
-   collectOffsetSquares(knight, at, pos, Offsets, attacks);
+   collectOffsetSquares(knight, at, pos, SquareFilterPolicy::EmptyOrOpponent, Offsets,
+                        attacks);
 }
 
 
@@ -422,7 +475,8 @@ void collectAttackedByPawn(Piece pawn, Square at, const Position& pos,
 {
    assert(isPawn(pawn));
    static constexpr std::array<Offset, 2> Offsets{Offset{1, 1}, {1, -1}};
-   collectOffsetSquares(pawn, at, pos, Offsets, attacks);
+   collectOffsetSquares(pawn, at, pos, SquareFilterPolicy::EmptyOrOpponent, Offsets,
+                        attacks);
 }
 
 } // namespace matt2

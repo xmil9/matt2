@@ -14,6 +14,7 @@ namespace matt2
 {
 ///////////////////
 
+// Collect moves that are possible for a given piece.
 void collectKingMoves(Piece king, Square at, const Position& pos,
                       std::vector<Move>& moves);
 void collectQueenMoves(Piece queen, Square at, const Position& pos,
@@ -27,12 +28,15 @@ void collectKnightMoves(Piece knight, Square at, const Position& pos,
 void collectPawnMoves(Piece pawn, Square at, const Position& pos,
                       std::vector<Move>& moves);
 
+// Collect moves for special situations.
 void collectCastlingMoves(Color side, const Position& pos, std::vector<Move>& moves);
 void collectEnPassantMoves(Color side, const Position& pos, std::vector<Move>& moves);
 
 
 ///////////////////
 
+// Collect squares that can be reached by a piece and are either empty or occupied by an
+// opponent's piece.
 void collectAttackedByKing(Piece king, Square at, const Position& pos,
                            std::vector<Square>& attacked);
 void collectAttackedByQueen(Piece queen, Square at, const Position& pos,
