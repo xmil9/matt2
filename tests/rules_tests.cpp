@@ -21,6 +21,12 @@ bool contains(const std::vector<Move>& moves, const Move& m)
 }
 
 
+bool contains(const std::vector<Square>& loc, Square sq)
+{
+   return std::find(std::begin(loc), std::end(loc), sq) != std::end(loc);
+}
+
+
 ///////////////////
 
 void testCollectKingMoves()
@@ -954,6 +960,61 @@ void testCollectEnPassantMoves()
    }
 }
 
+
+void testCollectAttackedByKing()
+{
+   {
+      const std::string caseLabel = "collectAttackedByKing when fully on board";
+
+      std::vector<Square> loc;
+      collectAttackedByKing(Kb, b3, Position{"Kbb3"}, loc);
+
+      static constexpr std::array<Square, 8> Expected = {a2, b2, c2, a3, c3, a4, b4, c4};
+
+      VERIFY(loc.size() == Expected.size(), caseLabel);
+      for (Square sq : Expected)
+         VERIFY(contains(loc, sq), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectAttackedByKing when on vertical side of board";
+
+      std::vector<Square> loc;
+      collectAttackedByKing(Kw, a5, Position{"Kwa5"}, loc);
+
+      static constexpr std::array<Square, 5> Expected = {a4, b4, b5, b6, a6};
+
+      VERIFY(loc.size() == Expected.size(), caseLabel);
+      for (Square sq : Expected)
+         VERIFY(contains(loc, sq), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectAttackedByKing when on horizontal side of board";
+
+      std::vector<Square> loc;
+      collectAttackedByKing(Kb, e8, Position{"Kbe8"}, loc);
+
+      static constexpr std::array<Square, 5> Expected = {d8, d7, e7, f7, f8};
+
+      VERIFY(loc.size() == Expected.size(), caseLabel);
+      for (Square sq : Expected)
+         VERIFY(contains(loc, sq), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectAttackedByKing when in corner of board";
+
+      std::vector<Square> loc;
+      collectAttackedByKing(Kw, h1, Position{"Kwh1"}, loc);
+
+      static constexpr std::array<Square, 3> Expected = {g1, g2, h2};
+
+      VERIFY(loc.size() == Expected.size(), caseLabel);
+      for (Square sq : Expected)
+         VERIFY(contains(loc, sq), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -969,4 +1030,5 @@ void testRules()
    testCollectPawnMoves();
    testCollectCastlingMoves();
    testCollectEnPassantMoves();
+   testCollectAttackedByKing();
 }
