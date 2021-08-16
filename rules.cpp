@@ -208,9 +208,10 @@ void collectDirectionalSquares(Piece piece, Square at, const Position& pos,
       while (isOnBoard(to, off))
       {
          to = to + off;
-         if (!filterFn(to))
+         if (filterFn(to))
+            squares.push_back(to);
+         if (pos[to])
             break;
-         squares.push_back(to);
       }
    }
 }
