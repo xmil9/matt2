@@ -1372,6 +1372,85 @@ void testCollectAttackedByKnight()
    }
 }
 
+
+void testCollectAttackedByPawn()
+{
+   {
+      const std::string caseLabel = "collectAttackedByPawn for white when fully on board";
+
+      std::vector<Square> loc;
+      collectAttackedByPawn(Pw, d5, Position{"wd5"}, loc);
+
+      static constexpr std::array<Square, 2> Expected = {c6, e6};
+
+      VERIFY(loc.size() == Expected.size(), caseLabel);
+      for (Square sq : Expected)
+         VERIFY(contains(loc, sq), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectAttackedByPawn for black when fully on board";
+
+      std::vector<Square> loc;
+      collectAttackedByPawn(Pb, d5, Position{"bd5"}, loc);
+
+      static constexpr std::array<Square, 2> Expected = {c4, e4};
+
+      VERIFY(loc.size() == Expected.size(), caseLabel);
+      for (Square sq : Expected)
+         VERIFY(contains(loc, sq), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectAttackedByPawn for white when on side of board";
+
+      std::vector<Square> loc;
+      collectAttackedByPawn(Pw, h6, Position{"wh6"}, loc);
+
+      static constexpr std::array<Square, 1> Expected = {g7};
+
+      VERIFY(loc.size() == Expected.size(), caseLabel);
+      for (Square sq : Expected)
+         VERIFY(contains(loc, sq), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "collectAttackedByPawn for black when on side of board";
+
+      std::vector<Square> loc;
+      collectAttackedByPawn(Pb, h6, Position{"bh6"}, loc);
+
+      static constexpr std::array<Square, 1> Expected = {g5};
+
+      VERIFY(loc.size() == Expected.size(), caseLabel);
+      for (Square sq : Expected)
+         VERIFY(contains(loc, sq), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectAttackedByPawn when blocked by opponent";
+
+      std::vector<Square> loc;
+      collectAttackedByPawn(Pw, b3, Position{"wb3 Nbc4"}, loc);
+
+      static constexpr std::array<Square, 2> Expected = {a4, c4};
+
+      VERIFY(loc.size() == Expected.size(), caseLabel);
+      for (Square sq : Expected)
+         VERIFY(contains(loc, sq), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectAttackedByPawn when blocked by own piece";
+
+      std::vector<Square> loc;
+      collectAttackedByPawn(Pb, b3, Position{"bb3 Nbc2"}, loc);
+
+      static constexpr std::array<Square, 1> Expected = {a2};
+
+      VERIFY(loc.size() == Expected.size(), caseLabel);
+      for (Square sq : Expected)
+         VERIFY(contains(loc, sq), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -1392,4 +1471,5 @@ void testRules()
    testCollectAttackedByRook();
    testCollectAttackedByBishop();
    testCollectAttackedByKnight();
+   testCollectAttackedByPawn();
 }
