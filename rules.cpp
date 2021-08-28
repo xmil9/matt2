@@ -475,7 +475,8 @@ void collectAttackedByPawn(Piece pawn, Square at, const Position& pos,
                            std::vector<Square>& attacks)
 {
    assert(isPawn(pawn));
-   static constexpr std::array<Offset, 2> Offsets{Offset{1, 1}, {1, -1}};
+   const int forward = isWhite(pawn) ? 1 : -1;
+   const std::array<Offset, 2> Offsets{Offset{1, forward}, {-1, forward}};
    collectOffsetSquares(pawn, at, pos, SquareFilterPolicy::EmptyOrOpponent, Offsets,
                         attacks);
 }
