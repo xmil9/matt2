@@ -2,6 +2,7 @@
 // Jun-2021, Michael Lindner
 // MIT license
 //
+#include "game_tests.h"
 #include "move_tests.h"
 #include "piece_tests.h"
 #include "placement_tests.h"
@@ -17,6 +18,7 @@ int main()
 {
    testColor();
    testFile();
+   testGame();
    testMoves();
    testPiece();
    testPlacement();
