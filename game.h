@@ -16,6 +16,9 @@ namespace matt2
 class Game
 {
  public:
+   Game();
+   Game(Position pos);
+
    std::size_t countMoves() const { return m_moves.size(); }
    std::size_t currentMoveIdx() const { return m_currMove; }
 
@@ -35,6 +38,15 @@ class Game
    std::size_t m_currMove = 0;
 };
 
+
+inline Game::Game() : m_currPos{StartPos}
+{
+}
+
+inline Game::Game(Position pos)
+   : m_currPos{std::move(pos)}
+{
+}
 
 inline const Position& Game::forward()
 {
