@@ -19,15 +19,6 @@ constexpr unsigned short PieceHash(unsigned char figure, unsigned char color)
    return (figure << 8) + color;
 }
 
-
-// Lookup table for pieces by figure and color codes.
-const std::unordered_map<unsigned short, Piece> PieceTable = {
-   {PieceHash('K', 'w'), Kw}, {PieceHash('Q', 'w'), Qw}, {PieceHash('R', 'w'), Rw},
-   {PieceHash('B', 'w'), Bw}, {PieceHash('N', 'w'), Nw}, {PieceHash('P', 'w'), Pw},
-   {PieceHash('K', 'b'), Kb}, {PieceHash('Q', 'b'), Qb}, {PieceHash('R', 'b'), Rb},
-   {PieceHash('B', 'b'), Bb}, {PieceHash('N', 'b'), Nb}, {PieceHash('P', 'b'), Pb},
-};
-
 } // namespace
 
 
@@ -76,6 +67,14 @@ Piece makePiece(std::string_view notation)
    default:
       throw std::runtime_error("Invalid notation for piece.");
    }
+
+   // Lookup table for pieces by figure and color codes.
+   static const std::unordered_map<unsigned short, Piece> PieceTable = {
+      {PieceHash('K', 'w'), Kw}, {PieceHash('Q', 'w'), Qw}, {PieceHash('R', 'w'), Rw},
+      {PieceHash('B', 'w'), Bw}, {PieceHash('N', 'w'), Nw}, {PieceHash('P', 'w'), Pw},
+      {PieceHash('K', 'b'), Kb}, {PieceHash('Q', 'b'), Qb}, {PieceHash('R', 'b'), Rb},
+      {PieceHash('B', 'b'), Bb}, {PieceHash('N', 'b'), Nb}, {PieceHash('P', 'b'), Pb},
+   };
 
    const auto pos = PieceTable.find(PieceHash(figure, color));
    if (pos == PieceTable.end())
