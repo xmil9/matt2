@@ -4,6 +4,7 @@
 //
 #include "position.h"
 #include "rules.h"
+#include "scoring.h"
 #include <cassert>
 #include <vector>
 
@@ -53,6 +54,8 @@ void Position::add(const Placement& placement)
 {
    m_board[toIdx(placement.at())] = placement.piece();
    m_pieces[toColorIdx(placement.piece())].add(placement);
+   
+   invalidateScore();
 }
 
 
@@ -60,6 +63,8 @@ void Position::remove(const Placement& placement)
 {
    m_board[toIdx(placement.at())] = std::nullopt;
    m_pieces[toColorIdx(placement.piece())].remove(placement);
+   
+   invalidateScore();
 }
 
 
@@ -69,6 +74,15 @@ void Position::move(const Relocation& relocation)
    m_board[toIdx(relocation.to())] = relocation.piece();
 
    m_pieces[toColorIdx(relocation.piece())].move(relocation.placement(), relocation.to());
+
+   invalidateScore();
+}
+
+
+double Position::updateScore()
+{
+   m_score = calcPieceValueScore(*this);
+   return *m_score;
 }
 
 

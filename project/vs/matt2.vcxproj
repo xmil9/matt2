@@ -22,6 +22,7 @@
     <ClInclude Include="..\..\game.h" />
     <ClInclude Include="..\..\move.h" />
     <ClInclude Include="..\..\piece.h" />
+    <ClInclude Include="..\..\scoring.h" />
     <ClInclude Include="..\..\placement.h" />
     <ClInclude Include="..\..\position.h" />
     <ClInclude Include="..\..\relocation.h" />
@@ -33,6 +34,7 @@
     <ClCompile Include="..\..\piece.cpp" />
     <ClCompile Include="..\..\position.cpp" />
     <ClCompile Include="..\..\rules.cpp" />
+    <ClCompile Include="..\..\scoring.cpp" />
     <ClCompile Include="..\..\square.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -57,7 +57,8 @@ class Position
    PlacementIterator begin(Color side) const;
    PlacementIterator end(Color side) const;
 
-   double score() const { return 100.; }
+   std::optional<double> score() const { return m_score; }
+   double updateScore();
 
    std::optional<File> enPassantFile() const { return m_enPassantFile; }
    void setEnPassantFile(std::optional<File> file) { m_enPassantFile = file; }
@@ -131,6 +132,7 @@ class Position
 
  private:
    void populate(std::string_view placements);
+   void invalidateScore() { m_score.reset(); }
 
    Square piece(Color side, std::size_t idx) const;
 
@@ -147,6 +149,8 @@ class Position
    std::array<std::optional<Piece>, 64> m_board;
    // Locations of each piece separated by color.
    std::array<ColorPlacements, 2> m_pieces;
+   // Score of position. Calculated explicitly and invalidated when position changes.
+   std::optional<double> m_score;
    // File on which a pawn moved two squares forward from its starting location during the
    // last turn.
    std::optional<File> m_enPassantFile;
