@@ -26,6 +26,8 @@ class MoveCalculator
    {
       std::optional<Move> move;
       double score;
+
+      explicit operator bool() const;
    };
 
    MoveScore next(Color side, bool calcMax);
@@ -63,15 +65,22 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, bool calcMax)
    moves.reserve(100);
    collectMoves(side, moves);
 
-   MoveScore bestMove{std::nullopt, calcMax ? 0. : std::numeric_limits<double>::max()};
+   MoveScore bestMove{std::nullopt, calcMax ? std::numeric_limits<double>::lowest()
+                                            : std::numeric_limits<double>::max()};
 
    for (auto& m : moves)
    {
       makeMove(m_pos, m);
+      double score = m_pos.updateScore();
 
-      auto bestCounterMove = next(!side, !calcMax);
-      if (isBetterScore(bestCounterMove.score, bestMove.score, calcMax))
-         bestMove = {m, bestCounterMove.score};
+      if (isBetterScore(score, bestMove.score, calcMax))
+         bestMove = {m, score};
+      // auto bestCounterMove = next(!side, !calcMax);
+      // if (bestCounterMove &&
+      //    isBetterScore(bestCounterMove.score, bestMove.score, calcMax))
+      //{
+      //   bestMove = {m, bestCounterMove.score};
+      //}
 
       reverseMove(m_pos, m);
    }
@@ -107,6 +116,12 @@ void MoveCalculator::collectMoves(Piece piece, Square at, std::vector<Move>& mov
       collectPawnMoves(piece, at, m_pos, moves);
    else
       throw std::runtime_error("Unknown piece.");
+}
+
+
+MoveCalculator::MoveScore::operator bool() const
+{
+   return move.has_value();
 }
 
 } // namespace
