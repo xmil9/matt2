@@ -19,7 +19,7 @@ class MoveCalculator
  public:
    MoveCalculator(Position& pos);
 
-   std::optional<Move> next(Color side);
+   std::optional<Move> next(Color side, std::size_t turns);
 
  private:
    struct MoveScore
@@ -30,7 +30,7 @@ class MoveCalculator
       explicit operator bool() const;
    };
 
-   MoveScore next(Color side, bool calcMax);
+   MoveScore next(Color side, std::size_t plies, bool calcMax);
    void collectMoves(Color side, std::vector<Move>& moves) const;
    void collectMoves(Piece piece, Square at, std::vector<Move>& moves) const;
 
@@ -46,9 +46,9 @@ MoveCalculator::MoveCalculator(Position& pos) : m_pos{pos}
 }
 
 
-std::optional<Move> MoveCalculator::next(Color side)
+std::optional<Move> MoveCalculator::next(Color side, std::size_t turns)
 {
-   return next(side, true).move;
+   return next(side, 2 * turns, true).move;
 }
 
 
@@ -58,8 +58,12 @@ bool MoveCalculator::isBetterScore(double a, double b, bool calcMax)
 }
 
 
-MoveCalculator::MoveScore MoveCalculator::next(Color side, bool calcMax)
+MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
+                                               bool calcMax)
 {
+   if (plies == 0)
+      return {std::nullopt, 0.};
+
    std::vector<Move> moves;
    // Reserve some space to avoid too many allocations.
    moves.reserve(100);
@@ -71,16 +75,14 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, bool calcMax)
    for (auto& m : moves)
    {
       makeMove(m_pos, m);
-      double score = m_pos.updateScore();
 
+      // Find best counter move for opponent.
+      auto bestCounterMove = next(!side, plies - 1, !calcMax);
+      double score = bestCounterMove ? bestCounterMove.score : m_pos.updateScore();
+      
+      // Use move m if it leads to a better score for the player.
       if (isBetterScore(score, bestMove.score, calcMax))
-         bestMove = {m, score};
-      // auto bestCounterMove = next(!side, !calcMax);
-      // if (bestCounterMove &&
-      //    isBetterScore(bestCounterMove.score, bestMove.score, calcMax))
-      //{
-      //   bestMove = {m, bestCounterMove.score};
-      //}
+         bestMove = {m, bestCounterMove.score};
 
       reverseMove(m_pos, m);
    }
@@ -134,7 +136,7 @@ namespace matt2
 const Position& Game::calcNextMove(Color side)
 {
    MoveCalculator calc{m_currPos};
-   auto move = calc.next(side);
+   auto move = calc.next(side, 1);
    if (move.has_value())
       apply(*move);
    return m_currPos;
