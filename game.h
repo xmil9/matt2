@@ -20,6 +20,7 @@ class Game
    Game(Position pos);
 
    std::size_t countMoves() const { return m_moves.size(); }
+   const Move& getMove(std::size_t idx) const { return m_moves[idx]; }
    std::size_t currentMoveIdx() const { return m_currMove; }
 
    const Position& forward();
