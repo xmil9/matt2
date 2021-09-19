@@ -72,7 +72,7 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
    MoveScore bestMove{std::nullopt, calcMax ? std::numeric_limits<double>::lowest()
                                             : std::numeric_limits<double>::max()};
 
-   std::size_t idx = 0;
+   std::size_t idxDbg = 0;
    for (auto& m : moves)
    {
       makeMove(m_pos, m);
@@ -86,7 +86,7 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
          bestMove = {m, score};
 
       reverseMove(m_pos, m);
-      ++idx;
+      ++idxDbg;
    }
 
    return bestMove;
