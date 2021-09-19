@@ -48,7 +48,7 @@ MoveCalculator::MoveCalculator(Position& pos) : m_pos{pos}
 
 std::optional<Move> MoveCalculator::next(Color side, std::size_t turns)
 {
-   return next(side, 2 * turns, true).move;
+   return next(side, 2 * turns, side == Color::White).move;
 }
 
 
@@ -72,6 +72,7 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
    MoveScore bestMove{std::nullopt, calcMax ? std::numeric_limits<double>::lowest()
                                             : std::numeric_limits<double>::max()};
 
+   std::size_t idx = 0;
    for (auto& m : moves)
    {
       makeMove(m_pos, m);
@@ -82,9 +83,10 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
       
       // Use move m if it leads to a better score for the player.
       if (isBetterScore(score, bestMove.score, calcMax))
-         bestMove = {m, bestCounterMove.score};
+         bestMove = {m, score};
 
       reverseMove(m_pos, m);
+      ++idx;
    }
 
    return bestMove;
@@ -133,10 +135,10 @@ namespace matt2
 {
 ///////////////////
 
-const Position& Game::calcNextMove(Color side)
+const Position& Game::calcNextMove(Color side, std::size_t turns)
 {
    MoveCalculator calc{m_currPos};
-   auto move = calc.next(side, 1);
+   auto move = calc.next(side, turns);
    if (move.has_value())
       apply(*move);
    return m_currPos;

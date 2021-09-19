@@ -25,7 +25,7 @@ class Game
 
    const Position& forward();
    const Position& backward();
-   const Position& calcNextMove(Color side);
+   const Position& calcNextMove(Color side, std::size_t turns);
 
  private:
    void apply(Move& m);
