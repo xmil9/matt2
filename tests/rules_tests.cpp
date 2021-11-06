@@ -27,6 +27,15 @@ bool contains(const std::vector<Square>& loc, Square sq)
 }
 
 
+bool containsAll(const std::vector<Square>& superset, const std::vector<Square>& subset)
+{
+   for (auto elem : subset)
+      if (!contains(superset, elem))
+         return false;
+   return true;
+}
+
+
 ///////////////////
 
 void testCollectKingMoves()
@@ -1451,6 +1460,64 @@ void testCollectAttackedByPawn()
    }
 }
 
+
+void testcollectAttackedBySide()
+{
+   {
+      const std::string caseLabel = "collectAttackedBySide for white";
+
+      const Position pos{
+         "Kwc1 Qwf3 Rwe1 Bwb3 Nwf5 wa3 wf4 wh2 Kbe8 Qbe5 Rba8 Bbc7 Nbf6 ba6 bg5"};
+
+      std::vector<Square> attacked;
+      collectAttackedBySide(Color::White, pos, attacked);
+
+      std::vector<Square> expectedWithDuplicates;
+      collectAttackedByKing(Piece::Kw, c1, pos, expectedWithDuplicates);
+      collectAttackedByQueen(Piece::Qw, f3, pos, expectedWithDuplicates);
+      collectAttackedByRook(Piece::Rw, e1, pos, expectedWithDuplicates);
+      collectAttackedByBishop(Piece::Bw, b3, pos, expectedWithDuplicates);
+      collectAttackedByKnight(Piece::Nw, f5, pos, expectedWithDuplicates);
+      collectAttackedByPawn(Piece::Pw, a3, pos, expectedWithDuplicates);
+      collectAttackedByPawn(Piece::Pw, f4, pos, expectedWithDuplicates);
+      collectAttackedByPawn(Piece::Pw, h2, pos, expectedWithDuplicates);
+
+      // Should not have duplicates.
+      std::sort(attacked.begin(), attacked.end());
+      const bool hasDuplicates =
+         std::adjacent_find(attacked.begin(), attacked.end()) != attacked.end();
+      VERIFY(!hasDuplicates, caseLabel);
+
+      VERIFY(containsAll(expectedWithDuplicates, attacked), caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectAttackedBySide for black";
+
+      const Position pos{
+         "Kwc1 Qwf3 Rwe1 Bwb3 Nwf5 wa3 wf4 wh2 Kbe8 Qbe5 Rba8 Bbc7 Nbf6 ba6 bg5"};
+
+      std::vector<Square> attacked;
+      collectAttackedBySide(Color::Black, pos, attacked);
+
+      std::vector<Square> expectedWithDuplicates;
+      collectAttackedByKing(Piece::Kb, e8, pos, expectedWithDuplicates);
+      collectAttackedByQueen(Piece::Qb, e5, pos, expectedWithDuplicates);
+      collectAttackedByRook(Piece::Rb, a8, pos, expectedWithDuplicates);
+      collectAttackedByBishop(Piece::Bb, c7, pos, expectedWithDuplicates);
+      collectAttackedByKnight(Piece::Nb, f6, pos, expectedWithDuplicates);
+      collectAttackedByPawn(Piece::Pb, a6, pos, expectedWithDuplicates);
+      collectAttackedByPawn(Piece::Pb, g5, pos, expectedWithDuplicates);
+
+      // Should not have duplicates.
+      std::sort(attacked.begin(), attacked.end());
+      const bool hasDuplicates =
+         std::adjacent_find(attacked.begin(), attacked.end()) != attacked.end();
+      VERIFY(!hasDuplicates, caseLabel);
+
+      VERIFY(containsAll(expectedWithDuplicates, attacked), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -1472,4 +1539,5 @@ void testRules()
    testCollectAttackedByBishop();
    testCollectAttackedByKnight();
    testCollectAttackedByPawn();
+   testcollectAttackedBySide();
 }

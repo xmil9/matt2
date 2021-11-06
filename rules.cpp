@@ -3,6 +3,7 @@
 // MIT license
 //
 #include "rules.h"
+#include <algorithm>
 #include <cmath>
 #include <functional>
 
@@ -428,57 +429,86 @@ void collectAttackedByKing(Piece king, Square at, const Position& pos,
 
 
 void collectAttackedByQueen(Piece queen, Square at, const Position& pos,
-                            std::vector<Square>& attacks)
+                            std::vector<Square>& attacked)
 {
    assert(isQueen(queen));
    static constexpr std::array<Offset, 8> Directions{
       Offset{1, 1}, {1, 0}, {1, -1}, {0, 1}, {0, -1}, {-1, 1}, {-1, 0}, {-1, -1}};
    collectDirectionalSquares(queen, at, pos, SquareFilterPolicy::EmptyOrOpponent,
-                             Directions, attacks);
+                             Directions, attacked);
 }
 
 
 void collectAttackedByRook(Piece rook, Square at, const Position& pos,
-                           std::vector<Square>& attacks)
+                           std::vector<Square>& attacked)
 {
    assert(isRook(rook));
    static constexpr std::array<Offset, 4> Directions{
       Offset{1, 0}, {0, 1}, {0, -1}, {-1, 0}};
    collectDirectionalSquares(rook, at, pos, SquareFilterPolicy::EmptyOrOpponent,
-                             Directions, attacks);
+                             Directions, attacked);
 }
 
 
 void collectAttackedByBishop(Piece bishop, Square at, const Position& pos,
-                             std::vector<Square>& attacks)
+                             std::vector<Square>& attacked)
 {
    assert(isBishop(bishop));
    static constexpr std::array<Offset, 4> Directions{
       Offset{1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
    collectDirectionalSquares(bishop, at, pos, SquareFilterPolicy::EmptyOrOpponent,
-                             Directions, attacks);
+                             Directions, attacked);
 }
 
 
 void collectAttackedByKnight(Piece knight, Square at, const Position& pos,
-                             std::vector<Square>& attacks)
+                             std::vector<Square>& attacked)
 {
    assert(isKnight(knight));
    static constexpr std::array<Offset, 8> Offsets{
       Offset{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
    collectOffsetSquares(knight, at, pos, SquareFilterPolicy::EmptyOrOpponent, Offsets,
-                        attacks);
+                        attacked);
 }
 
 
 void collectAttackedByPawn(Piece pawn, Square at, const Position& pos,
-                           std::vector<Square>& attacks)
+                           std::vector<Square>& attacked)
 {
    assert(isPawn(pawn));
    const int forward = isWhite(pawn) ? 1 : -1;
    const std::array<Offset, 2> Offsets{Offset{1, forward}, {-1, forward}};
    collectOffsetSquares(pawn, at, pos, SquareFilterPolicy::EmptyOrOpponent, Offsets,
-                        attacks);
+                        attacked);
+}
+
+
+void collectAttackedBySide(Color side, const Position& pos,
+                           std::vector<Square>& attacked)
+{
+   auto endIter = pos.end(side);
+   for (auto iter = pos.begin(side); iter < endIter; ++iter)
+   {
+      const Piece piece = iter.piece();
+      if (isKing(piece))
+         collectAttackedByKing(piece, iter.at(), pos, attacked);
+      else if (isQueen(piece))
+         collectAttackedByQueen(piece, iter.at(), pos, attacked);
+      else if (isRook(piece))
+         collectAttackedByRook(piece, iter.at(), pos, attacked);
+      else if (isBishop(piece))
+         collectAttackedByBishop(piece, iter.at(), pos, attacked);
+      else if (isKnight(piece))
+         collectAttackedByKnight(piece, iter.at(), pos, attacked);
+      else if (isPawn(piece))
+         collectAttackedByPawn(piece, iter.at(), pos, attacked);
+      else
+         throw std::runtime_error("Unknown piece.");
+   }
+
+   // Eliminate duplicates.
+   std::sort(attacked.begin(), attacked.end());
+   attacked.erase(std::unique(attacked.begin(), attacked.end() ), attacked.end());
 }
 
 } // namespace matt2

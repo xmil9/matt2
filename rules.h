@@ -40,14 +40,17 @@ void collectEnPassantMoves(Color side, const Position& pos, std::vector<Move>& m
 void collectAttackedByKing(Piece king, Square at, const Position& pos,
                            std::vector<Square>& attacked);
 void collectAttackedByQueen(Piece queen, Square at, const Position& pos,
-                            std::vector<Square>& attacks);
+                            std::vector<Square>& attacked);
 void collectAttackedByRook(Piece rook, Square at, const Position& pos,
-                           std::vector<Square>& attacks);
+                           std::vector<Square>& attacked);
 void collectAttackedByBishop(Piece bishop, Square at, const Position& pos,
-                             std::vector<Square>& attacks);
+                             std::vector<Square>& attacked);
 void collectAttackedByKnight(Piece knight, Square at, const Position& pos,
-                             std::vector<Square>& attacks);
+                             std::vector<Square>& attacked);
 void collectAttackedByPawn(Piece pawn, Square at, const Position& pos,
-                           std::vector<Square>& attacks);
+                           std::vector<Square>& attacked);
+
+void collectAttackedBySide(Color side, const Position& pos,
+                           std::vector<Square>& attacked);
 
 } // namespace matt2
