@@ -50,6 +50,11 @@ inline File operator-(File f, int dec)
    return res;
 }
 
+inline std::string toString(File f)
+{
+   return std::string(1, 'a' + static_cast<char>(f));
+}
+
 
 ///////////////////
 
@@ -90,6 +95,11 @@ inline Rank operator-(Rank r, int dec)
    const auto res = static_cast<Rank>(static_cast<unsigned char>(r) - dec);
    assert(res <= r8);
    return res;
+}
+
+inline std::string toString(Rank r)
+{
+   return std::string(1, '1' + static_cast<char>(r));
 }
 
 
@@ -211,6 +221,11 @@ inline Square operator++(Square& sq)
    sq = static_cast<Square>((static_cast<std::size_t>(sq) + 1) % 64);
    assert(sq <= h8);
    return sq;
+}
+
+inline std::string toString(Square sq)
+{
+   return toString(file(sq)) + toString(rank(sq));
 }
 
 

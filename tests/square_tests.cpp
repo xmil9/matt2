@@ -90,6 +90,23 @@ void testFileDecrementOperator()
 }
 
 
+void testFileToString()
+{
+   {
+      const std::string caseLabel = "toString(File)";
+
+      VERIFY(toString(fa) == "a", caseLabel);
+      VERIFY(toString(fb) == "b", caseLabel);
+      VERIFY(toString(fc) == "c", caseLabel);
+      VERIFY(toString(fd) == "d", caseLabel);
+      VERIFY(toString(fe) == "e", caseLabel);
+      VERIFY(toString(ff) == "f", caseLabel);
+      VERIFY(toString(fg) == "g", caseLabel);
+      VERIFY(toString(fh) == "h", caseLabel);
+   }
+}
+
+
 ///////////////////
 
 void testRankIsValid()
@@ -164,6 +181,23 @@ void testRankDecrementOperator()
       VERIFY(r8 - 5 == r3, caseLabel);
       VERIFY(r8 - 6 == r2, caseLabel);
       VERIFY(r8 - 7 == r1, caseLabel);
+   }
+}
+
+
+void testRankToString()
+{
+   {
+      const std::string caseLabel = "toString(rank)";
+
+      VERIFY(toString(r1) == "1", caseLabel);
+      VERIFY(toString(r2) == "2", caseLabel);
+      VERIFY(toString(r3) == "3", caseLabel);
+      VERIFY(toString(r4) == "4", caseLabel);
+      VERIFY(toString(r5) == "5", caseLabel);
+      VERIFY(toString(r6) == "6", caseLabel);
+      VERIFY(toString(r7) == "7", caseLabel);
+      VERIFY(toString(r8) == "8", caseLabel);
    }
 }
 
@@ -476,6 +510,23 @@ void testSquareIncrementOperator()
 }
 
 
+void testSquareToString()
+{
+   {
+      const std::string caseLabel = "toString(Square)";
+
+      VERIFY(toString(a1) == "a1", caseLabel);
+      VERIFY(toString(b2) == "b2", caseLabel);
+      VERIFY(toString(c3) == "c3", caseLabel);
+      VERIFY(toString(d4) == "d4", caseLabel);
+      VERIFY(toString(e5) == "e5", caseLabel);
+      VERIFY(toString(f6) == "f6", caseLabel);
+      VERIFY(toString(g7) == "g7", caseLabel);
+      VERIFY(toString(h8) == "h8", caseLabel);
+   }
+}
+
+
 ///////////////////
 
 void testOffsetIsOnBoard()
@@ -559,6 +610,7 @@ void testFile()
    testFileIsValid();
    testFileIncrementOperator();
    testFileDecrementOperator();
+   testFileToString();
 }
 
 
@@ -567,6 +619,7 @@ void testRank()
    testRankIsValid();
    testRankIncrementOperator();
    testRankDecrementOperator();
+   testRankToString();
 }
 
 
@@ -577,6 +630,7 @@ void testSquare()
    testGettingFileOfSquare();
    testGettingRankOfSquare();
    testSquareIncrementOperator();
+   testSquareToString();
 }
 
 

@@ -66,5 +66,6 @@ inline Color color(Piece p) { return p < Kb ? Color::White : Color::Black; }
 inline bool isWhite(Piece p) { return color(p) == Color::White; }
 inline bool isBlack(Piece p) { return color(p) == Color::Black; }
 inline bool haveSameColor(Piece a, Piece b) { return color(a) == color(b); }
+std::string toString(Piece p);
 
 } // namespace matt2

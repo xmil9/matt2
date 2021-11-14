@@ -83,4 +83,38 @@ Piece makePiece(std::string_view notation)
    return pos->second;
 }
 
+
+std::string toString(Piece p)
+{
+   switch (p)
+   {
+   case Kw:
+      return "Kw";
+   case Qw:
+      return "Qw";
+   case Rw:
+      return "Rw";
+   case Bw:
+      return "Bw";
+   case Nw:
+      return "Nw";
+   case Pw:
+      return "w";
+   case Kb:
+      return "Kb";
+   case Qb:
+      return "Qb";
+   case Rb:
+      return "Rb";
+   case Bb:
+      return "Bb";
+   case Nb:
+      return "Nb";
+   case Pb:
+      return "b";
+   default:
+      throw std::runtime_error("Invalid piece.");
+   }
+}
+
 } // namespace matt2

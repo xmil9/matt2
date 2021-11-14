@@ -364,6 +364,27 @@ void testPieceHaveSameColor()
    }
 }
 
+
+void testPieceToString()
+{
+   {
+      const std::string caseLabel = "toString(Piece)";
+
+      VERIFY(toString(Kw) == "Kw", caseLabel);
+      VERIFY(toString(Qw) == "Qw", caseLabel);
+      VERIFY(toString(Rw) == "Rw", caseLabel);
+      VERIFY(toString(Bw) == "Bw", caseLabel);
+      VERIFY(toString(Nw) == "Nw", caseLabel);
+      VERIFY(toString(Pw) == "w", caseLabel);
+      VERIFY(toString(Kb) == "Kb", caseLabel);
+      VERIFY(toString(Qb) == "Qb", caseLabel);
+      VERIFY(toString(Rb) == "Rb", caseLabel);
+      VERIFY(toString(Bb) == "Bb", caseLabel);
+      VERIFY(toString(Nb) == "Nb", caseLabel);
+      VERIFY(toString(Pb) == "b", caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -388,4 +409,5 @@ void testPiece()
    testPieceIsWhite();
    testPieceIsBlack();
    testPieceHaveSameColor();
+   testPieceToString();
 }

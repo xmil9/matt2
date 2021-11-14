@@ -10,6 +10,7 @@
     <ClInclude Include="..\..\relocation.h" />
     <ClInclude Include="..\..\rules.h" />
     <ClInclude Include="..\..\scoring.h" />
+    <ClInclude Include="..\..\console.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\position.cpp" />
