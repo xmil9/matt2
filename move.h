@@ -3,6 +3,7 @@
 // MIT license
 //
 #pragma once
+#include "notation.h"
 #include "piece.h"
 #include "position.h"
 #include "relocation.h"
@@ -73,6 +74,7 @@ class BasicMove : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
+   std::string toString(NotationScheme scheme) const;
    std::optional<File> enPassantFile() const { return m_enPassantFile; }
 
    friend bool operator==(const BasicMove& a, const BasicMove& b)
@@ -91,12 +93,12 @@ class BasicMove : public ReversibleState
 
 
 inline BasicMove::BasicMove(const Relocation& moved, std::optional<Piece> taken)
-: m_taken{taken}, m_moved{moved}
+: m_moved{moved}, m_taken{taken}
 {
 }
 
 inline BasicMove::BasicMove(const Relocation& moved, EnablesEnPassant_t)
-: m_enPassantFile{file(moved.from())}, m_moved{moved}
+: m_moved{moved}, m_enPassantFile{file(moved.from())}
 {
 }
 
@@ -145,6 +147,7 @@ class Castling : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
+   std::string toString(NotationScheme scheme) const;
 
    friend bool operator==(const Castling& a, const Castling& b)
    {
@@ -203,6 +206,7 @@ class EnPassant : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
+   std::string toString(NotationScheme scheme) const;
 
    friend bool operator==(const EnPassant& a, const EnPassant& b)
    {
@@ -256,6 +260,7 @@ class Promotion : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
+   std::string toString(NotationScheme scheme) const;
 
    friend bool operator==(const Promotion& a, const Promotion& b)
    {
@@ -321,6 +326,13 @@ inline Position& reverseMove(Position& pos, Move& move)
    auto dispatch = [&pos](auto& specificMove) { specificMove.reverse(pos); };
    std::visit(dispatch, move);
    return pos;
+}
+
+inline std::string toString(const Move& move, NotationScheme scheme)
+{
+   auto dispatch = [scheme](const auto& specificMove)
+   { return specificMove.toString(scheme); };
+   return std::visit(dispatch, move);
 }
 
 } // namespace matt2

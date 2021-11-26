@@ -84,37 +84,42 @@ Piece makePiece(std::string_view notation)
 }
 
 
-std::string toString(Piece p)
+std::string toString(Piece p, bool withColor)
 {
+   std::string s;
    switch (p)
    {
    case Kw:
-      return "Kw";
-   case Qw:
-      return "Qw";
-   case Rw:
-      return "Rw";
-   case Bw:
-      return "Bw";
-   case Nw:
-      return "Nw";
-   case Pw:
-      return "w";
    case Kb:
-      return "Kb";
+      s += "K";
+      break;
+   case Qw:
    case Qb:
-      return "Qb";
+      s += "Q";
+      break;
+   case Rw:
    case Rb:
-      return "Rb";
+      s += "R";
+      break;
+   case Bw:
    case Bb:
-      return "Bb";
+      s += "B";
+      break;
+   case Nw:
    case Nb:
-      return "Nb";
+      s += "N";
+      break;
+   case Pw:
    case Pb:
-      return "b";
+      break;
    default:
       throw std::runtime_error("Invalid piece.");
    }
+
+   if (withColor)
+      s += toString(color(p));
+   
+   return s;
 }
 
 } // namespace matt2

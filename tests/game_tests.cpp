@@ -75,6 +75,14 @@ void testCalcNextMove()
       VERIFY(g.countMoves() == 1, caseLabel);
       VERIFY(g.getMove(0) == Move(BasicMove{Relocation{Qb, d6, b6}, Pw}), caseLabel);
    }
+   {
+      //const std::string caseLabel = "Game::calcNextMove in 2 turns for mate";
+
+      //Game g{Position{"Kwc1 Rwf1 Rwg1 Kbc8"}};
+      //const auto& nextPos = g.calcNextMove(Color::White, 2);
+
+      //VERIFY(nextPos == Position{"Kwc1 Rwf7 Rwg8 Kbc8"}, caseLabel);
+   }
 }
 
 } // namespace

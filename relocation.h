@@ -25,7 +25,6 @@ class Relocation
    Piece piece() const { return m_from.piece(); }
    Square from() const { return m_from.at(); }
    Square to() const { return m_to; }
-
    const Placement& placement() const { return m_from; }
 
    Relocation reverse() const;

@@ -3,6 +3,7 @@
 // MIT license
 //
 #pragma once
+#include "console.h"
 #include "piece.h"
 #include "placement.h"
 #include "relocation.h"
@@ -429,12 +430,15 @@ inline PlacementIterator PlacementIterator::operator--(int)
 
 inline Piece PlacementIterator::piece() const
 {
+   assert((*m_pos)[at()].has_value());
    return (*m_pos)[at()].value();
 }
 
 inline Square PlacementIterator::at() const
 {
-   return m_pos->piece(m_side, m_idx);
+   const Square loc = m_pos->piece(m_side, m_idx);
+   consoleOut(toString(loc));
+   return loc;
 }
 
 
