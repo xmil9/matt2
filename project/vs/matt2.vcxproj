@@ -34,6 +34,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\game.cpp" />
     <ClCompile Include="..\..\move.cpp" />
+    <ClCompile Include="..\..\notation.cpp" />
     <ClCompile Include="..\..\piece.cpp" />
     <ClCompile Include="..\..\position.cpp" />
     <ClCompile Include="..\..\rules.cpp" />

@@ -3,7 +3,6 @@
 // MIT license
 //
 #pragma once
-#include "notation.h"
 #include "piece.h"
 #include "position.h"
 #include "relocation.h"
@@ -74,7 +73,12 @@ class BasicMove : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
-   std::string toString(NotationScheme scheme) const;
+   std::string toString(bool withColor, bool withPawnStart) const;
+
+   Piece piece() const { return m_moved.piece(); }
+   Square from() const { return m_moved.from(); }
+   Square to() const { return m_moved.to(); }
+   std::optional<Piece> taken() const { return m_taken; }
    std::optional<File> enPassantFile() const { return m_enPassantFile; }
 
    friend bool operator==(const BasicMove& a, const BasicMove& b)
@@ -147,7 +151,15 @@ class Castling : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
-   std::string toString(NotationScheme scheme) const;
+   std::string toString(bool withColor) const;
+
+   bool isKingside() const { return file(m_king.to()) == fg; }
+   Piece king() const { return m_king.piece(); }
+   Square kingFrom() const { return m_king.from(); }
+   Square kingTo() const { return m_king.to(); }
+   Piece rook() const { return m_rook.piece(); }
+   Square rookFrom() const { return m_rook.from(); }
+   Square rookTo() const { return m_rook.to(); }
 
    friend bool operator==(const Castling& a, const Castling& b)
    {
@@ -206,7 +218,13 @@ class EnPassant : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
-   std::string toString(NotationScheme scheme) const;
+   std::string toString(bool withColor) const;
+
+   Piece pawn() const { return m_movedPawn.piece(); }
+   Square from() const { return m_movedPawn.from(); }
+   Square to() const { return m_movedPawn.to(); }
+   Piece taken() const { return m_takenPawn.piece(); }
+   Square takenAt() const { return m_takenPawn.at(); }
 
    friend bool operator==(const EnPassant& a, const EnPassant& b)
    {
@@ -260,7 +278,13 @@ class Promotion : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
-   std::string toString(NotationScheme scheme) const;
+   std::string toString(bool withColor, bool withPawnStart) const;
+
+   Piece pawn() const { return m_movedPawn.piece(); }
+   Square from() const { return m_movedPawn.at(); }
+   Square to() const { return m_promoted.at(); }
+   Piece promotedTo() const { return m_promoted.piece(); }
+   std::optional<Piece> taken() const { return m_taken; }
 
    friend bool operator==(const Promotion& a, const Promotion& b)
    {
@@ -326,13 +350,6 @@ inline Position& reverseMove(Position& pos, Move& move)
    auto dispatch = [&pos](auto& specificMove) { specificMove.reverse(pos); };
    std::visit(dispatch, move);
    return pos;
-}
-
-inline std::string toString(const Move& move, NotationScheme scheme)
-{
-   auto dispatch = [scheme](const auto& specificMove)
-   { return specificMove.toString(scheme); };
-   return std::visit(dispatch, move);
 }
 
 } // namespace matt2

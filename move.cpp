@@ -8,43 +8,29 @@ namespace matt2
 {
 ///////////////////
 
-std::string BasicMove::toString(NotationScheme scheme) const
+std::string BasicMove::toString(bool withColor, bool withPawnStart) const
 {
-   const bool withColor = scheme == NotationScheme::Detailed;
-   const bool withStartLocation =
-      scheme == NotationScheme::LAN || scheme == NotationScheme::Detailed;
-   const bool withTakenPiece = scheme == NotationScheme::Detailed;
+   std::string s;
 
-   std::string s = matt2::toString(m_moved.piece(), withColor);
-
-   if (withStartLocation)
-      s += matt2::toString(m_moved.from());
+   s += matt2::toString(piece(), withColor);
 
    if (m_taken.has_value())
    {
-      // When a pawn captures indicate its start file before the 'x',
-      // unless we already added the full start location.
-      if (isPawn(m_moved.piece()) && !withStartLocation)
-         s += matt2::toString(file(m_moved.from()));
-
-      s += "x";
-      
-      if (withTakenPiece)
-         s += "(" + matt2::toString(*m_taken, withColor) + ")";
+      // When a pawn captures indicate its start file before the capture indicator.
+      if (withPawnStart && isPawn(*m_taken))
+         s += matt2::toString(file(from()));
+      s += 'x';
    }
 
-   s += matt2::toString(m_moved.to());
-
+   s += matt2::toString(to());
    return s;
 }
 
 
 ///////////////////
 
-std::string Castling::toString(NotationScheme scheme) const
+std::string Castling::toString(bool withColor) const
 {
-   const bool withColor = scheme == NotationScheme::Detailed;
-
    std::string s;
    if (withColor)
       s += matt2::toString(color(m_king.piece()));
@@ -58,10 +44,8 @@ std::string Castling::toString(NotationScheme scheme) const
 
 ///////////////////
 
-std::string EnPassant::toString(NotationScheme scheme) const
+std::string EnPassant::toString(bool withColor) const
 {
-   const bool withColor = scheme == NotationScheme::Detailed;
-
    std::string s;
    if (withColor)
       s += matt2::toString(color(m_movedPawn.piece()));
@@ -79,28 +63,17 @@ std::string EnPassant::toString(NotationScheme scheme) const
 
 ///////////////////
 
-std::string Promotion::toString(NotationScheme scheme) const
+std::string Promotion::toString(bool withColor, bool withPawnStart) const
 {
-   const bool withColor = scheme == NotationScheme::Detailed;
-   const bool withStartLocation =
-      scheme == NotationScheme::LAN || scheme == NotationScheme::Detailed;
-   const bool withTakenPiece = scheme == NotationScheme::Detailed;
-
    std::string s;
-   if (withColor)
-      s += matt2::toString(color(m_movedPawn.piece()));
+   s += matt2::toString(m_movedPawn.piece(), withColor);
 
    if (m_taken.has_value())
    {
-      // When a piece was captured indicate the start file before the 'x',
-      // unless we already added the full start location.
-      if (!withStartLocation)
+      // When a piece was captured indicate the start file before the capture indicator.
+      if (withPawnStart)
          s += matt2::toString(file(m_movedPawn.at()));
-
       s += "x";
-      
-      if (withTakenPiece)
-         s += "(" + matt2::toString(*m_taken, withColor) + ")";
    }
 
    s += matt2::toString(m_promoted.at());

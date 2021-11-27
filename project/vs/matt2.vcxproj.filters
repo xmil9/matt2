@@ -21,5 +21,6 @@
     <ClCompile Include="..\..\rules.cpp" />
     <ClCompile Include="..\..\scoring.cpp" />
     <ClCompile Include="..\..\move.cpp" />
+    <ClCompile Include="..\..\notation.cpp" />
   </ItemGroup>
 </Project>
