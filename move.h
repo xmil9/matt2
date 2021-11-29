@@ -73,7 +73,6 @@ class BasicMove : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
-   std::string toString(bool withColor, bool withPawnStart) const;
 
    Piece piece() const { return m_moved.piece(); }
    Square from() const { return m_moved.from(); }

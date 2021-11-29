@@ -8,27 +8,6 @@ namespace matt2
 {
 ///////////////////
 
-std::string BasicMove::toString(bool withColor, bool withPawnStart) const
-{
-   std::string s;
-
-   s += matt2::toString(piece(), withColor);
-
-   if (m_taken.has_value())
-   {
-      // When a pawn captures indicate its start file before the capture indicator.
-      if (withPawnStart && isPawn(*m_taken))
-         s += matt2::toString(file(from()));
-      s += 'x';
-   }
-
-   s += matt2::toString(to());
-   return s;
-}
-
-
-///////////////////
-
 std::string Castling::toString(bool withColor) const
 {
    std::string s;

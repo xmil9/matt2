@@ -46,13 +46,7 @@ class San
 
 inline std::string& San::notate(std::string& out, Piece p) const
 {
-   out += matt2::toString(p, false);
-   return out;
-}
-
-inline std::string& San::notate(std::string& out, const BasicMove& move) const
-{
-   out += move.toString(WithPieceColor, WithPawnStart);
+   out += toString(p, false);
    return out;
 }
 
@@ -97,12 +91,6 @@ class Lan
 inline std::string& Lan::notate(std::string& out, Piece p) const
 {
    out += matt2::toString(p, false);
-   return out;
-}
-
-inline std::string& Lan::notate(std::string& out, const BasicMove& move) const
-{
-   out += move.toString(WithPieceColor, WithPawnStart);
    return out;
 }
 
