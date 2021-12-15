@@ -135,16 +135,16 @@ void testPlacementToString()
    {
       const std::string caseLabel = "Placement::toString() with color";
 
-      VERIFY((Placement(Kw, b4).toString(true) == "Kb4"), caseLabel);
-      VERIFY((Placement(Rb, a8).toString(true) == "Ra8"), caseLabel);
-      VERIFY((Placement(Pb, f6).toString(true) == "f6"), caseLabel);
+      VERIFY((Placement(Kw, b4).toString(true) == "Kwb4"), caseLabel);
+      VERIFY((Placement(Rb, a8).toString(true) == "Rba8"), caseLabel);
+      VERIFY((Placement(Pb, f6).toString(true) == "bf6"), caseLabel);
    }
    {
       const std::string caseLabel = "Placement::toString() without color";
 
-      VERIFY((Placement(Kw, b4).toString(true) == "Kwb4"), caseLabel);
-      VERIFY((Placement(Rb, a8).toString(true) == "Rba8"), caseLabel);
-      VERIFY((Placement(Pb, f6).toString(true) == "bf6"), caseLabel);
+      VERIFY((Placement(Kw, b4).toString(false) == "Kb4"), caseLabel);
+      VERIFY((Placement(Rb, a8).toString(false) == "Ra8"), caseLabel);
+      VERIFY((Placement(Pb, f6).toString(false) == "f6"), caseLabel);
    }
 }
 
