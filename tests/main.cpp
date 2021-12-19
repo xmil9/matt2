@@ -4,6 +4,7 @@
 //
 #include "game_tests.h"
 #include "move_tests.h"
+#include "notation_tests.h"
 #include "piece_tests.h"
 #include "placement_tests.h"
 #include "position_tests.h"
@@ -20,6 +21,7 @@ int main()
    testFile();
    testGame();
    testMoves();
+   testNotations();
    testPiece();
    testPlacement();
    testPosition();

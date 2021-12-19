@@ -11,6 +11,7 @@
     <ClCompile Include="..\..\relocation_tests.cpp" />
     <ClCompile Include="..\..\rules_tests.cpp" />
     <ClCompile Include="..\..\game_tests.cpp" />
+    <ClCompile Include="..\..\notation_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\piece_tests.h" />
@@ -22,5 +23,6 @@
     <ClInclude Include="..\..\relocation_tests.h" />
     <ClInclude Include="..\..\rules_tests.h" />
     <ClInclude Include="..\..\game_tests.h" />
+    <ClInclude Include="..\..\notation_tests.h" />
   </ItemGroup>
 </Project>

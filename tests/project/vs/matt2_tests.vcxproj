@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\game_tests.cpp" />
     <ClCompile Include="..\..\main.cpp" />
+    <ClCompile Include="..\..\notation_tests.cpp" />
     <ClCompile Include="..\..\piece_tests.cpp" />
     <ClCompile Include="..\..\move_tests.cpp" />
     <ClCompile Include="..\..\placement_tests.cpp" />
@@ -32,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\game_tests.h" />
+    <ClInclude Include="..\..\notation_tests.h" />
     <ClInclude Include="..\..\piece_tests.h" />
     <ClInclude Include="..\..\move_tests.h" />
     <ClInclude Include="..\..\placement_tests.h" />
