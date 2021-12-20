@@ -15,58 +15,12 @@ namespace matt2
 
 enum class NotationScheme
 {
-   // Standard Algebraic Notation (FIDE)
-   SAN,
    // Long Algebraic Notation
    // Includes starting locations of pieces.
    LAN,
    // Includes full details, e.g. piece color and starting location.
    Detailed
 };
-
-
-///////////////////
-
-// Standard Algebraic Notation (FIDE)
-class San
-{
- public:
-   NotationScheme scheme() const { return NotationScheme::SAN; }
-   std::string& notate(std::string& out, Piece p) const;
-   std::string& notate(std::string& out, const BasicMove& move) const;
-   std::string& notate(std::string& out, const Castling& move) const;
-   std::string& notate(std::string& out, const EnPassant& move) const;
-   std::string& notate(std::string& out, const Promotion& move) const;
-
- private:
-   static constexpr bool WithPieceColor = false;
-   static constexpr bool WithPawnStart = false;
-};
-
-
-inline std::string& San::notate(std::string& out, Piece p) const
-{
-   out += toString(p, false);
-   return out;
-}
-
-inline std::string& San::notate(std::string& out, const Castling& move) const
-{
-   out += move.toString(WithPieceColor);
-   return out;
-}
-
-inline std::string& San::notate(std::string& out, const EnPassant& move) const
-{
-   out += move.toString(WithPieceColor);
-   return out;
-}
-
-inline std::string& San::notate(std::string& out, const Promotion& move) const
-{
-   out += move.toString(WithPieceColor, WithPawnStart);
-   return out;
-}
 
 
 ///////////////////
@@ -83,14 +37,14 @@ class Lan
    std::string& notate(std::string& out, const Promotion& move) const;
 
  private:
-   static constexpr bool WithPieceColor = false;
-   static constexpr bool WithPawnStart = true;
+    static constexpr bool WithPieceColor = false;
+    static constexpr bool WithStartingLocation = true;
 };
 
 
 inline std::string& Lan::notate(std::string& out, Piece p) const
 {
-   out += matt2::toString(p, false);
+   out += matt2::toString(p, WithPieceColor);
    return out;
 }
 
@@ -108,7 +62,7 @@ inline std::string& Lan::notate(std::string& out, const EnPassant& move) const
 
 inline std::string& Lan::notate(std::string& out, const Promotion& move) const
 {
-   out += move.toString(WithPieceColor, WithPawnStart);
+   out += move.toString(WithPieceColor, true);
    return out;
 }
 
@@ -127,13 +81,13 @@ class DetailedNotation
 
  private:
    static constexpr bool WithPieceColor = true;
-   static constexpr bool WithPawnStart = true;
+   static constexpr bool WithStartingLocation = true;
 };
 
 
 inline std::string& DetailedNotation::notate(std::string& out, Piece p) const
 {
-   out += matt2::toString(p, true);
+   out += matt2::toString(p, WithPieceColor);
    return out;
 }
 
@@ -146,7 +100,7 @@ inline std::string& DetailedNotation::notate(std::string& out, const Castling& m
 
 ///////////////////
 
-using Notation = std::variant<San, Lan, DetailedNotation>;
+using Notation = std::variant<Lan, DetailedNotation>;
 
 
 inline NotationScheme scheme(const Notation& n)

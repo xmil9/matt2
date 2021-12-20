@@ -277,7 +277,7 @@ class Promotion : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
-   std::string toString(bool withColor, bool withPawnStart) const;
+   std::string toString(bool withColor, bool withStart) const;
 
    Piece pawn() const { return m_movedPawn.piece(); }
    Square from() const { return m_movedPawn.at(); }

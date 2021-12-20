@@ -42,18 +42,15 @@ std::string EnPassant::toString(bool withColor) const
 
 ///////////////////
 
-std::string Promotion::toString(bool withColor, bool withPawnStart) const
+std::string Promotion::toString(bool withColor, bool withStart) const
 {
    std::string s;
    s += matt2::toString(m_movedPawn.piece(), withColor);
+   if (withStart)
+      s += matt2::toString(file(m_movedPawn.at()));
 
    if (m_taken.has_value())
-   {
-      // When a piece was captured indicate the start file before the capture indicator.
-      if (withPawnStart)
-         s += matt2::toString(file(m_movedPawn.at()));
       s += "x";
-   }
 
    s += matt2::toString(m_promoted.at());
    // Piece that pawn was promoted to.
