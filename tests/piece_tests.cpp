@@ -14,7 +14,7 @@ namespace
 {
 ///////////////////
 
-void testNegation()
+void testColorNegation()
 {
    {
       const std::string caseLabel = "Color negation";
@@ -412,17 +412,6 @@ void testPieceToString()
    }
 }
 
-
-void testToString()
-{
-   {
-      const std::string caseLabel = "toString(Color)";
-      
-      VERIFY(toString(Color::White) == "w", caseLabel);
-      VERIFY(toString(Color::Black) == "b", caseLabel);
-   }
-}
-
 } // namespace
 
 
@@ -430,8 +419,8 @@ void testToString()
 
 void testColor()
 {
-   testNegation();
-   testToString();
+   testColorNegation();
+   testColorToString();
 }
 
 
