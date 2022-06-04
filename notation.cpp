@@ -30,7 +30,7 @@ namespace matt2
 
 std::string& Lan::notate(std::string& out, const BasicMove& move) const
 {
-   notateMoveAlgebraicNotation(out, move, WithPieceColor, WithStartingLocation);
+   notateMoveAlgebraicNotation(out, move, WithoutPieceColor, WithStartingLocation);
    return out;
 }
 

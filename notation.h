@@ -37,32 +37,32 @@ class Lan
    std::string& notate(std::string& out, const Promotion& move) const;
 
  private:
-    static constexpr bool WithPieceColor = false;
+    static constexpr bool WithoutPieceColor = false;
     static constexpr bool WithStartingLocation = true;
 };
 
 
 inline std::string& Lan::notate(std::string& out, Piece p) const
 {
-   out += matt2::toString(p, WithPieceColor);
+   out += matt2::toString(p, WithoutPieceColor);
    return out;
 }
 
 inline std::string& Lan::notate(std::string& out, const Castling& move) const
 {
-   out += move.toString(WithPieceColor);
+   out += move.toString(WithoutPieceColor);
    return out;
 }
 
 inline std::string& Lan::notate(std::string& out, const EnPassant& move) const
 {
-   out += move.toString(WithPieceColor);
+   out += move.toString(WithoutPieceColor);
    return out;
 }
 
 inline std::string& Lan::notate(std::string& out, const Promotion& move) const
 {
-   out += move.toString(WithPieceColor, true);
+   out += move.toString(WithoutPieceColor, true);
    return out;
 }
 
