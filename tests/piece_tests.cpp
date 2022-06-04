@@ -25,6 +25,17 @@ void testNegation()
 }
 
 
+void testColorToString()
+{
+   {
+      const std::string caseLabel = "toString(Color)";
+
+      VERIFY(toString(Color::White) == "w", caseLabel);
+      VERIFY(toString(Color::Black) == "b", caseLabel);
+   }
+}
+
+
 ///////////////////
 
 void testMakePiece()
