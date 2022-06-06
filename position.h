@@ -55,6 +55,7 @@ class Position
    bool operator==(const Position& other) const;
    bool operator!=(const Position& other) const;
 
+   size_t count(Color side) const;
    PlacementIterator begin(Color side) const;
    PlacementIterator end(Color side) const;
 
@@ -205,6 +206,11 @@ inline bool Position::operator==(const Position& other) const
 inline bool Position::operator!=(const Position& other) const
 {
    return !(*this == other);
+}
+
+inline size_t Position::count(Color side) const
+{
+   return m_pieces[toColorIdx(side)].count();
 }
 
 
@@ -437,7 +443,6 @@ inline Piece PlacementIterator::piece() const
 inline Square PlacementIterator::at() const
 {
    const Square loc = m_pos->piece(m_side, m_idx);
-   consoleOut(toString(loc));
    return loc;
 }
 
