@@ -45,7 +45,7 @@ bool verifyPositionLocations(const Position& pos, const PieceMap& expected)
 
 ///////////////////
 
-void testDefaultCtor()
+void testPositionDefaultCtor()
 {
    {
       const std::string caseLabel = "Position default ctor";
@@ -64,7 +64,7 @@ void testDefaultCtor()
 }
 
 
-void testNotationCtor()
+void testPositionNotationCtor()
 {
    {
       const std::string caseLabel = "Position notation ctor for single placement";
@@ -175,7 +175,7 @@ void testNotationCtor()
 }
 
 
-void testLocationIndexOperator()
+void testPositionLocationIndexOperator()
 {
    {
       const std::string caseLabel = "Position::operator[](Square)";
@@ -250,7 +250,7 @@ void testLocationIndexOperator()
 }
 
 
-void testLocations()
+void testPositionLocations()
 {
    {
       const std::string caseLabel = "Position::locations";
@@ -265,7 +265,7 @@ void testLocations()
 }
 
 
-void testAdd()
+void testPositionAdd()
 {
    {
       const std::string caseLabel = "Position::add to empty position";
@@ -295,7 +295,7 @@ void testAdd()
 }
 
 
-void testRemove()
+void testPositionRemove()
 {
    {
       const std::string caseLabel = "Position::remove from populated position";
@@ -339,7 +339,7 @@ void testRemove()
 }
 
 
-void testMove()
+void testPositionMove()
 {
    {
       const std::string caseLabel = "Position::move in populated position";
@@ -384,7 +384,7 @@ void testMove()
 }
 
 
-void testEquality()
+void testPositionEquality()
 {
    {
       const std::string caseLabel =
@@ -423,7 +423,7 @@ void testEquality()
 }
 
 
-void testInequality()
+void testPositionInequality()
 {
    {
       const std::string caseLabel =
@@ -455,6 +455,252 @@ void testInequality()
    }
 }
 
+void testPositionCount()
+{
+   {
+      const std::string caseLabel = "Position::count for white";
+
+      Position pos{"Kwe1 Kbe8 Bwg6"};
+      VERIFY(pos.count(Color::White) == 2, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::count for black";
+
+      Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
+      VERIFY(pos.count(Color::Black) == 3, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::count for no pieces";
+
+      Position pos{"Kbe8"};
+      VERIFY(pos.count(Color::White) == 0, caseLabel);
+   }
+}
+
+void testPositionBegin()
+{
+   {
+      const std::string caseLabel = "Position::begin for white";
+
+      Position pos{"Kwe1 Kbe8 Bwg6"};
+      const auto iter = pos.begin(Color::White);
+      const auto piece = iter.piece();
+      const auto sq = iter.at();
+
+      VERIFY(isWhite(piece), caseLabel);
+      VERIFY(isKing(piece) || isBishop(piece), caseLabel);
+      VERIFY(sq == e1 || sq == g6, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::begin for black";
+
+      Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
+      const auto iter = pos.begin(Color::Black);
+      const auto piece = iter.piece();
+      const auto sq = iter.at();
+
+      VERIFY(isBlack(piece), caseLabel);
+      VERIFY(isKing(piece) || isPawn(piece) || isRook(piece), caseLabel);
+      VERIFY(sq == e8 || sq == g7 || sq == a2, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::begin for no pieces";
+
+      Position pos{"Kbe8"};
+      const auto iter = pos.begin(Color::White);
+
+      VERIFY(iter == pos.end(Color::White), caseLabel);
+   }
+}
+
+void testPositionEnd()
+{
+   {
+      const std::string caseLabel = "Position::end for white";
+
+      Position pos{"Kwe1 Kbe8 Bwg6"};
+      const auto end = pos.end(Color::White);
+
+      auto begin = pos.begin(Color::White);
+      for (size_t i = 0; i < pos.count(Color::White); ++i)
+         ++begin;
+
+      VERIFY(begin == end, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::end for black";
+
+      Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
+      const auto end = pos.end(Color::Black);
+
+      auto begin = pos.begin(Color::Black);
+      for (size_t i = 0; i < pos.count(Color::Black); ++i)
+         ++begin;
+
+      VERIFY(begin == end, caseLabel);
+   }
+}
+
+void testPositionScore()
+{
+   {
+      const std::string caseLabel = "Position::score before score is calculated";
+
+      Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
+      VERIFY(!pos.score(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::score after score is calculated";
+
+      Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
+      pos.updateScore();
+      VERIFY(pos.score().has_value(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::score for starting position";
+
+      Position pos = StartPos;
+      pos.updateScore();
+      VERIFY(pos.score().has_value(), caseLabel);
+      VERIFY(pos.score() == 0., caseLabel);
+   }
+}
+
+void testPositionUpdateScore()
+{
+   {
+      const std::string caseLabel = "Position::updateScore for starting position";
+
+      Position pos = StartPos;
+      VERIFY(pos.updateScore() == 0., caseLabel);
+   }
+}
+
+void testPositionEnPassantFile()
+{
+   {
+      const std::string caseLabel = "Position::enPassantFile not set initially";
+
+      Position pos = StartPos;
+      VERIFY(!pos.enPassantFile(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::enPassantFile";
+
+      Position pos = StartPos;
+      pos.setEnPassantFile(fe);
+      VERIFY(pos.enPassantFile() == fe, caseLabel);
+   }
+}
+
+void testPositionSetEnPassantFile()
+{
+   {
+      const std::string caseLabel = "Position::setEnPassantFile";
+
+      Position pos = StartPos;
+      pos.setEnPassantFile(fa);
+      VERIFY(pos.enPassantFile() == fa, caseLabel);
+   }
+}
+
+void testPositionHasKingMoved()
+{
+   {
+      const std::string caseLabel = "Position::hasKingMoved is 'false' initially";
+
+      Position pos = StartPos;
+      VERIFY(!pos.hasKingMoved(Color::White), caseLabel);
+      VERIFY(!pos.hasKingMoved(Color::Black), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::hasKingMoved for white king";
+
+      Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
+      pos.move(Relocation{"Kwe1e2"});
+      VERIFY(pos.hasKingMoved(Color::White), caseLabel);
+      VERIFY(!pos.hasKingMoved(Color::Black), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::hasKingMoved for black king";
+
+      Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
+      pos.move(Relocation{"Kbe8f8"});
+      VERIFY(!pos.hasKingMoved(Color::White), caseLabel);
+      VERIFY(pos.hasKingMoved(Color::Black), caseLabel);
+   }
+}
+
+void testPositionHasRookMoved()
+{
+   {
+      const std::string caseLabel = "Position::hasRookMoved is 'false' initially";
+
+      Position pos = StartPos;
+      VERIFY(!pos.hasRookMoved(Color::White, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::White, false), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::Black, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::Black, false), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::hasRookMoved is 'true' after white king-side rook moved";
+
+      Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
+      pos.move(Relocation{"Rwh1h5"});
+      
+      VERIFY(pos.hasRookMoved(Color::White, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::White, false), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::Black, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::Black, false), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::hasRookMoved is 'true' after white queen-side rook moved";
+
+      Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
+      pos.move(Relocation{"Rwa1b1"});
+
+      VERIFY(!pos.hasRookMoved(Color::White, true), caseLabel);
+      VERIFY(pos.hasRookMoved(Color::White, false), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::Black, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::Black, false), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::hasRookMoved is 'true' after black king-side rook moved";
+
+      Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
+      pos.move(Relocation{"Rbh8f8"});
+
+      VERIFY(!pos.hasRookMoved(Color::White, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::White, false), caseLabel);
+      VERIFY(pos.hasRookMoved(Color::Black, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::Black, false), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::hasRookMoved is 'true' after black queen-side rook moved";
+
+      Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
+      pos.move(Relocation{"Rba8a4"});
+
+      VERIFY(!pos.hasRookMoved(Color::White, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::White, false), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::Black, true), caseLabel);
+      VERIFY(pos.hasRookMoved(Color::Black, false), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::hasRookMoved is 'true' after multiple rooks moved";
+
+      Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
+      pos.move(Relocation{"Rwh1h5"});
+      pos.move(Relocation{"Rbh8f8"});
+      pos.move(Relocation{"Rba8a4"});
+
+      VERIFY(pos.hasRookMoved(Color::White, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Color::White, false), caseLabel);
+      VERIFY(pos.hasRookMoved(Color::Black, true), caseLabel);
+      VERIFY(pos.hasRookMoved(Color::Black, false), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -462,13 +708,22 @@ void testInequality()
 
 void testPosition()
 {
-   testDefaultCtor();
-   testNotationCtor();
-   testLocationIndexOperator();
-   testLocations();
-   testAdd();
-   testRemove();
-   testMove();
-   testEquality();
-   testInequality();
+   testPositionDefaultCtor();
+   testPositionNotationCtor();
+   testPositionLocationIndexOperator();
+   testPositionLocations();
+   testPositionAdd();
+   testPositionRemove();
+   testPositionMove();
+   testPositionEquality();
+   testPositionInequality();
+   testPositionCount();
+   testPositionBegin();
+   testPositionEnd();
+   testPositionScore();
+   testPositionUpdateScore();
+   testPositionEnPassantFile();
+   testPositionSetEnPassantFile();
+   testPositionHasKingMoved();
+   testPositionHasRookMoved();
 }
