@@ -576,20 +576,20 @@ void testPositionUpdateScore()
    }
 }
 
-void testPositionEnPassantFile()
+void testPositionEnPassantSquare()
 {
    {
       const std::string caseLabel = "Position::enPassantFile not set initially";
 
       Position pos = StartPos;
-      VERIFY(!pos.enPassantFile(), caseLabel);
+      VERIFY(!pos.enPassantSquare(), caseLabel);
    }
    {
       const std::string caseLabel = "Position::enPassantFile";
 
       Position pos = StartPos;
-      pos.setEnPassantFile(fe);
-      VERIFY(pos.enPassantFile() == fe, caseLabel);
+      pos.setEnPassantSquare(e4);
+      VERIFY(pos.enPassantSquare() == e4, caseLabel);
    }
 }
 
@@ -599,8 +599,8 @@ void testPositionSetEnPassantFile()
       const std::string caseLabel = "Position::setEnPassantFile";
 
       Position pos = StartPos;
-      pos.setEnPassantFile(fa);
-      VERIFY(pos.enPassantFile() == fa, caseLabel);
+      pos.setEnPassantSquare(a5);
+      VERIFY(pos.enPassantSquare() == a5, caseLabel);
    }
 }
 
@@ -643,18 +643,20 @@ void testPositionHasRookMoved()
       VERIFY(!pos.hasRookMoved(Color::Black, false), caseLabel);
    }
    {
-      const std::string caseLabel = "Position::hasRookMoved is 'true' after white king-side rook moved";
+      const std::string caseLabel =
+         "Position::hasRookMoved is 'true' after white king-side rook moved";
 
       Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
       pos.move(Relocation{"Rwh1h5"});
-      
+
       VERIFY(pos.hasRookMoved(Color::White, true), caseLabel);
       VERIFY(!pos.hasRookMoved(Color::White, false), caseLabel);
       VERIFY(!pos.hasRookMoved(Color::Black, true), caseLabel);
       VERIFY(!pos.hasRookMoved(Color::Black, false), caseLabel);
    }
    {
-      const std::string caseLabel = "Position::hasRookMoved is 'true' after white queen-side rook moved";
+      const std::string caseLabel =
+         "Position::hasRookMoved is 'true' after white queen-side rook moved";
 
       Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
       pos.move(Relocation{"Rwa1b1"});
@@ -665,7 +667,8 @@ void testPositionHasRookMoved()
       VERIFY(!pos.hasRookMoved(Color::Black, false), caseLabel);
    }
    {
-      const std::string caseLabel = "Position::hasRookMoved is 'true' after black king-side rook moved";
+      const std::string caseLabel =
+         "Position::hasRookMoved is 'true' after black king-side rook moved";
 
       Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
       pos.move(Relocation{"Rbh8f8"});
@@ -676,7 +679,8 @@ void testPositionHasRookMoved()
       VERIFY(!pos.hasRookMoved(Color::Black, false), caseLabel);
    }
    {
-      const std::string caseLabel = "Position::hasRookMoved is 'true' after black queen-side rook moved";
+      const std::string caseLabel =
+         "Position::hasRookMoved is 'true' after black queen-side rook moved";
 
       Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
       pos.move(Relocation{"Rba8a4"});
@@ -687,7 +691,8 @@ void testPositionHasRookMoved()
       VERIFY(pos.hasRookMoved(Color::Black, false), caseLabel);
    }
    {
-      const std::string caseLabel = "Position::hasRookMoved is 'true' after multiple rooks moved";
+      const std::string caseLabel =
+         "Position::hasRookMoved is 'true' after multiple rooks moved";
 
       Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
       pos.move(Relocation{"Rwh1h5"});
@@ -698,6 +703,263 @@ void testPositionHasRookMoved()
       VERIFY(!pos.hasRookMoved(Color::White, false), caseLabel);
       VERIFY(pos.hasRookMoved(Color::Black, true), caseLabel);
       VERIFY(pos.hasRookMoved(Color::Black, false), caseLabel);
+   }
+}
+
+void testPositionCanAttackForPlacement()
+{
+   // King
+   {
+      const std::string caseLabel = "Position::canAttack with king for empty square";
+
+      Position pos{"Kwe4"};
+      VERIFY(pos.canAttack(e5, Placement{"Kwe4"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with king for empty square that cannot be reached";
+
+      Position pos{"Kwe4"};
+      VERIFY(!pos.canAttack(e1, Placement{"Kwe4"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with king for square occupied by opponent";
+
+      Position pos{"Kwe4 be5"};
+      VERIFY(pos.canAttack(e5, Placement{"Kwe4"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with king for square occupied by own piece";
+
+      Position pos{"Kwe4 we5"};
+      VERIFY(!pos.canAttack(e5, Placement{"Kwe4"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with king for square occupied by self";
+
+      Position pos{"Kwe4"};
+      VERIFY(!pos.canAttack(e4, Placement{"Kwe4"}), caseLabel);
+   }
+
+   // Queen
+   {
+      const std::string caseLabel = "Position::canAttack with queen for empty square";
+
+      Position pos{"Qbd5"};
+      VERIFY(pos.canAttack(d1, Placement{"Qbd5"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with queen for empty square that cannot be reached";
+
+      Position pos{"Qbd5"};
+      VERIFY(!pos.canAttack(e1, Placement{"Qbd5"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with queen for square occupied by opponent";
+
+      Position pos{"Qbd5 wd1"};
+      VERIFY(pos.canAttack(d1, Placement{"Qbd5"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with queen for square occupied by own piece";
+
+      Position pos{"Qbd5 bd1"};
+      VERIFY(!pos.canAttack(d1, Placement{"Qbd5"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with queen for square occupied by self";
+
+      Position pos{"Qbd5"};
+      VERIFY(!pos.canAttack(d5, Placement{"Qbd5"}), caseLabel);
+   }
+
+   // Rook
+   {
+      const std::string caseLabel = "Position::canAttack with rook for empty square";
+
+      Position pos{"Rbb3"};
+      VERIFY(pos.canAttack(h3, Placement{"Rbb3"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with rook for empty square that cannot be reached";
+
+      Position pos{"Rbb3"};
+      VERIFY(!pos.canAttack(h4, Placement{"Rbb3"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with rook for square occupied by opponent";
+
+      Position pos{"Rbb3 wh3"};
+      VERIFY(pos.canAttack(h3, Placement{"Rbb3"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with rook for square occupied by own piece";
+
+      Position pos{"Rbb3 bh3"};
+      VERIFY(!pos.canAttack(h3, Placement{"Rbb3"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with rook for square occupied by self";
+
+      Position pos{"Rbb3"};
+      VERIFY(!pos.canAttack(b3, Placement{"Rbb3"}), caseLabel);
+   }
+
+   // Bishop
+   {
+      const std::string caseLabel = "Position::canAttack with bishop for empty square";
+
+      Position pos{"Bwa1"};
+      VERIFY(pos.canAttack(h8, Placement{"Bwa1"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with bishop for empty square that cannot be reached";
+
+      Position pos{"Bwa1"};
+      VERIFY(!pos.canAttack(h7, Placement{"Bwa1"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with bishop for square occupied by opponent";
+
+      Position pos{"Bwa1 bh8"};
+      VERIFY(pos.canAttack(h8, Placement{"Bwa1"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with bishop for square occupied by own piece";
+
+      Position pos{"Bwa1 wh8"};
+      VERIFY(!pos.canAttack(h8, Placement{"Bwa1"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with bishop for square occupied by self";
+
+      Position pos{"Bwa1"};
+      VERIFY(!pos.canAttack(a1, Placement{"Bwa1"}), caseLabel);
+   }
+
+   // Knight
+   {
+      const std::string caseLabel = "Position::canAttack with knight for empty square";
+
+      Position pos{"Nbg6"};
+      VERIFY(pos.canAttack(e5, Placement{"Nbg6"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with knight for empty square that cannot be reached";
+
+      Position pos{"Nbg6"};
+      VERIFY(!pos.canAttack(a1, Placement{"Nbg6"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with knight for square occupied by opponent";
+
+      Position pos{"Nbg6 we5"};
+      VERIFY(pos.canAttack(e5, Placement{"Nbg6"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with knight for square occupied by own piece";
+
+      Position pos{"Nbg6 be5"};
+      VERIFY(!pos.canAttack(e5, Placement{"Nbg6"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with knight for square occupied by self";
+
+      Position pos{"Nbg6"};
+      VERIFY(!pos.canAttack(g6, Placement{"Nbg6"}), caseLabel);
+   }
+
+   // Pawn
+   {
+      const std::string caseLabel = "Position::canAttack with pawn for empty square";
+
+      Position pos{"bh7"};
+      VERIFY(pos.canAttack(g6, Placement{"bh7"}), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::canAttack with pawn for empty square that "
+                                    "be moved to but not attacked";
+
+      Position pos{"bh7"};
+      VERIFY(!pos.canAttack(h6, Placement{"Nbg6"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with pawn for empty square that cannot be reached";
+
+      Position pos{"bh7"};
+      VERIFY(!pos.canAttack(b2, Placement{"bh7"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with pawn for square occupied by opponent";
+
+      Position pos{"bh7 wg6"};
+      VERIFY(pos.canAttack(g6, Placement{"bh7"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with pawn for square occupied by own piece";
+
+      Position pos{"bh7 bg6"};
+      VERIFY(!pos.canAttack(g6, Placement{"bh7"}), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position::canAttack with pawn for square occupied by self";
+
+      Position pos{"bh7"};
+      VERIFY(!pos.canAttack(h7, Placement{"bh7"}), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::canAttack with pawn through en-passant";
+
+      Position pos{"be4 wd2"};
+      pos.move(Relocation{"wd2d4"});
+      pos.setEnPassantSquare(d4);
+      VERIFY(pos.canAttack(d4, Placement{"be4"}), caseLabel);
+   }
+}
+
+void testPositionCanAttackForColor()
+{
+   {
+      const std::string caseLabel = "Position::canAttack for color with one piece";
+
+      Position pos{"Qwd4"};
+      VERIFY(pos.canAttack(d1, Color::White), caseLabel);
+      VERIFY(!pos.canAttack(e1, Color::White), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::canAttack for color with multiple pieces";
+
+      Position pos{"Qwd4 wf3"};
+      // One can attack
+      VERIFY(pos.canAttack(d1, Color::White), caseLabel);
+      VERIFY(pos.canAttack(g4, Color::White), caseLabel);
+      // None can attack
+      VERIFY(!pos.canAttack(h5, Color::White), caseLabel);
+      // Both can attack
+      VERIFY(pos.canAttack(e4, Color::White), caseLabel);
    }
 }
 
@@ -722,8 +984,10 @@ void testPosition()
    testPositionEnd();
    testPositionScore();
    testPositionUpdateScore();
-   testPositionEnPassantFile();
+   testPositionEnPassantSquare();
    testPositionSetEnPassantFile();
    testPositionHasKingMoved();
    testPositionHasRookMoved();
+   testPositionCanAttackForPlacement();
+   testPositionCanAttackForColor();
 }
