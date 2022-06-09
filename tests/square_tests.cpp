@@ -106,6 +106,222 @@ void testFileToString()
    }
 }
 
+void testFileIsLowerAdjacent()
+{
+   {
+      const std::string caseLabel = "isLowerAdjacent(File, File)";
+
+      VERIFY(!isLowerAdjacent(fa, fa), caseLabel);
+      VERIFY(isLowerAdjacent(fa, fb), caseLabel);
+      VERIFY(!isLowerAdjacent(fa, fc), caseLabel);
+      VERIFY(!isLowerAdjacent(fa, fd), caseLabel);
+      VERIFY(!isLowerAdjacent(fa, fe), caseLabel);
+      VERIFY(!isLowerAdjacent(fa, ff), caseLabel);
+      VERIFY(!isLowerAdjacent(fa, fg), caseLabel);
+      VERIFY(!isLowerAdjacent(fa, fh), caseLabel);
+      VERIFY(!isLowerAdjacent(fb, fa), caseLabel);
+      VERIFY(!isLowerAdjacent(fb, fb), caseLabel);
+      VERIFY(isLowerAdjacent(fb, fc), caseLabel);
+      VERIFY(!isLowerAdjacent(fb, fd), caseLabel);
+      VERIFY(!isLowerAdjacent(fb, fe), caseLabel);
+      VERIFY(!isLowerAdjacent(fb, ff), caseLabel);
+      VERIFY(!isLowerAdjacent(fb, fg), caseLabel);
+      VERIFY(!isLowerAdjacent(fb, fh), caseLabel);
+      VERIFY(!isLowerAdjacent(fc, fa), caseLabel);
+      VERIFY(!isLowerAdjacent(fc, fb), caseLabel);
+      VERIFY(!isLowerAdjacent(fc, fc), caseLabel);
+      VERIFY(isLowerAdjacent(fc, fd), caseLabel);
+      VERIFY(!isLowerAdjacent(fc, fe), caseLabel);
+      VERIFY(!isLowerAdjacent(fc, ff), caseLabel);
+      VERIFY(!isLowerAdjacent(fc, fg), caseLabel);
+      VERIFY(!isLowerAdjacent(fc, fh), caseLabel);
+      VERIFY(!isLowerAdjacent(fd, fa), caseLabel);
+      VERIFY(!isLowerAdjacent(fd, fb), caseLabel);
+      VERIFY(!isLowerAdjacent(fd, fc), caseLabel);
+      VERIFY(!isLowerAdjacent(fd, fd), caseLabel);
+      VERIFY(isLowerAdjacent(fd, fe), caseLabel);
+      VERIFY(!isLowerAdjacent(fd, ff), caseLabel);
+      VERIFY(!isLowerAdjacent(fd, fg), caseLabel);
+      VERIFY(!isLowerAdjacent(fd, fh), caseLabel);
+      VERIFY(!isLowerAdjacent(fe, fa), caseLabel);
+      VERIFY(!isLowerAdjacent(fe, fb), caseLabel);
+      VERIFY(!isLowerAdjacent(fe, fc), caseLabel);
+      VERIFY(!isLowerAdjacent(fe, fd), caseLabel);
+      VERIFY(!isLowerAdjacent(fe, fe), caseLabel);
+      VERIFY(isLowerAdjacent(fe, ff), caseLabel);
+      VERIFY(!isLowerAdjacent(fe, fg), caseLabel);
+      VERIFY(!isLowerAdjacent(fe, fh), caseLabel);
+      VERIFY(!isLowerAdjacent(ff, fa), caseLabel);
+      VERIFY(!isLowerAdjacent(ff, fb), caseLabel);
+      VERIFY(!isLowerAdjacent(ff, fc), caseLabel);
+      VERIFY(!isLowerAdjacent(ff, fd), caseLabel);
+      VERIFY(!isLowerAdjacent(ff, fe), caseLabel);
+      VERIFY(!isLowerAdjacent(ff, ff), caseLabel);
+      VERIFY(isLowerAdjacent(ff, fg), caseLabel);
+      VERIFY(!isLowerAdjacent(ff, fh), caseLabel);
+      VERIFY(!isLowerAdjacent(fg, fa), caseLabel);
+      VERIFY(!isLowerAdjacent(fg, fb), caseLabel);
+      VERIFY(!isLowerAdjacent(fg, fc), caseLabel);
+      VERIFY(!isLowerAdjacent(fg, fd), caseLabel);
+      VERIFY(!isLowerAdjacent(fg, fe), caseLabel);
+      VERIFY(!isLowerAdjacent(fg, ff), caseLabel);
+      VERIFY(!isLowerAdjacent(fg, fg), caseLabel);
+      VERIFY(isLowerAdjacent(fg, fh), caseLabel);
+      VERIFY(!isLowerAdjacent(fh, fa), caseLabel);
+      VERIFY(!isLowerAdjacent(fh, fb), caseLabel);
+      VERIFY(!isLowerAdjacent(fh, fc), caseLabel);
+      VERIFY(!isLowerAdjacent(fh, fd), caseLabel);
+      VERIFY(!isLowerAdjacent(fh, fe), caseLabel);
+      VERIFY(!isLowerAdjacent(fh, ff), caseLabel);
+      VERIFY(!isLowerAdjacent(fh, fg), caseLabel);
+      VERIFY(!isLowerAdjacent(fh, fh), caseLabel);
+   }
+}
+
+void testFileIsHigherAdjacent()
+{
+   {
+      const std::string caseLabel = "isHigherAdjacent(File, File)";
+
+      VERIFY(!isHigherAdjacent(fa, fa), caseLabel);
+      VERIFY(!isHigherAdjacent(fa, fb), caseLabel);
+      VERIFY(!isHigherAdjacent(fa, fc), caseLabel);
+      VERIFY(!isHigherAdjacent(fa, fd), caseLabel);
+      VERIFY(!isHigherAdjacent(fa, fe), caseLabel);
+      VERIFY(!isHigherAdjacent(fa, ff), caseLabel);
+      VERIFY(!isHigherAdjacent(fa, fg), caseLabel);
+      VERIFY(!isHigherAdjacent(fa, fh), caseLabel);
+      VERIFY(isHigherAdjacent(fb, fa), caseLabel);
+      VERIFY(!isHigherAdjacent(fb, fb), caseLabel);
+      VERIFY(!isHigherAdjacent(fb, fc), caseLabel);
+      VERIFY(!isHigherAdjacent(fb, fd), caseLabel);
+      VERIFY(!isHigherAdjacent(fb, fe), caseLabel);
+      VERIFY(!isHigherAdjacent(fb, ff), caseLabel);
+      VERIFY(!isHigherAdjacent(fb, fg), caseLabel);
+      VERIFY(!isHigherAdjacent(fb, fh), caseLabel);
+      VERIFY(!isHigherAdjacent(fc, fa), caseLabel);
+      VERIFY(isHigherAdjacent(fc, fb), caseLabel);
+      VERIFY(!isHigherAdjacent(fc, fc), caseLabel);
+      VERIFY(!isHigherAdjacent(fc, fd), caseLabel);
+      VERIFY(!isHigherAdjacent(fc, fe), caseLabel);
+      VERIFY(!isHigherAdjacent(fc, ff), caseLabel);
+      VERIFY(!isHigherAdjacent(fc, fg), caseLabel);
+      VERIFY(!isHigherAdjacent(fc, fh), caseLabel);
+      VERIFY(!isHigherAdjacent(fd, fa), caseLabel);
+      VERIFY(!isHigherAdjacent(fd, fb), caseLabel);
+      VERIFY(isHigherAdjacent(fd, fc), caseLabel);
+      VERIFY(!isHigherAdjacent(fd, fd), caseLabel);
+      VERIFY(!isHigherAdjacent(fd, fe), caseLabel);
+      VERIFY(!isHigherAdjacent(fd, ff), caseLabel);
+      VERIFY(!isHigherAdjacent(fd, fg), caseLabel);
+      VERIFY(!isHigherAdjacent(fd, fh), caseLabel);
+      VERIFY(!isHigherAdjacent(fe, fa), caseLabel);
+      VERIFY(!isHigherAdjacent(fe, fb), caseLabel);
+      VERIFY(!isHigherAdjacent(fe, fc), caseLabel);
+      VERIFY(isHigherAdjacent(fe, fd), caseLabel);
+      VERIFY(!isHigherAdjacent(fe, fe), caseLabel);
+      VERIFY(!isHigherAdjacent(fe, ff), caseLabel);
+      VERIFY(!isHigherAdjacent(fe, fg), caseLabel);
+      VERIFY(!isHigherAdjacent(fe, fh), caseLabel);
+      VERIFY(!isHigherAdjacent(ff, fa), caseLabel);
+      VERIFY(!isHigherAdjacent(ff, fb), caseLabel);
+      VERIFY(!isHigherAdjacent(ff, fc), caseLabel);
+      VERIFY(!isHigherAdjacent(ff, fd), caseLabel);
+      VERIFY(isHigherAdjacent(ff, fe), caseLabel);
+      VERIFY(!isHigherAdjacent(ff, ff), caseLabel);
+      VERIFY(!isHigherAdjacent(ff, fg), caseLabel);
+      VERIFY(!isHigherAdjacent(ff, fh), caseLabel);
+      VERIFY(!isHigherAdjacent(fg, fa), caseLabel);
+      VERIFY(!isHigherAdjacent(fg, fb), caseLabel);
+      VERIFY(!isHigherAdjacent(fg, fc), caseLabel);
+      VERIFY(!isHigherAdjacent(fg, fd), caseLabel);
+      VERIFY(!isHigherAdjacent(fg, fe), caseLabel);
+      VERIFY(isHigherAdjacent(fg, ff), caseLabel);
+      VERIFY(!isHigherAdjacent(fg, fg), caseLabel);
+      VERIFY(!isHigherAdjacent(fg, fh), caseLabel);
+      VERIFY(!isHigherAdjacent(fh, fa), caseLabel);
+      VERIFY(!isHigherAdjacent(fh, fb), caseLabel);
+      VERIFY(!isHigherAdjacent(fh, fc), caseLabel);
+      VERIFY(!isHigherAdjacent(fh, fd), caseLabel);
+      VERIFY(!isHigherAdjacent(fh, fe), caseLabel);
+      VERIFY(!isHigherAdjacent(fh, ff), caseLabel);
+      VERIFY(isHigherAdjacent(fh, fg), caseLabel);
+      VERIFY(!isHigherAdjacent(fh, fh), caseLabel);
+   }
+}
+
+void testFileIsAdjacent()
+{
+   {
+      const std::string caseLabel = "isAdjacent(File, File)";
+
+      VERIFY(!isAdjacent(fa, fa), caseLabel);
+      VERIFY(isAdjacent(fa, fb), caseLabel);
+      VERIFY(!isAdjacent(fa, fc), caseLabel);
+      VERIFY(!isAdjacent(fa, fd), caseLabel);
+      VERIFY(!isAdjacent(fa, fe), caseLabel);
+      VERIFY(!isAdjacent(fa, ff), caseLabel);
+      VERIFY(!isAdjacent(fa, fg), caseLabel);
+      VERIFY(!isAdjacent(fa, fh), caseLabel);
+      VERIFY(isAdjacent(fb, fa), caseLabel);
+      VERIFY(!isAdjacent(fb, fb), caseLabel);
+      VERIFY(isAdjacent(fb, fc), caseLabel);
+      VERIFY(!isAdjacent(fb, fd), caseLabel);
+      VERIFY(!isAdjacent(fb, fe), caseLabel);
+      VERIFY(!isAdjacent(fb, ff), caseLabel);
+      VERIFY(!isAdjacent(fb, fg), caseLabel);
+      VERIFY(!isAdjacent(fb, fh), caseLabel);
+      VERIFY(!isAdjacent(fc, fa), caseLabel);
+      VERIFY(isAdjacent(fc, fb), caseLabel);
+      VERIFY(!isAdjacent(fc, fc), caseLabel);
+      VERIFY(isAdjacent(fc, fd), caseLabel);
+      VERIFY(!isAdjacent(fc, fe), caseLabel);
+      VERIFY(!isAdjacent(fc, ff), caseLabel);
+      VERIFY(!isAdjacent(fc, fg), caseLabel);
+      VERIFY(!isAdjacent(fc, fh), caseLabel);
+      VERIFY(!isAdjacent(fd, fa), caseLabel);
+      VERIFY(!isAdjacent(fd, fb), caseLabel);
+      VERIFY(isAdjacent(fd, fc), caseLabel);
+      VERIFY(!isAdjacent(fd, fd), caseLabel);
+      VERIFY(isAdjacent(fd, fe), caseLabel);
+      VERIFY(!isAdjacent(fd, ff), caseLabel);
+      VERIFY(!isAdjacent(fd, fg), caseLabel);
+      VERIFY(!isAdjacent(fd, fh), caseLabel);
+      VERIFY(!isAdjacent(fe, fa), caseLabel);
+      VERIFY(!isAdjacent(fe, fb), caseLabel);
+      VERIFY(!isAdjacent(fe, fc), caseLabel);
+      VERIFY(isAdjacent(fe, fd), caseLabel);
+      VERIFY(!isAdjacent(fe, fe), caseLabel);
+      VERIFY(isAdjacent(fe, ff), caseLabel);
+      VERIFY(!isAdjacent(fe, fg), caseLabel);
+      VERIFY(!isAdjacent(fe, fh), caseLabel);
+      VERIFY(!isAdjacent(ff, fa), caseLabel);
+      VERIFY(!isAdjacent(ff, fb), caseLabel);
+      VERIFY(!isAdjacent(ff, fc), caseLabel);
+      VERIFY(!isAdjacent(ff, fd), caseLabel);
+      VERIFY(isAdjacent(ff, fe), caseLabel);
+      VERIFY(!isAdjacent(ff, ff), caseLabel);
+      VERIFY(isAdjacent(ff, fg), caseLabel);
+      VERIFY(!isAdjacent(ff, fh), caseLabel);
+      VERIFY(!isAdjacent(fg, fa), caseLabel);
+      VERIFY(!isAdjacent(fg, fb), caseLabel);
+      VERIFY(!isAdjacent(fg, fc), caseLabel);
+      VERIFY(!isAdjacent(fg, fd), caseLabel);
+      VERIFY(!isAdjacent(fg, fe), caseLabel);
+      VERIFY(isAdjacent(fg, ff), caseLabel);
+      VERIFY(!isAdjacent(fg, fg), caseLabel);
+      VERIFY(isAdjacent(fg, fh), caseLabel);
+      VERIFY(!isAdjacent(fh, fa), caseLabel);
+      VERIFY(!isAdjacent(fh, fb), caseLabel);
+      VERIFY(!isAdjacent(fh, fc), caseLabel);
+      VERIFY(!isAdjacent(fh, fd), caseLabel);
+      VERIFY(!isAdjacent(fh, fe), caseLabel);
+      VERIFY(!isAdjacent(fh, ff), caseLabel);
+      VERIFY(isAdjacent(fh, fg), caseLabel);
+      VERIFY(!isAdjacent(fh, fh), caseLabel);
+   }
+}
+
 
 ///////////////////
 
@@ -198,6 +414,222 @@ void testRankToString()
       VERIFY(toString(r6) == "6", caseLabel);
       VERIFY(toString(r7) == "7", caseLabel);
       VERIFY(toString(r8) == "8", caseLabel);
+   }
+}
+
+void testRankIsLowerAdjacent()
+{
+   {
+      const std::string caseLabel = "isLowerAdjacent(Rank, Rank)";
+
+      VERIFY(!isLowerAdjacent(r1, r1), caseLabel);
+      VERIFY(isLowerAdjacent(r1, r2), caseLabel);
+      VERIFY(!isLowerAdjacent(r1, r3), caseLabel);
+      VERIFY(!isLowerAdjacent(r1, r4), caseLabel);
+      VERIFY(!isLowerAdjacent(r1, r5), caseLabel);
+      VERIFY(!isLowerAdjacent(r1, r6), caseLabel);
+      VERIFY(!isLowerAdjacent(r1, r7), caseLabel);
+      VERIFY(!isLowerAdjacent(r1, r8), caseLabel);
+      VERIFY(!isLowerAdjacent(r2, r1), caseLabel);
+      VERIFY(!isLowerAdjacent(r2, r2), caseLabel);
+      VERIFY(isLowerAdjacent(r2, r3), caseLabel);
+      VERIFY(!isLowerAdjacent(r2, r4), caseLabel);
+      VERIFY(!isLowerAdjacent(r2, r5), caseLabel);
+      VERIFY(!isLowerAdjacent(r2, r6), caseLabel);
+      VERIFY(!isLowerAdjacent(r2, r7), caseLabel);
+      VERIFY(!isLowerAdjacent(r2, r8), caseLabel);
+      VERIFY(!isLowerAdjacent(r3, r1), caseLabel);
+      VERIFY(!isLowerAdjacent(r3, r2), caseLabel);
+      VERIFY(!isLowerAdjacent(r3, r3), caseLabel);
+      VERIFY(isLowerAdjacent(r3, r4), caseLabel);
+      VERIFY(!isLowerAdjacent(r3, r5), caseLabel);
+      VERIFY(!isLowerAdjacent(r3, r6), caseLabel);
+      VERIFY(!isLowerAdjacent(r3, r7), caseLabel);
+      VERIFY(!isLowerAdjacent(r3, r8), caseLabel);
+      VERIFY(!isLowerAdjacent(r4, r1), caseLabel);
+      VERIFY(!isLowerAdjacent(r4, r2), caseLabel);
+      VERIFY(!isLowerAdjacent(r4, r3), caseLabel);
+      VERIFY(!isLowerAdjacent(r4, r4), caseLabel);
+      VERIFY(isLowerAdjacent(r4, r5), caseLabel);
+      VERIFY(!isLowerAdjacent(r4, r6), caseLabel);
+      VERIFY(!isLowerAdjacent(r4, r7), caseLabel);
+      VERIFY(!isLowerAdjacent(r4, r8), caseLabel);
+      VERIFY(!isLowerAdjacent(r5, r1), caseLabel);
+      VERIFY(!isLowerAdjacent(r5, r2), caseLabel);
+      VERIFY(!isLowerAdjacent(r5, r3), caseLabel);
+      VERIFY(!isLowerAdjacent(r5, r4), caseLabel);
+      VERIFY(!isLowerAdjacent(r5, r5), caseLabel);
+      VERIFY(isLowerAdjacent(r5, r6), caseLabel);
+      VERIFY(!isLowerAdjacent(r5, r7), caseLabel);
+      VERIFY(!isLowerAdjacent(r5, r8), caseLabel);
+      VERIFY(!isLowerAdjacent(r6, r1), caseLabel);
+      VERIFY(!isLowerAdjacent(r6, r2), caseLabel);
+      VERIFY(!isLowerAdjacent(r6, r3), caseLabel);
+      VERIFY(!isLowerAdjacent(r6, r4), caseLabel);
+      VERIFY(!isLowerAdjacent(r6, r5), caseLabel);
+      VERIFY(!isLowerAdjacent(r6, r6), caseLabel);
+      VERIFY(isLowerAdjacent(r6, r7), caseLabel);
+      VERIFY(!isLowerAdjacent(r6, r8), caseLabel);
+      VERIFY(!isLowerAdjacent(r7, r1), caseLabel);
+      VERIFY(!isLowerAdjacent(r7, r2), caseLabel);
+      VERIFY(!isLowerAdjacent(r7, r3), caseLabel);
+      VERIFY(!isLowerAdjacent(r7, r4), caseLabel);
+      VERIFY(!isLowerAdjacent(r7, r5), caseLabel);
+      VERIFY(!isLowerAdjacent(r7, r6), caseLabel);
+      VERIFY(!isLowerAdjacent(r7, r7), caseLabel);
+      VERIFY(isLowerAdjacent(r7, r8), caseLabel);
+      VERIFY(!isLowerAdjacent(r8, r1), caseLabel);
+      VERIFY(!isLowerAdjacent(r8, r2), caseLabel);
+      VERIFY(!isLowerAdjacent(r8, r3), caseLabel);
+      VERIFY(!isLowerAdjacent(r8, r4), caseLabel);
+      VERIFY(!isLowerAdjacent(r8, r5), caseLabel);
+      VERIFY(!isLowerAdjacent(r8, r6), caseLabel);
+      VERIFY(!isLowerAdjacent(r8, r7), caseLabel);
+      VERIFY(!isLowerAdjacent(r8, r8), caseLabel);
+   }
+}
+
+void testRankIsHigherAdjacent()
+{
+   {
+      const std::string caseLabel = "isHigherAdjacent(Rank, Rank)";
+
+      VERIFY(!isHigherAdjacent(r1, r1), caseLabel);
+      VERIFY(!isHigherAdjacent(r1, r2), caseLabel);
+      VERIFY(!isHigherAdjacent(r1, r3), caseLabel);
+      VERIFY(!isHigherAdjacent(r1, r4), caseLabel);
+      VERIFY(!isHigherAdjacent(r1, r5), caseLabel);
+      VERIFY(!isHigherAdjacent(r1, r6), caseLabel);
+      VERIFY(!isHigherAdjacent(r1, r7), caseLabel);
+      VERIFY(!isHigherAdjacent(r1, r8), caseLabel);
+      VERIFY(isHigherAdjacent(r2, r1), caseLabel);
+      VERIFY(!isHigherAdjacent(r2, r2), caseLabel);
+      VERIFY(!isHigherAdjacent(r2, r3), caseLabel);
+      VERIFY(!isHigherAdjacent(r2, r4), caseLabel);
+      VERIFY(!isHigherAdjacent(r2, r5), caseLabel);
+      VERIFY(!isHigherAdjacent(r2, r6), caseLabel);
+      VERIFY(!isHigherAdjacent(r2, r7), caseLabel);
+      VERIFY(!isHigherAdjacent(r2, r8), caseLabel);
+      VERIFY(!isHigherAdjacent(r3, r1), caseLabel);
+      VERIFY(isHigherAdjacent(r3, r2), caseLabel);
+      VERIFY(!isHigherAdjacent(r3, r3), caseLabel);
+      VERIFY(!isHigherAdjacent(r3, r4), caseLabel);
+      VERIFY(!isHigherAdjacent(r3, r5), caseLabel);
+      VERIFY(!isHigherAdjacent(r3, r6), caseLabel);
+      VERIFY(!isHigherAdjacent(r3, r7), caseLabel);
+      VERIFY(!isHigherAdjacent(r3, r8), caseLabel);
+      VERIFY(!isHigherAdjacent(r4, r1), caseLabel);
+      VERIFY(!isHigherAdjacent(r4, r2), caseLabel);
+      VERIFY(isHigherAdjacent(r4, r3), caseLabel);
+      VERIFY(!isHigherAdjacent(r4, r4), caseLabel);
+      VERIFY(!isHigherAdjacent(r4, r5), caseLabel);
+      VERIFY(!isHigherAdjacent(r4, r6), caseLabel);
+      VERIFY(!isHigherAdjacent(r4, r7), caseLabel);
+      VERIFY(!isHigherAdjacent(r4, r8), caseLabel);
+      VERIFY(!isHigherAdjacent(r5, r1), caseLabel);
+      VERIFY(!isHigherAdjacent(r5, r2), caseLabel);
+      VERIFY(!isHigherAdjacent(r5, r3), caseLabel);
+      VERIFY(isHigherAdjacent(r5, r4), caseLabel);
+      VERIFY(!isHigherAdjacent(r5, r5), caseLabel);
+      VERIFY(!isHigherAdjacent(r5, r6), caseLabel);
+      VERIFY(!isHigherAdjacent(r5, r7), caseLabel);
+      VERIFY(!isHigherAdjacent(r5, r8), caseLabel);
+      VERIFY(!isHigherAdjacent(r6, r1), caseLabel);
+      VERIFY(!isHigherAdjacent(r6, r2), caseLabel);
+      VERIFY(!isHigherAdjacent(r6, r3), caseLabel);
+      VERIFY(!isHigherAdjacent(r6, r4), caseLabel);
+      VERIFY(isHigherAdjacent(r6, r5), caseLabel);
+      VERIFY(!isHigherAdjacent(r6, r6), caseLabel);
+      VERIFY(!isHigherAdjacent(r6, r7), caseLabel);
+      VERIFY(!isHigherAdjacent(r6, r8), caseLabel);
+      VERIFY(!isHigherAdjacent(r7, r1), caseLabel);
+      VERIFY(!isHigherAdjacent(r7, r2), caseLabel);
+      VERIFY(!isHigherAdjacent(r7, r3), caseLabel);
+      VERIFY(!isHigherAdjacent(r7, r4), caseLabel);
+      VERIFY(!isHigherAdjacent(r7, r5), caseLabel);
+      VERIFY(isHigherAdjacent(r7, r6), caseLabel);
+      VERIFY(!isHigherAdjacent(r7, r7), caseLabel);
+      VERIFY(!isHigherAdjacent(r7, r8), caseLabel);
+      VERIFY(!isHigherAdjacent(r8, r1), caseLabel);
+      VERIFY(!isHigherAdjacent(r8, r2), caseLabel);
+      VERIFY(!isHigherAdjacent(r8, r3), caseLabel);
+      VERIFY(!isHigherAdjacent(r8, r4), caseLabel);
+      VERIFY(!isHigherAdjacent(r8, r5), caseLabel);
+      VERIFY(!isHigherAdjacent(r8, r6), caseLabel);
+      VERIFY(isHigherAdjacent(r8, r7), caseLabel);
+      VERIFY(!isHigherAdjacent(r8, r8), caseLabel);
+   }
+}
+
+void testRankIsAdjacent()
+{
+   {
+      const std::string caseLabel = "isAdjacent(Rank, Rank)";
+
+      VERIFY(!isAdjacent(r1, r1), caseLabel);
+      VERIFY(isAdjacent(r1, r2), caseLabel);
+      VERIFY(!isAdjacent(r1, r3), caseLabel);
+      VERIFY(!isAdjacent(r1, r4), caseLabel);
+      VERIFY(!isAdjacent(r1, r5), caseLabel);
+      VERIFY(!isAdjacent(r1, r6), caseLabel);
+      VERIFY(!isAdjacent(r1, r7), caseLabel);
+      VERIFY(!isAdjacent(r1, r8), caseLabel);
+      VERIFY(isAdjacent(r2, r1), caseLabel);
+      VERIFY(!isAdjacent(r2, r2), caseLabel);
+      VERIFY(isAdjacent(r2, r3), caseLabel);
+      VERIFY(!isAdjacent(r2, r4), caseLabel);
+      VERIFY(!isAdjacent(r2, r5), caseLabel);
+      VERIFY(!isAdjacent(r2, r6), caseLabel);
+      VERIFY(!isAdjacent(r2, r7), caseLabel);
+      VERIFY(!isAdjacent(r2, r8), caseLabel);
+      VERIFY(!isAdjacent(r3, r1), caseLabel);
+      VERIFY(isAdjacent(r3, r2), caseLabel);
+      VERIFY(!isAdjacent(r3, r3), caseLabel);
+      VERIFY(isAdjacent(r3, r4), caseLabel);
+      VERIFY(!isAdjacent(r3, r5), caseLabel);
+      VERIFY(!isAdjacent(r3, r6), caseLabel);
+      VERIFY(!isAdjacent(r3, r7), caseLabel);
+      VERIFY(!isAdjacent(r3, r8), caseLabel);
+      VERIFY(!isAdjacent(r4, r1), caseLabel);
+      VERIFY(!isAdjacent(r4, r2), caseLabel);
+      VERIFY(isAdjacent(r4, r3), caseLabel);
+      VERIFY(!isAdjacent(r4, r4), caseLabel);
+      VERIFY(isAdjacent(r4, r5), caseLabel);
+      VERIFY(!isAdjacent(r4, r6), caseLabel);
+      VERIFY(!isAdjacent(r4, r7), caseLabel);
+      VERIFY(!isAdjacent(r4, r8), caseLabel);
+      VERIFY(!isAdjacent(r5, r1), caseLabel);
+      VERIFY(!isAdjacent(r5, r2), caseLabel);
+      VERIFY(!isAdjacent(r5, r3), caseLabel);
+      VERIFY(isAdjacent(r5, r4), caseLabel);
+      VERIFY(!isAdjacent(r5, r5), caseLabel);
+      VERIFY(isAdjacent(r5, r6), caseLabel);
+      VERIFY(!isAdjacent(r5, r7), caseLabel);
+      VERIFY(!isAdjacent(r5, r8), caseLabel);
+      VERIFY(!isAdjacent(r6, r1), caseLabel);
+      VERIFY(!isAdjacent(r6, r2), caseLabel);
+      VERIFY(!isAdjacent(r6, r3), caseLabel);
+      VERIFY(!isAdjacent(r6, r4), caseLabel);
+      VERIFY(isAdjacent(r6, r5), caseLabel);
+      VERIFY(!isAdjacent(r6, r6), caseLabel);
+      VERIFY(isAdjacent(r6, r7), caseLabel);
+      VERIFY(!isAdjacent(r6, r8), caseLabel);
+      VERIFY(!isAdjacent(r7, r1), caseLabel);
+      VERIFY(!isAdjacent(r7, r2), caseLabel);
+      VERIFY(!isAdjacent(r7, r3), caseLabel);
+      VERIFY(!isAdjacent(r7, r4), caseLabel);
+      VERIFY(!isAdjacent(r7, r5), caseLabel);
+      VERIFY(isAdjacent(r7, r6), caseLabel);
+      VERIFY(!isAdjacent(r7, r7), caseLabel);
+      VERIFY(isAdjacent(r7, r8), caseLabel);
+      VERIFY(!isAdjacent(r8, r1), caseLabel);
+      VERIFY(!isAdjacent(r8, r2), caseLabel);
+      VERIFY(!isAdjacent(r8, r3), caseLabel);
+      VERIFY(!isAdjacent(r8, r4), caseLabel);
+      VERIFY(!isAdjacent(r8, r5), caseLabel);
+      VERIFY(!isAdjacent(r8, r6), caseLabel);
+      VERIFY(isAdjacent(r8, r7), caseLabel);
+      VERIFY(!isAdjacent(r8, r8), caseLabel);
    }
 }
 
@@ -611,6 +1043,9 @@ void testFile()
    testFileIncrementOperator();
    testFileDecrementOperator();
    testFileToString();
+   testFileIsLowerAdjacent();
+   testFileIsHigherAdjacent();
+   testFileIsAdjacent();
 }
 
 
@@ -620,6 +1055,9 @@ void testRank()
    testRankIncrementOperator();
    testRankDecrementOperator();
    testRankToString();
+   testRankIsLowerAdjacent();
+   testRankIsHigherAdjacent();
+   testRankIsAdjacent();
 }
 
 

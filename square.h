@@ -55,6 +55,23 @@ inline std::string toString(File f)
    return std::string(1, 'a' + static_cast<char>(f));
 }
 
+// Is file a lower than file b and adjacent to it?
+inline bool isLowerAdjacent(File  a, File b)
+{
+   return isValid(a, 1) && a + 1 == b;
+}
+
+// Is file a higher than file b and adjacent to it?
+inline bool isHigherAdjacent(File a, File b)
+{
+   return isValid(a, -1) && a - 1 == b;
+}
+
+// Is file a adjacent to file b?
+inline bool isAdjacent(File a, File b)
+{
+   return isLowerAdjacent(a, b) || isHigherAdjacent(a, b);
+}
 
 ///////////////////
 
@@ -100,6 +117,24 @@ inline Rank operator-(Rank r, int dec)
 inline std::string toString(Rank r)
 {
    return std::string(1, '1' + static_cast<char>(r));
+}
+
+// Is rank a lower than rank b and adjacent to it?
+inline bool isLowerAdjacent(Rank  a, Rank b)
+{
+   return isValid(a, 1) && a + 1 == b;
+}
+
+// Is rank a higher than rank b and adjacent to it?
+inline bool isHigherAdjacent(Rank a, Rank b)
+{
+   return isValid(a, -1) && a - 1 == b;
+}
+
+// Is rank a adjacent to rank b?
+inline bool isAdjacent(Rank a, Rank b)
+{
+   return isLowerAdjacent(a, b) || isHigherAdjacent(a, b);
 }
 
 
