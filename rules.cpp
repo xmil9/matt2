@@ -151,7 +151,8 @@ SquareFilterFn makeEmptySquareFilter(const Position& pos)
 
 SquareFilterFn makeEmptyOrOpponentSquareFilter(Color opponent, const Position& pos)
 {
-   return [opponent, &pos](Square at) {
+   return [opponent, &pos](Square at)
+   {
       const auto destPiece = pos[at];
       return !destPiece || color(*destPiece) == opponent;
    };
@@ -387,29 +388,36 @@ void collectCastlingMoves(Color side, const Position& pos, std::vector<Move>& mo
 
 void collectEnPassantMoves(Color side, const Position& pos, std::vector<Move>& moves)
 {
-   // Did oppenent make move that allows en-passant?
-   if (const auto epFile = pos.enPassantFile(); epFile.has_value())
+   // Is en-passant enabled?
+   const auto epSquare = pos.enPassantSquare();
+   if (!epSquare.has_value())
+      return;
+   const File epFile = file(*epSquare);
+
+   // Is en-passant enabled by opponent?
+   const auto epPiece = pos[*epSquare];
+   if (!epPiece.has_value() || color(*epPiece) == side)
+      return;
+
+   const auto fromRank = side == Color::White ? r5 : r4;
+   const auto toRank = side == Color::White ? r6 : r3;
+   Square to = makeSquare(epFile, toRank);
+
+   // Try both neighboring files.
+   static constexpr std::array<int, 2> FileOffsets = {-1, 1};
+   for (int off : FileOffsets)
    {
-      const auto fromRank = side == Color::White ? r5 : r4;
-      const auto toRank = side == Color::White ? r6 : r3;
-      Square to = makeSquare(*epFile, toRank);
-
-      // Try both neighboring files.
-      static constexpr std::array<int, 2> FileOffsets = {-1, 1};
-      for (int off : FileOffsets)
+      // Is the neighboring file on the board?
+      if (isValid(epFile, off))
       {
-         // Is the neighboring file on the board?
-         if (isValid(*epFile, off))
-         {
-            const Square from = makeSquare(*epFile + off, fromRank);
+         const Square from = makeSquare(epFile + off, fromRank);
 
-            // Is a pawn of matching color on the right square to make an en-passent
-            // move?
-            if (const auto piece = pos[from];
-                piece.has_value() && isPawn(*piece) && color(*piece) == side)
-            {
-               moves.push_back(EnPassant{Relocation(*piece, from, to)});
-            }
+         // Is a pawn of matching color on the right square to make an en-passent
+         // move?
+         if (const auto piece = pos[from];
+             piece.has_value() && isPawn(*piece) && color(*piece) == side)
+         {
+            moves.push_back(EnPassant{Relocation(*piece, from, to)});
          }
       }
    }
@@ -449,7 +457,6 @@ void collectAttackedByRook(Piece rook, Square at, const Position& pos,
                              Directions, attacked);
 }
 
-
 void collectAttackedByBishop(Piece bishop, Square at, const Position& pos,
                              std::vector<Square>& attacked)
 {
@@ -459,7 +466,6 @@ void collectAttackedByBishop(Piece bishop, Square at, const Position& pos,
    collectDirectionalSquares(bishop, at, pos, SquareFilterPolicy::EmptyOrOpponent,
                              Directions, attacked);
 }
-
 
 void collectAttackedByKnight(Piece knight, Square at, const Position& pos,
                              std::vector<Square>& attacked)
@@ -471,6 +477,25 @@ void collectAttackedByKnight(Piece knight, Square at, const Position& pos,
                         attacked);
 }
 
+void collectAttackedByEnPassant(Piece pawn, Square at, const Position& pos,
+                                std::vector<Square>& attacked)
+{
+   assert(isPawn(pawn));
+
+   // Is en-passant enabled?
+   const auto epSquare = pos.enPassantSquare();
+   if (!epSquare.has_value())
+      return;
+
+   // Is en-passant enabled by opponent?
+   const auto epPiece = pos[*epSquare];
+   if (!epPiece.has_value() || haveSameColor(pawn, *epPiece))
+      return;
+
+   // Is the attacking pawn on a square that it can do the en-passant move from?
+   if (rank(at) == rank(*epSquare) && isAdjacent(file(at), file(*epSquare)))
+      attacked.push_back(*epSquare);
+}
 
 void collectAttackedByPawn(Piece pawn, Square at, const Position& pos,
                            std::vector<Square>& attacked)
@@ -480,11 +505,11 @@ void collectAttackedByPawn(Piece pawn, Square at, const Position& pos,
    const std::array<Offset, 2> Offsets{Offset{1, forward}, {-1, forward}};
    collectOffsetSquares(pawn, at, pos, SquareFilterPolicy::EmptyOrOpponent, Offsets,
                         attacked);
+
+   collectAttackedByEnPassant(pawn, at, pos, attacked);
 }
 
-
-void collectAttackedBySide(Color side, const Position& pos,
-                           std::vector<Square>& attacked)
+void collectAttackedBySide(Color side, const Position& pos, std::vector<Square>& attacked)
 {
    auto endIter = pos.end(side);
    for (auto iter = pos.begin(side); iter < endIter; ++iter)
@@ -508,7 +533,7 @@ void collectAttackedBySide(Color side, const Position& pos,
 
    // Eliminate duplicates.
    std::sort(attacked.begin(), attacked.end());
-   attacked.erase(std::unique(attacked.begin(), attacked.end() ), attacked.end());
+   attacked.erase(std::unique(attacked.begin(), attacked.end()), attacked.end());
 }
 
 } // namespace matt2

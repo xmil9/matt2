@@ -62,8 +62,8 @@ class Position
    std::optional<double> score() const { return m_score; }
    double updateScore();
 
-   std::optional<File> enPassantFile() const { return m_enPassantFile; }
-   void setEnPassantFile(std::optional<File> file) { m_enPassantFile = file; }
+   std::optional<Square> enPassantSquare() const { return m_enPassantSquare; }
+   void setEnPassantSquare(std::optional<Square> square) { m_enPassantSquare = square; }
 
    bool hasKingMoved(Color side) const;
    bool hasRookMoved(Color side, bool onKingside) const;
@@ -153,9 +153,8 @@ class Position
    std::array<ColorPlacements, 2> m_pieces;
    // Score of position. Calculated explicitly and invalidated when position changes.
    std::optional<double> m_score;
-   // File on which a pawn moved two squares forward from its starting location during the
-   // last turn.
-   std::optional<File> m_enPassantFile;
+   // Square on a pawn is located that can be taken with an en-passant move.
+   std::optional<Square> m_enPassantSquare;
 };
 
 
@@ -200,7 +199,7 @@ inline std::size_t Position::toColorIdx(Color side)
 inline bool Position::operator==(const Position& other) const
 {
    return m_board == other.m_board && m_pieces == other.m_pieces &&
-          m_enPassantFile == other.m_enPassantFile;
+          m_enPassantSquare == other.m_enPassantSquare;
 }
 
 inline bool Position::operator!=(const Position& other) const

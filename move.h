@@ -20,32 +20,32 @@ class ReversibleState
  protected:
    ReversibleState() = default;
 
-   void setState(std::optional<File> enPassantFile, Position& pos);
+   void setState(std::optional<Square> enPassantSquare, Position& pos);
    void resetState(Position& pos);
 
    friend bool operator==(const ReversibleState& a, const ReversibleState& b)
    {
-      return a.m_prevEnPassantFile == b.m_prevEnPassantFile;
+      return a.m_prevEnPassantSquare == b.m_prevEnPassantSquare;
    }
 
  private:
    // State of position before move is made. Needed to reverse moves.
-   std::optional<File> m_prevEnPassantFile;
+   std::optional<Square> m_prevEnPassantSquare;
 };
 
 
-inline void ReversibleState::setState(std::optional<File> enPassantFile, Position& pos)
+inline void ReversibleState::setState(std::optional<Square> enPassantSquare, Position& pos)
 {
    // Remember the position's previous state, so that we can reset it.
-   m_prevEnPassantFile = pos.enPassantFile();
+   m_prevEnPassantSquare = pos.enPassantSquare();
 
    // Set the state caused by this move as the position's new state.
-   pos.setEnPassantFile(enPassantFile);
+   pos.setEnPassantSquare(enPassantSquare);
 }
 
 inline void ReversibleState::resetState(Position& pos)
 {
-   pos.setEnPassantFile(m_prevEnPassantFile);
+   pos.setEnPassantSquare(m_prevEnPassantSquare);
 }
 
 inline bool operator!=(const ReversibleState& a, const ReversibleState& b)
@@ -78,20 +78,20 @@ class BasicMove : public ReversibleState
    Square from() const { return m_moved.from(); }
    Square to() const { return m_moved.to(); }
    std::optional<Piece> taken() const { return m_taken; }
-   std::optional<File> enPassantFile() const { return m_enPassantFile; }
+   std::optional<Square> enPassantSquare() const { return m_enPassantSquare; }
 
    friend bool operator==(const BasicMove& a, const BasicMove& b)
    {
       return static_cast<ReversibleState>(a) == static_cast<ReversibleState>(b) &&
              a.m_moved == b.m_moved && a.m_taken == b.m_taken &&
-             a.m_enPassantFile == b.m_enPassantFile;
+             a.m_enPassantSquare == b.m_enPassantSquare;
    }
 
  private:
    Relocation m_moved;
    std::optional<Piece> m_taken;
-   // File that this move enables en-passant on.
-   std::optional<File> m_enPassantFile;
+   // Square that this move enables en-passant on.
+   std::optional<Square> m_enPassantSquare;
 };
 
 
@@ -101,7 +101,7 @@ inline BasicMove::BasicMove(const Relocation& moved, std::optional<Piece> taken)
 }
 
 inline BasicMove::BasicMove(const Relocation& moved, EnablesEnPassant_t)
-: m_moved{moved}, m_enPassantFile{file(moved.from())}
+: m_moved{moved}, m_enPassantSquare{moved.to()}
 {
 }
 
@@ -111,7 +111,7 @@ inline void BasicMove::move(Position& pos)
       pos.remove(Placement{*m_taken, m_moved.to()});
    pos.move(m_moved);
 
-   setState(m_enPassantFile, pos);
+   setState(m_enPassantSquare, pos);
 }
 
 inline void BasicMove::reverse(Position& pos)
