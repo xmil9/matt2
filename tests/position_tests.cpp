@@ -963,6 +963,173 @@ void testPositionCanAttackForColor()
    }
 }
 
+///////////////////
+
+void testPlacementIterCopyCtor()
+{
+   {
+      const std::string caseLabel = "PlacementIterator copy ctor";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White);
+
+      auto copy{it};
+
+      VERIFY(copy == it, caseLabel);
+   }
+}
+
+void testPlacementIterMoveCtor()
+{
+   {
+      const std::string caseLabel = "PlacementIterator move ctor";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White);
+      Placement placement = *it;
+
+      auto movedTo{std::move(it)};
+
+      VERIFY(*movedTo == placement, caseLabel);
+   }
+}
+
+void testPlacementIterCopyAssignment()
+{
+   {
+      const std::string caseLabel = "PlacementIterator copy assignment";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White);
+
+      PlacementIterator copy;
+      copy = it;
+
+      VERIFY(copy == it, caseLabel);
+   }
+}
+
+void testPlacementIterMoveAssignment()
+{
+   {
+      const std::string caseLabel = "PlacementIterator move assignment";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White);
+      Placement placement = *it;
+
+      PlacementIterator movedTo;
+      movedTo = std::move(it);
+
+      VERIFY(*movedTo == placement, caseLabel);
+   }
+}
+
+void testPlacementIterDereference()
+{
+   {
+      const std::string caseLabel = "PlacementIterator::operator*()";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White);
+
+      Placement placement = *it;
+      VERIFY(placement == Placement("Qwd4") || placement == Placement("wf3"), caseLabel);
+   }
+}
+
+void testPlacementIterPrefixInc()
+{
+   {
+      const std::string caseLabel = "PlacementIterator::operator++()";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White);
+
+      Placement prev = *it;
+      ++it;
+      Placement next = *it;
+
+      VERIFY(next != prev && (next == Placement("Qwd4") || next == Placement("wf3")), caseLabel);
+   }
+}
+
+void testPlacementIterPostfixInc()
+{
+   {
+      const std::string caseLabel = "PlacementIterator::operator++(int)";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White);
+
+      Placement prev = *it;
+      it++;
+      Placement next = *it;
+
+      VERIFY(next != prev && (next == Placement("Qwd4") || next == Placement("wf3")), caseLabel);
+   }
+}
+
+void testPlacementIterPrefixDec()
+{
+   {
+      const std::string caseLabel = "PlacementIterator::operator--()";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White);
+      ++it;
+
+      Placement next = *it;
+      --it;
+      Placement prev = *it;
+
+      VERIFY(next != prev && (prev == Placement("Qwd4") || prev == Placement("wf3")), caseLabel);
+   }
+}
+
+void testPlacementIterPostfixDec()
+{
+   {
+      const std::string caseLabel = "PlacementIterator::operator--(int)";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White);
+      ++it;
+
+      Placement next = *it;
+      it--;
+      Placement prev = *it;
+
+      VERIFY(next != prev && (prev == Placement("Qwd4") || prev == Placement("wf3")), caseLabel);
+   }
+}
+
+void testPlacementIterPieceAccessor()
+{
+   {
+      const std::string caseLabel = "PlacementIterator::piece()";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White);
+      Placement placement = *it;
+
+      VERIFY(it.piece() == placement.piece(), caseLabel);
+   }
+}
+
+void testPlacementIterLocationAccessor()
+{
+   {
+      const std::string caseLabel = "PlacementIterator::at()";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White);
+      Placement placement = *it;
+
+      VERIFY(it.at() == placement.at(), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -990,4 +1157,19 @@ void testPosition()
    testPositionHasRookMoved();
    testPositionCanAttackForPlacement();
    testPositionCanAttackForColor();
+}
+
+void testPlacementIterator()
+{
+   testPlacementIterCopyCtor();
+   testPlacementIterMoveCtor();
+   testPlacementIterCopyAssignment();
+   testPlacementIterMoveAssignment();
+   testPlacementIterDereference();
+   testPlacementIterPrefixInc();
+   testPlacementIterPostfixInc();
+   testPlacementIterPrefixDec();
+   testPlacementIterPostfixDec();
+   testPlacementIterPieceAccessor();
+   testPlacementIterLocationAccessor();
 }

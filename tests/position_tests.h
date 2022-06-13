@@ -5,3 +5,4 @@
 #pragma once
 
 void testPosition();
+void testPlacementIterator();
