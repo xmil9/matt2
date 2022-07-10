@@ -1050,7 +1050,8 @@ void testPlacementIterPrefixInc()
       ++it;
       Placement next = *it;
 
-      VERIFY(next != prev && (next == Placement("Qwd4") || next == Placement("wf3")), caseLabel);
+      VERIFY(next != prev && (next == Placement("Qwd4") || next == Placement("wf3")),
+             caseLabel);
    }
 }
 
@@ -1066,7 +1067,8 @@ void testPlacementIterPostfixInc()
       it++;
       Placement next = *it;
 
-      VERIFY(next != prev && (next == Placement("Qwd4") || next == Placement("wf3")), caseLabel);
+      VERIFY(next != prev && (next == Placement("Qwd4") || next == Placement("wf3")),
+             caseLabel);
    }
 }
 
@@ -1083,7 +1085,8 @@ void testPlacementIterPrefixDec()
       --it;
       Placement prev = *it;
 
-      VERIFY(next != prev && (prev == Placement("Qwd4") || prev == Placement("wf3")), caseLabel);
+      VERIFY(next != prev && (prev == Placement("Qwd4") || prev == Placement("wf3")),
+             caseLabel);
    }
 }
 
@@ -1100,7 +1103,8 @@ void testPlacementIterPostfixDec()
       it--;
       Placement prev = *it;
 
-      VERIFY(next != prev && (prev == Placement("Qwd4") || prev == Placement("wf3")), caseLabel);
+      VERIFY(next != prev && (prev == Placement("Qwd4") || prev == Placement("wf3")),
+             caseLabel);
    }
 }
 
@@ -1127,6 +1131,197 @@ void testPlacementIterLocationAccessor()
       Placement placement = *it;
 
       VERIFY(it.at() == placement.at(), caseLabel);
+   }
+}
+
+void testPlacementIterEquality()
+{
+   {
+      const std::string caseLabel = "Placement iterator equality for equal placements";
+
+      Position pos{"Qwd4 wf3"};
+      auto a = pos.begin(Color::White);
+      auto b = pos.begin(Color::White);
+
+      VERIFY(a == b, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Placement iterator equality for placements from different positions";
+
+      Position posA{"Qwd4 wf3"};
+      Position posB{"Qwd4 wf3"};
+      auto a = posA.begin(Color::White);
+      auto b = posB.begin(Color::White);
+
+      VERIFY(!(a == b), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Placement iterator equality for placements of different sides";
+
+      Position pos{"Qwd4 bf3"};
+      auto a = pos.begin(Color::White);
+      auto b = pos.begin(Color::Black);
+
+      VERIFY(!(a == b), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Placement iterator equality for placements of different pieces";
+
+      Position pos{"Qwd4 wf3"};
+      auto a = pos.begin(Color::White);
+      auto b = a;
+      ++b;
+
+      VERIFY(!(a == b), caseLabel);
+   }
+}
+
+void testPlacementIterInequality()
+{
+   {
+      const std::string caseLabel = "Placement iterator inequality for equal placements";
+
+      Position pos{"Qwd4 wf3"};
+      auto a = pos.begin(Color::White);
+      auto b = pos.begin(Color::White);
+
+      VERIFY(!(a != b), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Placement iterator inequality for placements from different positions";
+
+      Position posA{"Qwd4 wf3"};
+      Position posB{"Qwd4 wf3"};
+      auto a = posA.begin(Color::White);
+      auto b = posB.begin(Color::White);
+
+      VERIFY(a != b, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Placement iterator inequality for placements of different sides";
+
+      Position pos{"Qwd4 bf3"};
+      auto a = pos.begin(Color::White);
+      auto b = pos.begin(Color::Black);
+
+      VERIFY(a != b, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Placement iterator inequality for placements of different pieces";
+
+      Position pos{"Qwd4 wf3"};
+      auto a = pos.begin(Color::White);
+      auto b = a;
+      ++b;
+
+      VERIFY(a != b, caseLabel);
+   }
+}
+
+void testPlacementIterLtComparision()
+{
+   {
+      const std::string caseLabel = "Placement less-than comparision";
+
+      Position pos{"Qwd4 wf3 Rwa1"};
+      auto c = pos.begin(Color::White);
+      auto a = ++c;
+      auto b = ++c;
+
+      VERIFY(a < b, caseLabel);
+      VERIFY(a < c, caseLabel);
+      VERIFY(b < c, caseLabel);
+      VERIFY(!(b < a), caseLabel);
+      VERIFY(!(c < a), caseLabel);
+      VERIFY(!(c < b), caseLabel);
+   }
+}
+
+void testPlacementIterGtComparision()
+{
+   {
+      const std::string caseLabel = "Placement greater-than comparision";
+
+      Position pos{"Qwd4 wf3 Rwa1"};
+      auto c = pos.begin(Color::White);
+      auto a = ++c;
+      auto b = ++c;
+
+      VERIFY(b > a, caseLabel);
+      VERIFY(c > a, caseLabel);
+      VERIFY(c > b, caseLabel);
+      VERIFY(!(a > b), caseLabel);
+      VERIFY(!(a > c), caseLabel);
+      VERIFY(!(b > c), caseLabel);
+   }
+}
+
+void testPlacementIterLeComparision()
+{
+   {
+      const std::string caseLabel = "Placement less-than-or-equal comparision";
+
+      Position pos{"Qwd4 wf3 Rwa1"};
+      auto c = pos.begin(Color::White);
+      auto a = ++c;
+      auto b = ++c;
+
+      VERIFY(a <= b, caseLabel);
+      VERIFY(a <= c, caseLabel);
+      VERIFY(b <= c, caseLabel);
+      VERIFY(a <= a, caseLabel);
+      VERIFY(b <= b, caseLabel);
+      VERIFY(c <= c, caseLabel);
+      VERIFY(!(b <= a), caseLabel);
+      VERIFY(!(c <= a), caseLabel);
+      VERIFY(!(c <= b), caseLabel);
+   }
+}
+
+void testPlacementIterGeComparision()
+{
+   {
+      const std::string caseLabel = "Placement greater-than-or-equal comparision";
+
+      Position pos{"Kbe2 Bbd7 bb3"};
+      auto c = pos.begin(Color::Black);
+      auto a = ++c;
+      auto b = ++c;
+
+      VERIFY(b >= a, caseLabel);
+      VERIFY(c >= a, caseLabel);
+      VERIFY(c >= b, caseLabel);
+      VERIFY(a >= a, caseLabel);
+      VERIFY(b >= b, caseLabel);
+      VERIFY(c >= c, caseLabel);
+      VERIFY(!(a >= b), caseLabel);
+      VERIFY(!(a >= c), caseLabel);
+      VERIFY(!(b >= c), caseLabel);
+   }
+}
+
+void testPlacementIterSwap()
+{
+   {
+      const std::string caseLabel = "Placement swap";
+
+      Position posA{"Qwd4 wf3 Rwa1"};
+      auto a = posA.begin(Color::White);
+      Position posB{"Kbe2 Bbd7 bb3"};
+      auto b = posB.begin(Color::Black);
+
+      swap(a, b);
+
+      VERIFY(a.piece() == Piece::Kb, caseLabel);
+      VERIFY(a.at() == Square::e2, caseLabel);
+      VERIFY(b.piece() == Piece::Qw, caseLabel);
+      VERIFY(b.at() == Square::d4, caseLabel);
    }
 }
 
@@ -1172,4 +1367,11 @@ void testPlacementIterator()
    testPlacementIterPostfixDec();
    testPlacementIterPieceAccessor();
    testPlacementIterLocationAccessor();
+   testPlacementIterEquality();
+   testPlacementIterInequality();
+   testPlacementIterLtComparision();
+   testPlacementIterGtComparision();
+   testPlacementIterLeComparision();
+   testPlacementIterGeComparision();
+   testPlacementIterSwap();
 }
