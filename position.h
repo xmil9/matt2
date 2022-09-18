@@ -153,7 +153,7 @@ class Position
    std::array<ColorPlacements, 2> m_pieces;
    // Score of position. Calculated explicitly and invalidated when position changes.
    std::optional<double> m_score;
-   // Square on a pawn is located that can be taken with an en-passant move.
+   // Square on which a pawn is located that can be taken with an en-passant move.
    std::optional<Square> m_enPassantSquare;
 };
 
