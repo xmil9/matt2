@@ -53,7 +53,7 @@ std::string& DetailedNotation::notate(std::string& out, const EnPassant& move) c
    out += move.toString(WithPieceColor);
 
    // Append info about taken piece.
-   out += "[x: " + toString(move.taken(), WithPieceColor) + "]";
+   out += "[x:" + toString(move.taken(), WithPieceColor) + "]";
 
    return out;
 }
@@ -65,9 +65,7 @@ std::string& DetailedNotation::notate(std::string& out, const Promotion& move) c
 
    // Append info about taken piece.
    if (auto taken = move.taken(); taken.has_value())
-   {
-      out += "[x: " + toString(*taken, WithPieceColor) + "]";
-   }
+      out += "[x:" + toString(*taken, WithPieceColor) + "]";
 
    return out;
 }

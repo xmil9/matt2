@@ -23,7 +23,6 @@ void testLanScheme()
    }
 }
 
-
 void testLanNotatePiece()
 {
    {
@@ -59,7 +58,6 @@ void testLanNotatePiece()
    }
 }
 
-
 void testLanNotateBasicMove()
 {
    {
@@ -91,6 +89,50 @@ void testLanNotateBasicMove()
    }
 }
 
+void testLanNotateCastling()
+{
+   {
+      const std::string caseLabel = "Lan::notate castling move at king-side";
+
+      std::string out;
+      Lan lan;
+      Castling move{Kingside, Color::White};
+
+      VERIFY((lan.notate(out, move) == "0-0"), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Lan::notate castling move at queen-side";
+
+      std::string out;
+      Lan lan;
+      Castling move{Queenside, Color::Black};
+
+      VERIFY((lan.notate(out, move) == "0-0-0"), caseLabel);
+   }
+}
+
+void testLanNotateEnPassant()
+{
+   {
+      const std::string caseLabel = "Lan::notate en-passant move for white to higher file";
+
+      std::string out;
+      Lan lan;
+      EnPassant move{Relocation{"wc5d6"}};
+
+      VERIFY((lan.notate(out, move) == "cxd6"), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Lan::notate en-passant move for black to lower file";
+
+      std::string out;
+      Lan lan;
+      EnPassant move{Relocation{"bh4g3"}};
+
+      VERIFY((lan.notate(out, move) == "hxg3"), caseLabel);
+   }
+}
+
 
 ///////////////////
 
@@ -102,7 +144,6 @@ void testDnScheme()
       VERIFY((DetailedNotation().scheme() == NotationScheme::Detailed), caseLabel);
    }
 }
-
 
 void testDnNotatePiece()
 {
@@ -139,7 +180,6 @@ void testDnNotatePiece()
    }
 }
 
-
 void testDnNotateBasicMove()
 {
    {
@@ -171,6 +211,50 @@ void testDnNotateBasicMove()
    }
 }
 
+void testDnNotateCastling()
+{
+   {
+      const std::string caseLabel = "DetailedNotation::notate castling move at king-side";
+
+      std::string out;
+      DetailedNotation dn;
+      Castling move{Kingside, Color::White};
+
+      VERIFY((dn.notate(out, move) == "w0-0"), caseLabel);
+   }
+   {
+      const std::string caseLabel = "DetailedNotation::notate castling move at queen-side";
+
+      std::string out;
+      DetailedNotation dn;
+      Castling move{Queenside, Color::Black};
+
+      VERIFY((dn.notate(out, move) == "b0-0-0"), caseLabel);
+   }
+}
+
+void testDnNotateEnPassant()
+{
+   {
+      const std::string caseLabel = "DetailedNotation::notate en-passant move for white to higher file";
+
+      std::string out;
+      DetailedNotation dn;
+      EnPassant move{Relocation{"wc5d6"}};
+
+      VERIFY((dn.notate(out, move) == "wcxd6[x:b]"), caseLabel);
+   }
+   {
+      const std::string caseLabel = "DetailedNotation::notate en-passant move for black to lower file";
+
+      std::string out;
+      DetailedNotation dn;
+      EnPassant move{Relocation{"bh4g3"}};
+
+      VERIFY((dn.notate(out, move) == "bhxg3[x:w]"), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -181,11 +265,13 @@ void testNotations()
    testLanScheme();
    testLanNotatePiece();
    testLanNotateBasicMove();
-   //testLanNotateCastling();
-   //testLanNotateEnPassant();
+   testLanNotateCastling();
+   testLanNotateEnPassant();
    //testLanNotatePromotion();
 
    testDnScheme();
    testDnNotatePiece();
    testDnNotateBasicMove();
+   testDnNotateCastling();
+   testDnNotateEnPassant();
 }
