@@ -15,6 +15,8 @@ namespace matt2
 {
 ///////////////////
 
+// Holds information about a position's state before a move. This info is used to restore
+// the position to that state when a move is reversed.
 class ReversibleState
 {
  protected:
