@@ -47,13 +47,14 @@ std::string Promotion::toString(bool withColor, bool withStart) const
    std::string s;
    s += matt2::toString(m_movedPawn.piece(), withColor);
    if (withStart)
-      s += matt2::toString(file(m_movedPawn.at()));
+      s += matt2::toString(m_movedPawn.at());
 
    if (m_taken.has_value())
       s += "x";
 
    s += matt2::toString(m_promoted.at());
    // Piece that pawn was promoted to.
+   s += '=';
    s += matt2::toString(m_promoted.piece(), withColor);
 
    return s;
