@@ -133,6 +133,27 @@ void testLanNotateEnPassant()
    }
 }
 
+void testLanNotatePromotion()
+{
+   {
+      const std::string caseLabel = "Lan::notate promotion move for white to queen without taking";
+
+      std::string out;
+      Lan lan;
+      Promotion move{Relocation{"wc7c8"}, Qw};
+
+      VERIFY((lan.notate(out, move) == "c7c8=Q"), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Lan::notate promotion move for black to knight with taking";
+
+      std::string out;
+      Lan lan;
+      Promotion move{Relocation{"bb2a1"}, Nb, Bw};
+
+      VERIFY((lan.notate(out, move) == "b2xa1=N"), caseLabel);
+   }
+}
 
 ///////////////////
 
@@ -255,6 +276,28 @@ void testDnNotateEnPassant()
    }
 }
 
+void testDnNotatePromotion()
+{
+   {
+      const std::string caseLabel = "DetailedNotation::notate promotion move for white to queen without taking";
+
+      std::string out;
+      DetailedNotation dn;
+      Promotion move{Relocation{"wc7c8"}, Qw};
+
+      VERIFY((dn.notate(out, move) == "wc7c8=Qw"), caseLabel);
+   }
+   {
+      const std::string caseLabel = "DetailedNotation::notate promotion move for black to knight with taking";
+
+      std::string out;
+      DetailedNotation dn;
+      Promotion move{Relocation{"bb2a1"}, Nb, Bw};
+
+      VERIFY((dn.notate(out, move) == "bb2xa1=Nb[x:Bw]"), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -267,11 +310,12 @@ void testNotations()
    testLanNotateBasicMove();
    testLanNotateCastling();
    testLanNotateEnPassant();
-   //testLanNotatePromotion();
+   testLanNotatePromotion();
 
    testDnScheme();
    testDnNotatePiece();
    testDnNotateBasicMove();
    testDnNotateCastling();
    testDnNotateEnPassant();
+   testDnNotatePromotion();
 }
