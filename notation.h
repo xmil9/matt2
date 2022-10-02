@@ -37,8 +37,8 @@ class Lan
    std::string& notate(std::string& out, const Promotion& move) const;
 
  private:
-    static constexpr bool WithoutPieceColor = false;
-    static constexpr bool WithStartingLocation = true;
+   static constexpr bool WithoutPieceColor = false;
+   static constexpr bool WithStartingLocation = true;
 };
 
 
@@ -48,27 +48,11 @@ inline std::string& Lan::notate(std::string& out, Piece p) const
    return out;
 }
 
-inline std::string& Lan::notate(std::string& out, const Castling& move) const
-{
-   out += move.toString(WithoutPieceColor);
-   return out;
-}
-
-inline std::string& Lan::notate(std::string& out, const EnPassant& move) const
-{
-   out += move.toString(WithoutPieceColor);
-   return out;
-}
-
-inline std::string& Lan::notate(std::string& out, const Promotion& move) const
-{
-   out += move.toString(WithoutPieceColor, true);
-   return out;
-}
-
 
 ///////////////////
 
+// Internal, non-standard notation that contains more information about a move, e.g.
+// which piece was taken.
 class DetailedNotation
 {
  public:
@@ -88,12 +72,6 @@ class DetailedNotation
 inline std::string& DetailedNotation::notate(std::string& out, Piece p) const
 {
    out += matt2::toString(p, WithPieceColor);
-   return out;
-}
-
-inline std::string& DetailedNotation::notate(std::string& out, const Castling& move) const
-{
-   out += move.toString(WithPieceColor);
    return out;
 }
 

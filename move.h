@@ -152,7 +152,6 @@ class Castling : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
-   std::string toString(bool withColor) const;
 
    bool isKingside() const { return file(m_king.to()) == fg; }
    Piece king() const { return m_king.piece(); }
@@ -219,7 +218,6 @@ class EnPassant : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
-   std::string toString(bool withColor) const;
 
    Piece pawn() const { return m_movedPawn.piece(); }
    Square from() const { return m_movedPawn.from(); }
@@ -279,7 +277,6 @@ class Promotion : public ReversibleState
 
    void move(Position& pos);
    void reverse(Position& pos);
-   std::string toString(bool withColor, bool withStart) const;
 
    Piece pawn() const { return m_movedPawn.piece(); }
    Square from() const { return m_movedPawn.at(); }
