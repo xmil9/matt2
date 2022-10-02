@@ -14,6 +14,10 @@ namespace matt2
 ///////////////////
 
 // Represents a piece changing its location.
+// Relocation vs move:
+// This is not the same as a move. A move involves more information, e.g. about
+// a taken piece or a promotion. A relocation is usually one of the pieces of
+// information that make up a move.
 class Relocation
 {
  public:
