@@ -6,18 +6,18 @@
 
 using namespace matt2;
 
-namespace
+namespace an
 {
 ///////////////////
 
 // Algebraic notation
 
-std::string& notateColorAn(std::string& out, Color c)
+std::string& notateColor(std::string& out, Color c)
 {
    return out += c == Color::White ? "w" : "b";
 }
 
-std::string& notatePieceAn(std::string& out, Piece p, bool withColor = false)
+std::string& notatePiece(std::string& out, Piece p, bool withColor = false)
 {
    switch (p)
    {
@@ -49,107 +49,107 @@ std::string& notatePieceAn(std::string& out, Piece p, bool withColor = false)
    }
 
    if (withColor)
-      notateColorAn(out, color(p));
+      notateColor(out, color(p));
 
    return out;
 }
 
-std::string& notateFileAn(std::string& out, File f)
+std::string& notateFile(std::string& out, File f)
 {
    return out += toLowercaseChar(f);
 }
 
-std::string& notateRankAn(std::string& out, Rank r)
+std::string& notateRank(std::string& out, Rank r)
 {
    return out += toLowercaseChar(r);
 }
 
-std::string& notateSquareAn(std::string& out, Square sq)
+std::string& notateSquare(std::string& out, Square sq)
 {
-   notateFileAn(out, file(sq));
-   return notateRankAn(out, rank(sq));
+   notateFile(out, file(sq));
+   return notateRank(out, rank(sq));
 }
 
-std::string& notatePlacementAn(std::string& out, const Placement& placement,
-                               bool withColor = false)
+std::string& notatePlacement(std::string& out, const Placement& placement,
+                             bool withColor = false)
 {
-   notatePieceAn(out, placement.piece(), withColor);
-   return notateSquareAn(out, placement.at());
+   notatePiece(out, placement.piece(), withColor);
+   return notateSquare(out, placement.at());
 }
 
-std::string& notateMoveInAlgebraicNotation(std::string& out, const matt2::BasicMove& move,
-                                           bool withColor, bool withStart)
+std::string& notateMove(std::string& out, const matt2::BasicMove& move, bool withColor,
+                        bool withStart)
 {
-   notatePieceAn(out, move.piece(), withColor);
+   notatePiece(out, move.piece(), withColor);
    if (withStart)
-      notateSquareAn(out, move.from());
+      notateSquare(out, move.from());
    if (auto taken = move.taken(); taken.has_value())
       out += 'x';
-   notateSquareAn(out, move.to());
+   notateSquare(out, move.to());
    return out;
 }
 
-std::string& notateCastlingInAlgebraicNotation(std::string& out,
-                                               const matt2::Castling& move,
-                                               bool withColor)
+std::string& notateCastling(std::string& out, const matt2::Castling& move, bool withColor)
 {
    if (withColor)
-      notateColorAn(out, color(move.king()));
+      notateColor(out, color(move.king()));
 
    const bool isKingside = file(move.kingTo()) == fg;
    out += isKingside ? "0-0" : "0-0-0";
    return out;
 }
 
-std::string& notateEnPassantInAlgebraicNotation(std::string& out,
-                                                const matt2::EnPassant& move,
-                                                bool withColor)
+std::string& notateEnPassant(std::string& out, const matt2::EnPassant& move,
+                             bool withColor)
 {
    if (withColor)
-      notateColorAn(out, color(move.pawn()));
+      notateColor(out, color(move.pawn()));
 
    // Moved pawn's starting file.
-   notateFileAn(out, file(move.from()));
+   notateFile(out, file(move.from()));
    // Capturing indicator.
    out += "x";
    // Moved pawn's destination square.
-   notateSquareAn(out, move.to());
+   notateSquare(out, move.to());
 
    return out;
 }
 
-std::string& notatePromotionInAlgebraicNotation(std::string& out,
-                                                const matt2::Promotion& move,
-                                                bool withColor, bool withStart)
+std::string& notatePromotion(std::string& out, const matt2::Promotion& move,
+                             bool withColor, bool withStart)
 {
-   notatePieceAn(out, move.pawn(), withColor);
+   notatePiece(out, move.pawn(), withColor);
    if (withStart)
-      notateSquareAn(out, move.from());
+      notateSquare(out, move.from());
 
    if (move.taken().has_value())
       out += "x";
 
-   notateSquareAn(out, move.to());
+   notateSquare(out, move.to());
    // Piece that pawn was promoted to.
    out += '=';
-   notatePieceAn(out, move.promotedTo(), withColor);
+   notatePiece(out, move.promotedTo(), withColor);
 
    return out;
 }
 
+} // namespace an
+
+namespace dn
+{
 ///////////////////
 
 // Detailed notation
 
-std::string& notateTakenPieceDn(std::string& out, Piece taken, bool withColor)
+std::string& notateTakenPiece(std::string& out, Piece taken, bool withColor)
 {
    out += "[x:";
-   notatePieceAn(out, taken, withColor);
+   an::notatePiece(out, taken, withColor);
    out += "]";
    return out;
 }
 
-} // namespace
+} // namespace dn
 
 
 namespace matt2
@@ -158,121 +158,119 @@ namespace matt2
 
 std::string& Lan::notate(std::string& out, Color c) const
 {
-   return notateColorAn(out, c);
+   return an::notateColor(out, c);
 }
 
 std::string& Lan::notate(std::string& out, Piece p) const
 {
-   return notatePieceAn(out, p, WithoutPieceColor);
+   return an::notatePiece(out, p, WithoutPieceColor);
 }
 
 std::string& Lan::notate(std::string& out, File f) const
 {
-   return notateFileAn(out, f);
+   return an::notateFile(out, f);
 }
 
 std::string& Lan::notate(std::string& out, Rank r) const
 {
-   return notateRankAn(out, r);
+   return an::notateRank(out, r);
 }
 
 std::string& Lan::notate(std::string& out, Square sq) const
 {
-   return notateSquareAn(out, sq);
+   return an::notateSquare(out, sq);
 }
 
 std::string& Lan::notate(std::string& out, const Placement& placement) const
 {
-   return notatePlacementAn(out, placement, WithoutPieceColor);
+   return an::notatePlacement(out, placement, WithoutPieceColor);
 }
 
 std::string& Lan::notate(std::string& out, const BasicMove& move) const
 {
-   return notateMoveInAlgebraicNotation(out, move, WithoutPieceColor,
-                                        WithStartingLocation);
+   return an::notateMove(out, move, WithoutPieceColor, WithStartingLocation);
 }
 
 std::string& Lan::notate(std::string& out, const Castling& move) const
 {
-   return notateCastlingInAlgebraicNotation(out, move, WithoutPieceColor);
+   return an::notateCastling(out, move, WithoutPieceColor);
 }
 
 std::string& Lan::notate(std::string& out, const EnPassant& move) const
 {
-   return notateEnPassantInAlgebraicNotation(out, move, WithoutPieceColor);
+   return an::notateEnPassant(out, move, WithoutPieceColor);
 }
 
 std::string& Lan::notate(std::string& out, const Promotion& move) const
 {
-   return notatePromotionInAlgebraicNotation(out, move, WithoutPieceColor,
-                                             WithStartingLocation);
+   return an::notatePromotion(out, move, WithoutPieceColor, WithStartingLocation);
 }
 
 ///////////////////
 
 std::string& DetailedNotation::notate(std::string& out, Color c) const
 {
-   return notateColorAn(out, c);
+   return an::notateColor(out, c);
 }
 
 std::string& DetailedNotation::notate(std::string& out, Piece p) const
 {
-   return notatePieceAn(out, p, WithPieceColor);
+   return an::notatePiece(out, p, WithPieceColor);
 }
 
 std::string& DetailedNotation::notate(std::string& out, File f) const
 {
-   return notateFileAn(out, f);
+   return an::notateFile(out, f);
 }
 
 std::string& DetailedNotation::notate(std::string& out, Rank r) const
 {
-   return notateRankAn(out, r);
+   return an::notateRank(out, r);
 }
 
 std::string& DetailedNotation::notate(std::string& out, Square sq) const
 {
-   return notateSquareAn(out, sq);
+   return an::notateSquare(out, sq);
 }
 
 std::string& DetailedNotation::notate(std::string& out, const Placement& placement) const
 {
-   return notatePlacementAn(out, placement, WithPieceColor);
+   return an::notatePlacement(out, placement, WithPieceColor);
 }
 
 std::string& DetailedNotation::notate(std::string& out, const BasicMove& move) const
 {
-   notateMoveInAlgebraicNotation(out, move, WithPieceColor, WithStartingLocation);
+   an::notateMove(out, move, WithPieceColor, WithStartingLocation);
 
    // Append info about taken piece.
    if (auto taken = move.taken(); taken.has_value())
-      notateTakenPieceDn(out, *taken, WithPieceColor);
+      dn::notateTakenPiece(out, *taken, WithPieceColor);
 
    return out;
 }
 
 std::string& DetailedNotation::notate(std::string& out, const Castling& move) const
 {
-   return notateCastlingInAlgebraicNotation(out, move, WithPieceColor);
+   return an::notateCastling(out, move, WithPieceColor);
 }
 
 std::string& DetailedNotation::notate(std::string& out, const EnPassant& move) const
 {
-   notateEnPassantInAlgebraicNotation(out, move, WithPieceColor);
+   an::notateEnPassant(out, move, WithPieceColor);
 
    // Append info about taken piece.
-   notateTakenPieceDn(out, move.taken(), WithPieceColor);
+   dn::notateTakenPiece(out, move.taken(), WithPieceColor);
 
    return out;
 }
 
 std::string& DetailedNotation::notate(std::string& out, const Promotion& move) const
 {
-   notatePromotionInAlgebraicNotation(out, move, WithPieceColor, WithStartingLocation);
+   an::notatePromotion(out, move, WithPieceColor, WithStartingLocation);
 
    // Append info about taken piece.
    if (auto taken = move.taken(); taken.has_value())
-      notateTakenPieceDn(out, *taken, WithPieceColor);
+      dn::notateTakenPiece(out, *taken, WithPieceColor);
 
    return out;
 }
