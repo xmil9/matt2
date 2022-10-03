@@ -77,88 +77,19 @@ class DetailedNotation
 using Notation = std::variant<Lan, DetailedNotation>;
 
 
+// Notation api as free functions taking a notation instance.
+
 inline NotationScheme scheme(const Notation& n)
 {
    auto dispatch = [](const auto& specificNotation) { return specificNotation.scheme(); };
    return std::visit(dispatch, n);
 }
 
-inline std::string& notate(std::string& out, Color c, const Notation& n)
+template<typename T>
+inline std::string& notate(std::string& out, const T& item, const Notation& n)
 {
    auto dispatch = [&](const auto& specificNotation)
-   { return specificNotation.notate(out, c); };
-   std::visit(dispatch, n);
-   return out;
-}
-
-inline std::string& notate(std::string& out, Piece p, const Notation& n)
-{
-   auto dispatch = [&](const auto& specificNotation)
-   { return specificNotation.notate(out, p); };
-   std::visit(dispatch, n);
-   return out;
-}
-
-inline std::string& notate(std::string& out, File f, const Notation& n)
-{
-   auto dispatch = [&](const auto& specificNotation)
-   { return specificNotation.notate(out, f); };
-   std::visit(dispatch, n);
-   return out;
-}
-
-inline std::string& notate(std::string& out, Rank r, const Notation& n)
-{
-   auto dispatch = [&](const auto& specificNotation)
-   { return specificNotation.notate(out, r); };
-   std::visit(dispatch, n);
-   return out;
-}
-
-inline std::string& notate(std::string& out, Square sq, const Notation& n)
-{
-   auto dispatch = [&](const auto& specificNotation)
-   { return specificNotation.notate(out, sq); };
-   std::visit(dispatch, n);
-   return out;
-}
-
-inline std::string& notate(std::string& out, const Placement& placement, const Notation& n)
-{
-   auto dispatch = [&](const auto& specificNotation)
-   { return specificNotation.notate(out, placement); };
-   std::visit(dispatch, n);
-   return out;
-}
-
-inline std::string& notate(std::string& out, const BasicMove& move, const Notation& n)
-{
-   auto dispatch = [&](const auto& specificNotation)
-   { return specificNotation.notate(out, move); };
-   std::visit(dispatch, n);
-   return out;
-}
-
-inline std::string& notate(std::string& out, const Castling& move, const Notation& n)
-{
-   auto dispatch = [&](const auto& specificNotation)
-   { return specificNotation.notate(out, move); };
-   std::visit(dispatch, n);
-   return out;
-}
-
-inline std::string& notate(std::string& out, const EnPassant& move, const Notation& n)
-{
-   auto dispatch = [&](const auto& specificNotation)
-   { return specificNotation.notate(out, move); };
-   std::visit(dispatch, n);
-   return out;
-}
-
-inline std::string& notate(std::string& out, const Promotion& move, const Notation& n)
-{
-   auto dispatch = [&](const auto& specificNotation)
-   { return specificNotation.notate(out, move); };
+   { return specificNotation.notate(out, item); };
    std::visit(dispatch, n);
    return out;
 }
