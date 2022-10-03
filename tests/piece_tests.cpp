@@ -25,17 +25,6 @@ void testColorNegation()
 }
 
 
-void testColorToString()
-{
-   {
-      const std::string caseLabel = "toString(Color)";
-
-      VERIFY(toString(Color::White) == "w", caseLabel);
-      VERIFY(toString(Color::Black) == "b", caseLabel);
-   }
-}
-
-
 ///////////////////
 
 void testMakePiece()
@@ -375,43 +364,6 @@ void testPieceHaveSameColor()
    }
 }
 
-
-void testPieceToString()
-{
-   {
-      const std::string caseLabel = "toString(Piece) with color";
-
-      VERIFY(toString(Kw, true) == "Kw", caseLabel);
-      VERIFY(toString(Qw, true) == "Qw", caseLabel);
-      VERIFY(toString(Rw, true) == "Rw", caseLabel);
-      VERIFY(toString(Bw, true) == "Bw", caseLabel);
-      VERIFY(toString(Nw, true) == "Nw", caseLabel);
-      VERIFY(toString(Pw, true) == "w", caseLabel);
-      VERIFY(toString(Kb, true) == "Kb", caseLabel);
-      VERIFY(toString(Qb, true) == "Qb", caseLabel);
-      VERIFY(toString(Rb, true) == "Rb", caseLabel);
-      VERIFY(toString(Bb, true) == "Bb", caseLabel);
-      VERIFY(toString(Nb, true) == "Nb", caseLabel);
-      VERIFY(toString(Pb, true) == "b", caseLabel);
-   }
-   {
-      const std::string caseLabel = "toString(Piece) without color";
-
-      VERIFY(toString(Kw, false) == "K", caseLabel);
-      VERIFY(toString(Qw, false) == "Q", caseLabel);
-      VERIFY(toString(Rw, false) == "R", caseLabel);
-      VERIFY(toString(Bw, false) == "B", caseLabel);
-      VERIFY(toString(Nw, false) == "N", caseLabel);
-      VERIFY(toString(Pw, false) == "", caseLabel);
-      VERIFY(toString(Kb, false) == "K", caseLabel);
-      VERIFY(toString(Qb, false) == "Q", caseLabel);
-      VERIFY(toString(Rb, false) == "R", caseLabel);
-      VERIFY(toString(Bb, false) == "B", caseLabel);
-      VERIFY(toString(Nb, false) == "N", caseLabel);
-      VERIFY(toString(Pb, false) == "", caseLabel);
-   }
-}
-
 } // namespace
 
 
@@ -420,7 +372,6 @@ void testPieceToString()
 void testColor()
 {
    testColorNegation();
-   testColorToString();
 }
 
 
@@ -437,5 +388,4 @@ void testPiece()
    testPieceIsWhite();
    testPieceIsBlack();
    testPieceHaveSameColor();
-   testPieceToString();
 }

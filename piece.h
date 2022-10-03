@@ -22,11 +22,6 @@ inline Color operator!(Color c)
    return c == Color::White ? Color::Black : Color::White;
 }
 
-inline std::string toString(Color c)
-{
-   return c == Color::White ? "w" : "b";
-}
-
 
 ///////////////////
 
@@ -71,6 +66,5 @@ inline Color color(Piece p) { return p < Kb ? Color::White : Color::Black; }
 inline bool isWhite(Piece p) { return color(p) == Color::White; }
 inline bool isBlack(Piece p) { return color(p) == Color::Black; }
 inline bool haveSameColor(Piece a, Piece b) { return color(a) == color(b); }
-std::string toString(Piece p, bool withColor = false);
 
 } // namespace matt2

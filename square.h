@@ -50,9 +50,9 @@ inline File operator-(File f, int dec)
    return res;
 }
 
-inline std::string toString(File f)
+inline char toLowercaseChar(File f)
 {
-   return std::string(1, 'a' + static_cast<char>(f));
+   return 'a' + static_cast<char>(f);
 }
 
 // Is file a lower than file b and adjacent to it?
@@ -114,9 +114,9 @@ inline Rank operator-(Rank r, int dec)
    return res;
 }
 
-inline std::string toString(Rank r)
+inline char toLowercaseChar(Rank r)
 {
-   return std::string(1, '1' + static_cast<char>(r));
+   return '1' + static_cast<char>(r);
 }
 
 // Is rank a lower than rank b and adjacent to it?
@@ -256,11 +256,6 @@ inline Square operator++(Square& sq)
    sq = static_cast<Square>((static_cast<std::size_t>(sq) + 1) % 64);
    assert(sq <= h8);
    return sq;
-}
-
-inline std::string toString(Square sq)
-{
-   return toString(file(sq)) + toString(rank(sq));
 }
 
 
