@@ -3,6 +3,7 @@
 // MIT license
 //
 #include "notation.h"
+#include "move.h"
 
 using namespace matt2;
 

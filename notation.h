@@ -4,10 +4,17 @@
 //
 #pragma once
 #include "piece.h"
-#include "move.h"
+#include "square.h"
 #include <string>
 #include <variant>
 
+// clang-format off
+namespace matt2 { class BasicMove; }
+namespace matt2 { class Castling; }
+namespace matt2 { class EnPassant; }
+namespace matt2 { class Placement; }
+namespace matt2 { class Promotion; }
+// clang-format on
 
 namespace matt2
 {

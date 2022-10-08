@@ -3,7 +3,9 @@
 // MIT license
 //
 #include "notation_tests.h"
+#include "move.h"
 #include "notation.h"
+#include "placement.h"
 #include "test_util.h"
 #include <stdexcept>
 
