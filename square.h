@@ -30,24 +30,25 @@ constexpr File fg = File::fg;
 constexpr File fh = File::fh;
 
 
+inline bool isValid(File f)
+{
+   // Rank enum is based on an unsigned value and can never be less than zero.
+   return static_cast<unsigned char>(f) <= static_cast<unsigned char>(fh);
+}
+
 inline bool isValid(File f, int offset)
 {
-   const int val = static_cast<int>(f) + offset;
-   return static_cast<int>(fa) <= val && val <= static_cast<int>(fh);
+   return isValid(static_cast<File>(static_cast<int>(f) + offset));
 }
 
 inline File operator+(File f, int inc)
 {
-   assert(isValid(f, inc));
-   const auto res = static_cast<File>(static_cast<unsigned char>(f) + inc);
-   return res;
+   return static_cast<File>(static_cast<unsigned char>(f) + inc);
 }
 
 inline File operator-(File f, int dec)
 {
-   assert(isValid(f, -dec));
-   const auto res = static_cast<File>(static_cast<unsigned char>(f) - dec);
-   return res;
+   return static_cast<File>(static_cast<unsigned char>(f) - dec);
 }
 
 inline char toLowercaseChar(File f)
@@ -56,7 +57,7 @@ inline char toLowercaseChar(File f)
 }
 
 // Is file a lower than file b and adjacent to it?
-inline bool isLowerAdjacent(File  a, File b)
+inline bool isLowerAdjacent(File a, File b)
 {
    return isValid(a, 1) && a + 1 == b;
 }
@@ -94,24 +95,25 @@ constexpr Rank r7 = Rank::r7;
 constexpr Rank r8 = Rank::r8;
 
 
+inline bool isValid(Rank r)
+{
+   // File enum is based on an unsigned value and can never be less than zero.
+   return static_cast<unsigned char>(r) <= static_cast<unsigned char>(r8);
+}
+
 inline bool isValid(Rank r, int offset)
 {
-   const int val = static_cast<int>(r) + offset;
-   return static_cast<int>(r1) <= val && val <= static_cast<int>(r8);
+   return isValid(static_cast<Rank>(static_cast<int>(r) + offset));
 }
 
 inline Rank operator+(Rank r, int inc)
 {
-   const auto res = static_cast<Rank>(static_cast<unsigned char>(r) + inc);
-   assert(res <= r8);
-   return res;
+   return static_cast<Rank>(static_cast<unsigned char>(r) + inc);
 }
 
 inline Rank operator-(Rank r, int dec)
 {
-   const auto res = static_cast<Rank>(static_cast<unsigned char>(r) - dec);
-   assert(res <= r8);
-   return res;
+   return static_cast<Rank>(static_cast<unsigned char>(r) - dec);
 }
 
 inline char toLowercaseChar(Rank r)
@@ -120,7 +122,7 @@ inline char toLowercaseChar(Rank r)
 }
 
 // Is rank a lower than rank b and adjacent to it?
-inline bool isLowerAdjacent(Rank  a, Rank b)
+inline bool isLowerAdjacent(Rank a, Rank b)
 {
    return isValid(a, 1) && a + 1 == b;
 }
@@ -231,30 +233,29 @@ Square makeSquare(std::string_view notation);
 // Create square from file and rank.
 inline Square makeSquare(File f, Rank r)
 {
-   const auto sq = static_cast<Square>(static_cast<unsigned char>(f) * 8 +
-                                       static_cast<unsigned char>(r));
-   assert(sq <= h8);
-   return sq;
+   return static_cast<Square>(static_cast<unsigned char>(f) * 8 +
+                              static_cast<unsigned char>(r));
 }
 
 inline File file(Square sq)
 {
-   const auto f = static_cast<File>(static_cast<unsigned char>(sq) / 8);
-   assert(f <= fh);
-   return f;
+   return static_cast<File>(static_cast<unsigned char>(sq) / 8);
 }
 
 inline Rank rank(Square sq)
 {
-   const auto r = static_cast<Rank>(static_cast<unsigned char>(sq) % 8);
-   assert(r <= r8);
-   return r;
+   return static_cast<Rank>(static_cast<unsigned char>(sq) % 8);
+}
+
+inline bool isValid(Square sq)
+{
+   // Square enum is based on an unsigned value and can never be less than zero.
+   return static_cast<unsigned char>(sq) <= static_cast<unsigned char>(h8);
 }
 
 inline Square operator++(Square& sq)
 {
    sq = static_cast<Square>((static_cast<std::size_t>(sq) + 1) % 64);
-   assert(sq <= h8);
    return sq;
 }
 

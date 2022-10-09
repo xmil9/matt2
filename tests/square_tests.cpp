@@ -17,6 +17,22 @@ namespace
 void testFileIsValid()
 {
    {
+      const std::string caseLabel = "isValid(File)";
+
+      VERIFY(!isValid(static_cast<File>(-2)), caseLabel);
+      VERIFY(!isValid(static_cast<File>(-1)), caseLabel);
+      VERIFY(isValid(static_cast<File>(0)), caseLabel);
+      VERIFY(isValid(static_cast<File>(1)), caseLabel);
+      VERIFY(isValid(static_cast<File>(2)), caseLabel);
+      VERIFY(isValid(static_cast<File>(3)), caseLabel);
+      VERIFY(isValid(static_cast<File>(4)), caseLabel);
+      VERIFY(isValid(static_cast<File>(5)), caseLabel);
+      VERIFY(isValid(static_cast<File>(6)), caseLabel);
+      VERIFY(isValid(static_cast<File>(7)), caseLabel);
+      VERIFY(!isValid(static_cast<File>(8)), caseLabel);
+      VERIFY(!isValid(static_cast<File>(9)), caseLabel);
+   }
+   {
       const std::string caseLabel = "isValid(File, int)";
 
       VERIFY(!isValid(fa, -2), caseLabel);
@@ -327,6 +343,22 @@ void testFileIsAdjacent()
 
 void testRankIsValid()
 {
+   {
+      const std::string caseLabel = "isValid(Rank)";
+
+      VERIFY(!isValid(static_cast<Rank>(-2)), caseLabel);
+      VERIFY(!isValid(static_cast<Rank>(-1)), caseLabel);
+      VERIFY(isValid(static_cast<Rank>(0)), caseLabel);
+      VERIFY(isValid(static_cast<Rank>(1)), caseLabel);
+      VERIFY(isValid(static_cast<Rank>(2)), caseLabel);
+      VERIFY(isValid(static_cast<Rank>(3)), caseLabel);
+      VERIFY(isValid(static_cast<Rank>(4)), caseLabel);
+      VERIFY(isValid(static_cast<Rank>(5)), caseLabel);
+      VERIFY(isValid(static_cast<Rank>(6)), caseLabel);
+      VERIFY(isValid(static_cast<Rank>(7)), caseLabel);
+      VERIFY(!isValid(static_cast<Rank>(8)), caseLabel);
+      VERIFY(!isValid(static_cast<Rank>(9)), caseLabel);
+   }
    {
       const std::string caseLabel = "isValid(Rank, int)";
 
@@ -916,6 +948,17 @@ void testGettingRankOfSquare()
    }
 }
 
+void testSquareIsValid()
+{
+   {
+      const std::string caseLabel = "isValid(Square)";
+
+      VERIFY(!isValid(static_cast<Square>(-1)), caseLabel);
+      for (int i = 0; i < 64; ++i)
+         VERIFY(isValid(static_cast<Square>(i)), caseLabel);
+      VERIFY(!isValid(static_cast<Square>(65)), caseLabel);
+   }
+}
 
 void testSquareIncrementOperator()
 {
@@ -1049,6 +1092,7 @@ void testSquare()
    testMakeSquareFromFileRank();
    testGettingFileOfSquare();
    testGettingRankOfSquare();
+   testSquareIsValid();
    testSquareIncrementOperator();
 }
 
