@@ -13,6 +13,7 @@ namespace matt2 { class BasicMove; }
 namespace matt2 { class Castling; }
 namespace matt2 { class EnPassant; }
 namespace matt2 { class Placement; }
+namespace matt2 { class Position; }
 namespace matt2 { class Promotion; }
 // clang-format on
 
@@ -47,6 +48,7 @@ class Lan
    std::string& notate(std::string& out, const Castling& move) const;
    std::string& notate(std::string& out, const EnPassant& move) const;
    std::string& notate(std::string& out, const Promotion& move) const;
+   std::string& notate(std::string& out, const Position& pos) const;
 
  private:
    static constexpr bool WithoutPieceColor = false;
@@ -72,6 +74,7 @@ class DetailedNotation
    std::string& notate(std::string& out, const Castling& move) const;
    std::string& notate(std::string& out, const EnPassant& move) const;
    std::string& notate(std::string& out, const Promotion& move) const;
+   std::string& notate(std::string& out, const Position& pos) const;
 
  private:
    static constexpr bool WithPieceColor = true;
@@ -100,5 +103,9 @@ inline std::string& notate(std::string& out, const T& item, const Notation& n)
    std::visit(dispatch, n);
    return out;
 }
+
+///////////////////
+
+std::string& printPosition(std::string& out, const Position& pos);
 
 } // namespace matt2

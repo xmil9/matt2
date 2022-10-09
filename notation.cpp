@@ -4,6 +4,7 @@
 //
 #include "notation.h"
 #include "move.h"
+#include <algorithm>
 
 using namespace matt2;
 
@@ -152,6 +153,35 @@ std::string& notateTakenPiece(std::string& out, Piece taken, bool withColor)
 
 } // namespace dn
 
+///////////////////
+
+static void trimTrailingChar(std::string& s, char c)
+{
+   while (!s.empty() && *s.rbegin() == c)
+      s.erase(s.begin() + s.length() - 1);
+}
+
+static std::string& notatePlacements(std::string& out, const Position& pos, Color color,
+                                     char pieceSep)
+{
+   std::for_each(pos.begin(color), pos.end(color),
+                 [&out, pieceSep](const auto& placement)
+                 {
+                    an::notatePlacement(out, placement, true);
+                    out += pieceSep;
+                 });
+   return out;
+}
+
+static std::string& notatePosition(std::string& out, const Position& pos)
+{
+   static constexpr char PieceSep = ' ';
+
+   notatePlacements(out, pos, Color::White, PieceSep);
+   notatePlacements(out, pos, Color::Black, PieceSep);
+   trimTrailingChar(out, PieceSep);
+   return out;
+}
 
 namespace matt2
 {
@@ -205,6 +235,11 @@ std::string& Lan::notate(std::string& out, const EnPassant& move) const
 std::string& Lan::notate(std::string& out, const Promotion& move) const
 {
    return an::notatePromotion(out, move, WithoutPieceColor, WithStartingLocation);
+}
+
+std::string& Lan::notate(std::string& out, const Position& pos) const
+{
+   return notatePosition(out, pos);
 }
 
 ///////////////////
@@ -272,6 +307,82 @@ std::string& DetailedNotation::notate(std::string& out, const Promotion& move) c
    // Append info about taken piece.
    if (auto taken = move.taken(); taken.has_value())
       dn::notateTakenPiece(out, *taken, WithPieceColor);
+
+   return out;
+}
+
+std::string& DetailedNotation::notate(std::string& out, const Position& pos) const
+{
+   return notatePosition(out, pos);
+}
+
+///////////////////
+
+static std::string& printPiece(std::string& out, Piece p)
+{
+   switch (p)
+   {
+   case Kw:
+      out += "K";
+      break;
+   case Kb:
+      out += "k";
+      break;
+   case Qw:
+      out += "Q";
+      break;
+   case Qb:
+      out += "q";
+      break;
+   case Rw:
+      out += "R";
+      break;
+   case Rb:
+      out += "r";
+      break;
+   case Bw:
+      out += "B";
+      break;
+   case Bb:
+      out += "b";
+      break;
+   case Nw:
+      out += "N";
+      break;
+   case Nb:
+      out += "n";
+      break;
+   case Pw:
+      out += "P";
+      break;
+   case Pb:
+      out += "p";
+      break;
+   default:
+      throw std::runtime_error("Invalid piece.");
+   }
+
+   return out;
+}
+
+std::string& printPosition(std::string& out, const Position& pos)
+{
+   if (out.length() > 0)
+      out += "\n";
+
+   for (Rank r = r8; isValid(r); r = r - 1)
+   {
+      for (File f = fa; isValid(f); f = f + 1)
+      {
+         auto piece = pos[makeSquare(f, r)];
+         if (piece)
+            printPiece(out, *piece);
+         else
+            out += ".";
+      }
+
+      out += "\n";
+   }
 
    return out;
 }

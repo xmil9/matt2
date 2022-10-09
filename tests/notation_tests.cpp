@@ -99,7 +99,6 @@ void testLanNotateFile()
       VERIFY(lan.notate(out, fg) == "g", caseLabel);
       out.clear();
       VERIFY(lan.notate(out, fh) == "h", caseLabel);
-
    }
 }
 
@@ -127,7 +126,6 @@ void testLanNotateRank()
       VERIFY(lan.notate(out, r7) == "7", caseLabel);
       out.clear();
       VERIFY(lan.notate(out, r8) == "8", caseLabel);
-
    }
 }
 
@@ -155,7 +153,6 @@ void testLanNotateSquare()
       VERIFY(lan.notate(out, g7) == "g7", caseLabel);
       out.clear();
       VERIFY(lan.notate(out, h8) == "h8", caseLabel);
-
    }
 }
 
@@ -232,7 +229,8 @@ void testLanNotateCastling()
 void testLanNotateEnPassant()
 {
    {
-      const std::string caseLabel = "Lan::notate en-passant move for white to higher file";
+      const std::string caseLabel =
+         "Lan::notate en-passant move for white to higher file";
 
       std::string out;
       Lan lan;
@@ -254,7 +252,8 @@ void testLanNotateEnPassant()
 void testLanNotatePromotion()
 {
    {
-      const std::string caseLabel = "Lan::notate promotion move for white to queen without taking";
+      const std::string caseLabel =
+         "Lan::notate promotion move for white to queen without taking";
 
       std::string out;
       Lan lan;
@@ -263,13 +262,57 @@ void testLanNotatePromotion()
       VERIFY((lan.notate(out, move) == "c7c8=Q"), caseLabel);
    }
    {
-      const std::string caseLabel = "Lan::notate promotion move for black to knight with taking";
+      const std::string caseLabel =
+         "Lan::notate promotion move for black to knight with taking";
 
       std::string out;
       Lan lan;
       Promotion move{Relocation{"bb2a1"}, Nb, Bw};
 
       VERIFY((lan.notate(out, move) == "b2xa1=N"), caseLabel);
+   }
+}
+
+void testLanNotatePosition()
+{
+   {
+      const std::string caseLabel = "Lan::notate position without pieces";
+
+      std::string out;
+      Lan lan;
+      Position pos;
+
+      VERIFY((lan.notate(out, pos) == ""), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Lan::notate position with one piece";
+
+      std::string out;
+      Lan lan;
+      Position pos{"Kba8"};
+
+      VERIFY((lan.notate(out, pos) == "Kba8"), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Lan::notate position two pieces";
+
+      std::string out;
+      Lan lan;
+      Position pos{"Kwf3 Kbb5"};
+
+      VERIFY((lan.notate(out, pos) == "Kwf3 Kbb5"), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Lan::notate position with all pieces";
+
+      std::string out;
+      Lan lan;
+      Position pos = StartPos;
+
+      const std::string expected{
+         "Rwa1 Rwh1 Bwc1 Bwf1 Nwb1 Nwg1 Qwd1 wa2 wb2 wc2 wd2 we2 wf2 wg2 wh2 Kwe1 Rba8 "
+         "Rbh8 Bbc8 Bbf8 Nbb8 Nbg8 Qbd8 ba7 bb7 bc7 bd7 be7 bf7 bg7 bh7 Kbe8"};
+      VERIFY((lan.notate(out, pos) == expected), caseLabel);
    }
 }
 
@@ -358,7 +401,6 @@ void testDnNotateFile()
       VERIFY(dn.notate(out, fg) == "g", caseLabel);
       out.clear();
       VERIFY(dn.notate(out, fh) == "h", caseLabel);
-
    }
 }
 
@@ -386,7 +428,6 @@ void testDnNotateRank()
       VERIFY(dn.notate(out, r7) == "7", caseLabel);
       out.clear();
       VERIFY(dn.notate(out, r8) == "8", caseLabel);
-
    }
 }
 
@@ -414,7 +455,6 @@ void testDnNotateSquare()
       VERIFY(dn.notate(out, g7) == "g7", caseLabel);
       out.clear();
       VERIFY(dn.notate(out, h8) == "h8", caseLabel);
-
    }
 }
 
@@ -456,7 +496,8 @@ void testDnNotateBasicMove()
       VERIFY((dn.notate(out, move) == "Qbf5xa5[x:Bw]"), caseLabel);
    }
    {
-      const std::string caseLabel = "DetailedNotation::notate basic move for pawn with taking";
+      const std::string caseLabel =
+         "DetailedNotation::notate basic move for pawn with taking";
 
       std::string out;
       DetailedNotation dn;
@@ -478,7 +519,8 @@ void testDnNotateCastling()
       VERIFY((dn.notate(out, move) == "w0-0"), caseLabel);
    }
    {
-      const std::string caseLabel = "DetailedNotation::notate castling move at queen-side";
+      const std::string caseLabel =
+         "DetailedNotation::notate castling move at queen-side";
 
       std::string out;
       DetailedNotation dn;
@@ -491,7 +533,8 @@ void testDnNotateCastling()
 void testDnNotateEnPassant()
 {
    {
-      const std::string caseLabel = "DetailedNotation::notate en-passant move for white to higher file";
+      const std::string caseLabel =
+         "DetailedNotation::notate en-passant move for white to higher file";
 
       std::string out;
       DetailedNotation dn;
@@ -500,7 +543,8 @@ void testDnNotateEnPassant()
       VERIFY((dn.notate(out, move) == "wcxd6[x:b]"), caseLabel);
    }
    {
-      const std::string caseLabel = "DetailedNotation::notate en-passant move for black to lower file";
+      const std::string caseLabel =
+         "DetailedNotation::notate en-passant move for black to lower file";
 
       std::string out;
       DetailedNotation dn;
@@ -513,7 +557,8 @@ void testDnNotateEnPassant()
 void testDnNotatePromotion()
 {
    {
-      const std::string caseLabel = "DetailedNotation::notate promotion move for white to queen without taking";
+      const std::string caseLabel =
+         "DetailedNotation::notate promotion move for white to queen without taking";
 
       std::string out;
       DetailedNotation dn;
@@ -522,13 +567,74 @@ void testDnNotatePromotion()
       VERIFY((dn.notate(out, move) == "wc7c8=Qw"), caseLabel);
    }
    {
-      const std::string caseLabel = "DetailedNotation::notate promotion move for black to knight with taking";
+      const std::string caseLabel =
+         "DetailedNotation::notate promotion move for black to knight with taking";
 
       std::string out;
       DetailedNotation dn;
       Promotion move{Relocation{"bb2a1"}, Nb, Bw};
 
       VERIFY((dn.notate(out, move) == "bb2xa1=Nb[x:Bw]"), caseLabel);
+   }
+}
+
+void testDnNotatePosition()
+{
+   // For now same as:
+   // testLanNotatePosition()
+}
+
+///////////////////
+
+void testPrintPosition()
+{
+   {
+      const std::string caseLabel = "printPosition for empty position";
+
+      std::string out;
+      Position pos;
+
+      const std::string expected{"........\n"
+                                 "........\n"
+                                 "........\n"
+                                 "........\n"
+                                 "........\n"
+                                 "........\n"
+                                 "........\n"
+                                 "........\n"};
+      VERIFY((printPosition(out, pos) == expected), caseLabel);
+   }
+   {
+      const std::string caseLabel = "printPosition for one piece";
+
+      std::string out;
+      Position pos{"Kbf5"};
+
+      const std::string expected{"........\n"
+                                 "........\n"
+                                 "........\n"
+                                 ".....k..\n"
+                                 "........\n"
+                                 "........\n"
+                                 "........\n"
+                                 "........\n"};
+      VERIFY((printPosition(out, pos) == expected), caseLabel);
+   }
+   {
+      const std::string caseLabel = "printPosition for all pieces";
+
+      std::string out;
+      Position pos = StartPos;
+
+      const std::string expected{"rnbqkbnr\n"
+                                 "pppppppp\n"
+                                 "........\n"
+                                 "........\n"
+                                 "........\n"
+                                 "........\n"
+                                 "PPPPPPPP\n"
+                                 "RNBQKBNR\n"};
+      VERIFY((printPosition(out, pos) == expected), caseLabel);
    }
 }
 
@@ -550,6 +656,7 @@ void testNotations()
    testLanNotateCastling();
    testLanNotateEnPassant();
    testLanNotatePromotion();
+   testLanNotatePosition();
 
    testDnScheme();
    testDnNotateColor();
@@ -562,4 +669,7 @@ void testNotations()
    testDnNotateCastling();
    testDnNotateEnPassant();
    testDnNotatePromotion();
+   testDnNotatePosition();
+
+   testPrintPosition();
 }
