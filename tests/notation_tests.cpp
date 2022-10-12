@@ -594,14 +594,15 @@ void testPrintPosition()
       std::string out;
       Position pos;
 
-      const std::string expected{"........\n"
-                                 "........\n"
-                                 "........\n"
-                                 "........\n"
-                                 "........\n"
-                                 "........\n"
-                                 "........\n"
-                                 "........\n"};
+      const std::string expected{"8........\n"
+                                 "7........\n"
+                                 "6........\n"
+                                 "5........\n"
+                                 "4........\n"
+                                 "3........\n"
+                                 "2........\n"
+                                 "1........\n"
+                                 " abcdefgh\n"};
       VERIFY((printPosition(out, pos) == expected), caseLabel);
    }
    {
@@ -610,14 +611,15 @@ void testPrintPosition()
       std::string out;
       Position pos{"Kbf5"};
 
-      const std::string expected{"........\n"
-                                 "........\n"
-                                 "........\n"
-                                 ".....k..\n"
-                                 "........\n"
-                                 "........\n"
-                                 "........\n"
-                                 "........\n"};
+      const std::string expected{"8........\n"
+                                 "7........\n"
+                                 "6........\n"
+                                 "5.....k..\n"
+                                 "4........\n"
+                                 "3........\n"
+                                 "2........\n"
+                                 "1........\n"
+                                 " abcdefgh\n"};
       VERIFY((printPosition(out, pos) == expected), caseLabel);
    }
    {
@@ -626,14 +628,15 @@ void testPrintPosition()
       std::string out;
       Position pos = StartPos;
 
-      const std::string expected{"rnbqkbnr\n"
-                                 "pppppppp\n"
-                                 "........\n"
-                                 "........\n"
-                                 "........\n"
-                                 "........\n"
-                                 "PPPPPPPP\n"
-                                 "RNBQKBNR\n"};
+      const std::string expected{"8rnbqkbnr\n"
+                                 "7pppppppp\n"
+                                 "6........\n"
+                                 "5........\n"
+                                 "4........\n"
+                                 "3........\n"
+                                 "2PPPPPPPP\n"
+                                 "1RNBQKBNR\n"
+                                 " abcdefgh\n"};
       VERIFY((printPosition(out, pos) == expected), caseLabel);
    }
 }

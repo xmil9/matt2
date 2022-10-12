@@ -76,12 +76,14 @@ void testCalcNextMove()
       VERIFY(g.getMove(0) == Move(BasicMove{Relocation{Qb, d6, b6}, Pw}), caseLabel);
    }
    {
-      //const std::string caseLabel = "Game::calcNextMove in 2 turns for mate";
+      const std::string caseLabel =
+         "Game::calcNextMove in 2 turns for mate (note that the mate is in one move but "
+         "the algorithm needs to look ahead two turns to score the position correctly)";
 
-      //Game g{Position{"Kwc1 Rwf1 Rwg1 Kbc8"}};
-      //const auto& nextPos = g.calcNextMove(Color::White, 2);
+      Game g{Position{"Kwc1 Rwf7 Rwg1 Kbc8"}};
+      const auto& nextPos = g.calcNextMove(Color::White, 2);
 
-      //VERIFY(nextPos == Position{"Kwc1 Rwf7 Rwg8 Kbc8"}, caseLabel);
+      VERIFY(nextPos == Position{"Kwc1 Rwf7 Rwg8 Kbc8"}, caseLabel);
    }
 }
 
