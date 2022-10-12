@@ -237,6 +237,14 @@ std::string& Lan::notate(std::string& out, const Promotion& move) const
    return an::notatePromotion(out, move, WithoutPieceColor, WithStartingLocation);
 }
 
+std::string& Lan::notate(std::string& out, const Move& move) const
+{
+   auto dispatch = [this, &out](const auto& specificMove)
+   { return notate(out, specificMove); };
+   std::visit(dispatch, move);
+   return out;
+}
+
 std::string& Lan::notate(std::string& out, const Position& pos) const
 {
    return notatePosition(out, pos);
@@ -311,6 +319,14 @@ std::string& DetailedNotation::notate(std::string& out, const Promotion& move) c
    return out;
 }
 
+std::string& DetailedNotation::notate(std::string& out, const Move& move) const
+{
+   auto dispatch = [this, &out](const auto& specificMove)
+   { return notate(out, specificMove); };
+   std::visit(dispatch, move);
+   return out;
+}
+
 std::string& DetailedNotation::notate(std::string& out, const Position& pos) const
 {
    return notatePosition(out, pos);
@@ -372,6 +388,9 @@ std::string& printPosition(std::string& out, const Position& pos)
 
    for (Rank r = r8; isValid(r); r = r - 1)
    {
+      // Rank labeling.
+      out += toLowercaseChar(r);
+
       for (File f = fa; isValid(f); f = f + 1)
       {
          auto piece = pos[makeSquare(f, r)];
@@ -383,6 +402,12 @@ std::string& printPosition(std::string& out, const Position& pos)
 
       out += "\n";
    }
+
+   // File labeling.
+   out += ' ';
+   for (File f = fa; isValid(f); f = f + 1)
+      out += toLowercaseChar(f);
+   out += "\n";
 
    return out;
 }

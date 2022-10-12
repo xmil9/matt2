@@ -3,18 +3,15 @@
 // MIT license
 //
 #pragma once
+#include "move.h"
 #include "piece.h"
 #include "square.h"
 #include <string>
 #include <variant>
 
 // clang-format off
-namespace matt2 { class BasicMove; }
-namespace matt2 { class Castling; }
-namespace matt2 { class EnPassant; }
 namespace matt2 { class Placement; }
 namespace matt2 { class Position; }
-namespace matt2 { class Promotion; }
 // clang-format on
 
 namespace matt2
@@ -48,6 +45,7 @@ class Lan
    std::string& notate(std::string& out, const Castling& move) const;
    std::string& notate(std::string& out, const EnPassant& move) const;
    std::string& notate(std::string& out, const Promotion& move) const;
+   std::string& notate(std::string& out, const Move& move) const;
    std::string& notate(std::string& out, const Position& pos) const;
 
  private:
@@ -74,6 +72,7 @@ class DetailedNotation
    std::string& notate(std::string& out, const Castling& move) const;
    std::string& notate(std::string& out, const EnPassant& move) const;
    std::string& notate(std::string& out, const Promotion& move) const;
+   std::string& notate(std::string& out, const Move& move) const;
    std::string& notate(std::string& out, const Position& pos) const;
 
  private:
