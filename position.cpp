@@ -78,7 +78,6 @@ void Position::move(const Relocation& relocation)
    invalidateScore();
 }
 
-
 double Position::updateScore()
 {
    m_score = calcPieceValueScore(*this);

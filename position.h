@@ -93,7 +93,8 @@ class Position
       bool operator!=(const PiecePlacements& other) const;
 
     private:
-      std::array<Square, N> m_locations = {static_cast<Square>(0)};
+      static constexpr Square NoSquare = static_cast<Square>(-1);
+      std::array<Square, N> m_locations = {NoSquare};
       Count m_numPieces = 0;
    };
 
@@ -198,8 +199,11 @@ inline std::size_t Position::toColorIdx(Color side)
 
 inline bool Position::operator==(const Position& other) const
 {
-   return m_board == other.m_board && m_pieces == other.m_pieces &&
-          m_enPassantSquare == other.m_enPassantSquare;
+   // The data structure for piece locations does not necessarily restore to the same
+   // state when a move is reversed (because the remove operation when a piece is taken
+   // reorders the locations' array). Therefore, do not include it in the equality
+   // comparision.
+   return m_board == other.m_board && m_enPassantSquare == other.m_enPassantSquare;
 }
 
 inline bool Position::operator!=(const Position& other) const
@@ -261,23 +265,24 @@ template <std::size_t N> void Position::PiecePlacements<N>::add(Square at)
 
 template <std::size_t N> void Position::PiecePlacements<N>::remove(Square at)
 {
-   for (std::size_t i = 0; i < m_numPieces; ++i)
+   auto pos = std::find(std::begin(m_locations), std::end(m_locations), at);
+   if (pos != std::end(m_locations))
    {
-      if (m_locations[i] == at)
-      {
-         // Set to
-         m_locations[i] = static_cast<Square>(0);
-         --m_numPieces;
-      }
+      // Clear and swap with last populated element to keep populate elements at front.
+      *pos = NoSquare;
+      auto idx = std::distance(std::begin(m_locations), pos);
+      std::swap(m_locations[idx], m_locations[m_numPieces - 1]);
+
+      --m_numPieces;
    }
 }
 
 
 template <std::size_t N> void Position::PiecePlacements<N>::move(Square from, Square to)
 {
-   for (std::size_t i = 0; i < m_numPieces; ++i)
-      if (m_locations[i] == from)
-         m_locations[i] = to;
+   auto pos = std::find(std::begin(m_locations), std::end(m_locations), from);
+   if (pos != std::end(m_locations))
+      *pos = to;
 }
 
 
@@ -297,12 +302,7 @@ std::vector<Square> Position::PiecePlacements<N>::locations() const
 template <std::size_t N>
 bool Position::PiecePlacements<N>::operator==(const PiecePlacements& other) const
 {
-   if (m_numPieces != other.m_numPieces)
-      return false;
-   for (std::size_t i = 0; i < m_numPieces; ++i)
-      if (m_locations[i] != other.m_locations[i])
-         return false;
-   return true;
+   return m_numPieces == other.m_numPieces && m_locations == other.m_locations;
 }
 
 
