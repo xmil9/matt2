@@ -3,6 +3,8 @@
 // MIT license
 //
 #include "game.h"
+#include "console.h"
+#include "notation.h"
 #include "rules.h"
 #include <limits>
 #include <queue>
@@ -12,6 +14,108 @@ using namespace matt2;
 
 namespace
 {
+///////////////////
+
+std::string toString(Color c)
+{
+   return c == Color::White ? "white" : "black";
+}
+
+std::string toString(const Move& m)
+{
+   std::string s;
+   return notate(s, m, Lan{});
+}
+
+std::string toString(const std::optional<Move>& move, double score)
+{
+   std::string s;
+   Lan n;
+
+   if (move)
+   {
+      notate(s, *move, n);
+      s += "(score=" + std::to_string(score) + ")";
+   }
+   else
+   {
+      s += "<none>";
+   }
+
+   return s;
+}
+
+void printCalculatingStatus(Color side, size_t plies, const Position& pos)
+{
+#ifndef NDEBUG
+   std::string s = "Calculating move for ";
+   s += ::toString(side);
+   s += " with depth ";
+   s += std::to_string(plies);
+   s += " at position ";
+   printPosition(s, pos);
+   consoleOut(s);
+#endif
+}
+
+void printCalculatedStatus(Color side, size_t plies, const std::optional<Move>& move,
+                           double score)
+{
+#ifndef NDEBUG
+   std::string s = "Calculated move for ";
+   s += ::toString(side);
+   s += " with depth ";
+   s += std::to_string(plies);
+   s += " ==> ";
+   s += toString(move, score);
+   consoleOut(s);
+#endif
+}
+
+void printEvaluatingStatus(Color side, size_t plies, size_t moveIdx_0based,
+                           size_t numMoves, const Move& move, const Position& pos)
+{
+#ifndef NDEBUG
+   std::string s = "Evaluating move #";
+   s += std::to_string(moveIdx_0based + 1);
+   s += "/";
+   s += std::to_string(numMoves);
+   s += " for ";
+   s += ::toString(side);
+   s += " with depth ";
+   s += std::to_string(plies);
+   s += ": ";
+   s += ::toString(move);
+   printPosition(s, pos);
+   consoleOut(s);
+#endif
+}
+
+void printEvaluatedStatus(Color side, size_t plies, size_t moveIdx_0based,
+                          size_t numMoves, const Move& move, double score,
+                          bool isBetterMove)
+{
+#ifndef NDEBUG
+   std::string s = "Evaluated move #";
+   s += std::to_string(moveIdx_0based + 1);
+   s += "/";
+   s += std::to_string(numMoves);
+   s += " for ";
+   s += ::toString(side);
+   s += " with depth ";
+   s += std::to_string(plies);
+   s += ": ";
+   s += ::toString(move);
+   s += " ==> score=";
+   s += std::to_string(score);
+   if (isBetterMove)
+      s += " ==> better move";
+   else
+      s += " ==> no improvement";
+   consoleOut(s);
+#endif
+}
+
 ///////////////////
 
 class MoveCalculator
@@ -25,7 +129,7 @@ class MoveCalculator
    struct MoveScore
    {
       std::optional<Move> move;
-      double score;
+      double score = 0.;
 
       explicit operator bool() const;
    };
@@ -35,6 +139,7 @@ class MoveCalculator
    void collectMoves(Piece piece, Square at, std::vector<Move>& moves) const;
 
    static bool isBetterScore(double a, double b, bool calcMax);
+   static double worstScore(bool calcMax);
 
  private:
    Position& m_pos;
@@ -57,38 +162,61 @@ bool MoveCalculator::isBetterScore(double a, double b, bool calcMax)
    return calcMax ? a > b : a < b;
 }
 
+double MoveCalculator::worstScore(bool calcMax)
+{
+   return calcMax ? std::numeric_limits<double>::lowest()
+                  : std::numeric_limits<double>::max();
+}
 
 MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
                                                bool calcMax)
 {
+   assert(plies > 0);
    if (plies == 0)
-      return {std::nullopt, 0.};
+      return {};
+
+   printCalculatingStatus(side, plies, m_pos);
 
    std::vector<Move> moves;
    // Reserve some space to avoid too many allocations.
    moves.reserve(100);
    collectMoves(side, moves);
 
-   MoveScore bestMove{std::nullopt, calcMax ? std::numeric_limits<double>::lowest()
-                                            : std::numeric_limits<double>::max()};
+   MoveScore bestMove{std::nullopt, worstScore(calcMax)};
 
-   std::size_t idxDbg = 0;
+   // Track move index for debugging.
+   std::size_t moveIdx = 0;
    for (auto& m : moves)
    {
       makeMove(m_pos, m);
+      printEvaluatingStatus(side, plies, moveIdx, moves.size(), m, m_pos);
 
-      // Find best counter move for opponent.
-      auto bestCounterMove = next(!side, plies - 1, !calcMax);
-      double score = bestCounterMove ? bestCounterMove.score : m_pos.updateScore();
-      
+      // Calculate score without counter moves.
+      double moveScore = m_pos.updateScore();
+
+      // Find best counter move for opponent if more plies should be explored.
+      MoveScore bestCounterMove;
+      if (plies > 1)
+      {
+         bestCounterMove = next(!side, plies - 1, !calcMax);
+         // Score of move becomes the score of the best counter move if one was found.
+         if (bestCounterMove)
+            moveScore = bestCounterMove.score;
+      }
+
       // Use move m if it leads to a better score for the player.
-      if (isBetterScore(score, bestMove.score, calcMax))
-         bestMove = {m, score};
+      const bool isBetterMove = isBetterScore(moveScore, bestMove.score, calcMax);
+      if (isBetterMove)
+         bestMove = {m, moveScore};
+
+      printEvaluatedStatus(side, plies, moveIdx, moves.size(), m, moveScore,
+                           isBetterMove);
 
       reverseMove(m_pos, m);
-      ++idxDbg;
+      ++moveIdx;
    }
 
+   printCalculatedStatus(side, plies, bestMove.move, bestMove.score);
    return bestMove;
 }
 
