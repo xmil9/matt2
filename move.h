@@ -36,7 +36,8 @@ class ReversibleState
 };
 
 
-inline void ReversibleState::setState(std::optional<Square> enPassantSquare, Position& pos)
+inline void ReversibleState::setState(std::optional<Square> enPassantSquare,
+                                      Position& pos)
 {
    // Remember the position's previous state, so that we can reset it.
    m_prevEnPassantSquare = pos.enPassantSquare();
@@ -160,6 +161,12 @@ class Castling : public ReversibleState
    Piece rook() const { return m_rook.piece(); }
    Square rookFrom() const { return m_rook.from(); }
    Square rookTo() const { return m_rook.to(); }
+
+   // Generic functions for all Move types.
+   // For castling they refer to the king.
+   Square from() const { return kingFrom(); }
+   Square to() const { return kingTo(); }
+
 
    friend bool operator==(const Castling& a, const Castling& b)
    {
@@ -335,6 +342,18 @@ inline bool operator!=(const Promotion& a, const Promotion& b)
 // Any of the possible move types.
 using Move = std::variant<BasicMove, Castling, EnPassant, Promotion>;
 
+
+inline Square to(const Move& move)
+{
+   auto dispatch = [](const auto& specificMove) { return specificMove.to(); };
+   return std::visit(dispatch, move);
+}
+
+inline Square from(const Move& move)
+{
+   auto dispatch = [](const auto& specificMove) { return specificMove.from(); };
+   return std::visit(dispatch, move);
+}
 
 inline Position& makeMove(Position& pos, Move& move)
 {

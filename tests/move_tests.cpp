@@ -702,6 +702,62 @@ void testPromotionInequality()
 
 ///////////////////
 
+void testTo()
+{
+   {
+      const std::string caseLabel = "to() for basic move";
+
+      Move m = BasicMove{{Bb, e6, c4}, Pw};
+      VERIFY(to(m) == c4, caseLabel);
+   }
+   {
+      const std::string caseLabel = "to() for castling move on king's side";
+
+      Move m = Castling{Kingside, Color::White};
+      VERIFY(to(m) == g1, caseLabel);
+   }
+   {
+      const std::string caseLabel = "to() for en passant move";
+
+      Move m = EnPassant{{Pb, f4, g3}};
+      VERIFY(to(m) == g3, caseLabel);
+   }
+   {
+      const std::string caseLabel = "to() for promotion move";
+
+      Move m = Promotion{{Pw, a7, a8}, Nw};
+      VERIFY(to(m) == a8, caseLabel);
+   }
+}
+
+void testFrom()
+{
+   {
+      const std::string caseLabel = "to() for basic move";
+
+      Move m = BasicMove{{Bb, e6, c4}, Pw};
+      VERIFY(from(m) == e6, caseLabel);
+   }
+   {
+      const std::string caseLabel = "to() for castling move on king's side";
+
+      Move m = Castling{Kingside, Color::White};
+      VERIFY(from(m) == e1, caseLabel);
+   }
+   {
+      const std::string caseLabel = "to() for en passant move";
+
+      Move m = EnPassant{{Pb, f4, g3}};
+      VERIFY(from(m) == f4, caseLabel);
+   }
+   {
+      const std::string caseLabel = "to() for promotion move";
+
+      Move m = Promotion{{Pw, a7, a8}, Nw};
+      VERIFY(from(m) == a7, caseLabel);
+   }
+}
+
 void testMakeMove()
 {
    {
@@ -820,6 +876,8 @@ void testMoves()
    testPromotionReverse();
    testPromotionEquality();
    testPromotionInequality();
+   testTo();
+   testFrom();
    testMakeMove();
    testReverseMove();
 }
