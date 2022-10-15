@@ -301,10 +301,29 @@ void collectKingMoves(Piece king, Square at, const Position& pos,
                       std::vector<Move>& moves)
 {
    assert(isKing(king));
+
+   std::vector<Move> possibleMoves;
    static constexpr std::array<Offset, 8> Offsets{
       Offset{1, 1}, {1, 0}, {1, -1}, {0, 1}, {0, -1}, {-1, 1}, {-1, 0}, {-1, -1}};
-   collectOffsetMoves(king, at, pos, Offsets, moves);
-   // todo - exclude moves that lead to check
+   collectOffsetMoves(king, at, pos, Offsets, possibleMoves);
+
+   // Eliminate moves that would lead to check.
+   std::vector<Square> attackedSorted;
+   collectAttackedBySide(!color(king), pos, attackedSorted);
+
+   std::copy_if(
+      std::begin(possibleMoves), std::end(possibleMoves), std::back_inserter(moves),
+      [&attackedSorted](const Move& m)
+      {
+         Square toSq = to(m);
+         auto endIter = std::end(attackedSorted);
+         auto geIter = std::lower_bound(std::begin(attackedSorted), endIter, toSq);
+         // We still have to check for equality because the iterator returned by
+         // lower_bound points to the first element that is not less than the search for
+         // value.
+         const bool isSquareAttacked = geIter != endIter && *geIter == toSq;
+         return !isSquareAttacked;
+      });
 }
 
 

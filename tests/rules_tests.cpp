@@ -96,20 +96,15 @@ void testCollectKingMoves()
    }
    {
       const std::string caseLabel =
-         "collectKingMoves with neighboring pieces of opposite color";
+         "collectKingMoves with some squares under attack by other side";
 
       std::vector<Move> moves;
-      collectKingMoves(Kb, c5, Position{"Kbc5 wb4 Rwd5 Nwc6"}, moves);
+      collectKingMoves(Kb, c5, Position{"Kbc5 Rwd4 Bwb5"}, moves);
 
-      VERIFY(moves.size() == 8, caseLabel);
-      VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, b4), Pw)), caseLabel);
-      VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, b5))), caseLabel);
+      VERIFY(moves.size() == 3, caseLabel);
       VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, b6))), caseLabel);
-      VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, c4))), caseLabel);
-      VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, c6), Nw)), caseLabel);
-      VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, d4))), caseLabel);
-      VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, d5), Rw)), caseLabel);
-      VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, d6))), caseLabel);
+      VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, b5), Bw)), caseLabel);
+      VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, d4), Rw)), caseLabel);
    }
 }
 

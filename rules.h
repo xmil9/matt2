@@ -50,6 +50,7 @@ void collectAttackedByKnight(Piece knight, Square at, const Position& pos,
 void collectAttackedByPawn(Piece pawn, Square at, const Position& pos,
                            std::vector<Square>& attacked);
 
+// Output collection is sorted.
 void collectAttackedBySide(Color side, const Position& pos,
                            std::vector<Square>& attacked);
 
