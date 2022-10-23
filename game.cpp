@@ -55,6 +55,10 @@ void printCalculatingStatus(Color side, size_t plies, const Position& pos)
    s += " at position ";
    printPosition(s, pos);
    consoleOut(s);
+#else
+   side;
+   plies;
+   pos;
 #endif
 }
 
@@ -69,6 +73,11 @@ void printCalculatedStatus(Color side, size_t plies, const std::optional<Move>& 
    s += " ==> ";
    s += toString(move, score);
    consoleOut(s);
+#else
+   side;
+   plies;
+   move;
+   score;
 #endif
 }
 
@@ -88,6 +97,13 @@ void printEvaluatingStatus(Color side, size_t plies, size_t moveIdx_0based,
    s += ::toString(move);
    printPosition(s, pos);
    consoleOut(s);
+#else
+   side;
+   plies;
+   moveIdx_0based;
+   numMoves;
+   move;
+   pos;
 #endif
 }
 
@@ -113,6 +129,14 @@ void printEvaluatedStatus(Color side, size_t plies, size_t moveIdx_0based,
    else
       s += " ==> no improvement";
    consoleOut(s);
+#else
+   side;
+   plies;
+   moveIdx_0based;
+   numMoves;
+   move;
+   score;
+   isBetterMove;
 #endif
 }
 
