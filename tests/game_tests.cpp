@@ -85,6 +85,25 @@ void testCalcNextMove()
 
       VERIFY(nextPos == Position{"Kwc1 Rwf7 Rwg8 Kbc8"}, caseLabel);
    }
+   {
+      const std::string caseLabel = "Game::calcNextMove for Polgar Chess book problem 1.";
+
+      Game g{Position{"Kwg1 Qwf6 Bwc3 wh2 wg2 wf2 Kbg8 Qbd8 Rbf8 Bbg7 bh7 bg6 bf7"}};
+      const auto& nextPos = g.calcNextMove(Color::White, 2);
+
+      VERIFY(nextPos == Position{"Kwg1 Qwg7 Bwc3 wh2 wg2 wf2 Kbg8 Qbd8 Rbf8 bh7 bg6 bf7"},
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "Game::calcNextMove for Polgar Chess book problem 2.";
+
+      Game g{Position{"Kwc1 Qwh6 Rwd1 Nwg5 wb2 wc2 we5 Kbg8 Qbc7 Rbc8 Rbf8 bh7 bg6 bf7"}};
+      const auto& nextPos = g.calcNextMove(Color::White, 2);
+
+      VERIFY(nextPos ==
+                Position{"Kwc1 Qwh7 Rwd1 Nwg5 wb2 wc2 we5 Kbg8 Qbc7 Rbc8 Rbf8 bg6 bf7"},
+             caseLabel);
+   }
 }
 
 } // namespace
