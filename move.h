@@ -22,22 +22,30 @@ class ReversibleState
  protected:
    ReversibleState() = default;
 
-   void setState(std::optional<Square> enPassantSquare, Position& pos);
+   void setEnPassantState(std::optional<Square> enPassantSquare, Position& pos);
+   void collectCastlingState(const Position& pos);
    void resetState(Position& pos);
 
    friend bool operator==(const ReversibleState& a, const ReversibleState& b)
    {
-      return a.m_prevEnPassantSquare == b.m_prevEnPassantSquare;
+      return a.m_prevEnPassantSquare == b.m_prevEnPassantSquare &&
+             a.m_prevCastlingState == b.m_prevCastlingState;
    }
+
+ private:
+   // Array indices for castling state of each color.
+   static constexpr std::size_t White = 0;
+   static constexpr std::size_t Black = 1;
 
  private:
    // State of position before move is made. Needed to reverse moves.
    std::optional<Square> m_prevEnPassantSquare;
+   std::array<Position::CastlingState, 2> m_prevCastlingState;
 };
 
 
-inline void ReversibleState::setState(std::optional<Square> enPassantSquare,
-                                      Position& pos)
+inline void ReversibleState::setEnPassantState(std::optional<Square> enPassantSquare,
+                                               Position& pos)
 {
    // Remember the position's previous state, so that we can reset it.
    m_prevEnPassantSquare = pos.enPassantSquare();
@@ -46,16 +54,23 @@ inline void ReversibleState::setState(std::optional<Square> enPassantSquare,
    pos.setEnPassantSquare(enPassantSquare);
 }
 
+inline void ReversibleState::collectCastlingState(const Position& pos)
+{
+   m_prevCastlingState[White] = pos.castlingState(Color::White);
+   m_prevCastlingState[Black] = pos.castlingState(Color::Black);
+}
+
 inline void ReversibleState::resetState(Position& pos)
 {
    pos.setEnPassantSquare(m_prevEnPassantSquare);
+   pos.setCastlingState(Color::White, m_prevCastlingState[White]);
+   pos.setCastlingState(Color::Black, m_prevCastlingState[Black]);
 }
 
 inline bool operator!=(const ReversibleState& a, const ReversibleState& b)
 {
    return !(a == b);
 }
-
 
 ///////////////////
 
@@ -83,11 +98,10 @@ class BasicMove : public ReversibleState
    std::optional<Piece> taken() const { return m_taken; }
    std::optional<Square> enPassantSquare() const { return m_enPassantSquare; }
 
+   bool isEqual(const BasicMove& other, bool withGameState) const;
    friend bool operator==(const BasicMove& a, const BasicMove& b)
    {
-      return static_cast<ReversibleState>(a) == static_cast<ReversibleState>(b) &&
-             a.m_moved == b.m_moved && a.m_taken == b.m_taken &&
-             a.m_enPassantSquare == b.m_enPassantSquare;
+      return a.isEqual(b, false);
    }
 
  private:
@@ -114,7 +128,8 @@ inline void BasicMove::move(Position& pos)
       pos.remove(Placement{*m_taken, m_moved.to()});
    pos.move(m_moved);
 
-   setState(m_enPassantSquare, pos);
+   setEnPassantState(m_enPassantSquare, pos);
+   collectCastlingState(pos);
 }
 
 inline void BasicMove::reverse(Position& pos)
@@ -124,6 +139,17 @@ inline void BasicMove::reverse(Position& pos)
       pos.add(Placement{*m_taken, m_moved.to()});
 
    resetState(pos);
+}
+
+inline bool BasicMove::isEqual(const BasicMove& other, bool withGameState) const
+{
+   // Ignore reversible state because it is the more intuitive way from a chess
+   // perspective and it is also difficult to set up in tests when comparing moves. If
+   // comparing the reversible state is needed in the future, add another parameter.
+   bool isEqual = m_moved == other.m_moved && m_taken == other.m_taken;
+   if (withGameState)
+      isEqual &= m_enPassantSquare == other.m_enPassantSquare;
+   return isEqual;
 }
 
 inline bool operator!=(const BasicMove& a, const BasicMove& b)
@@ -168,10 +194,10 @@ class Castling : public ReversibleState
    Square to() const { return kingTo(); }
 
 
+   bool isEqual(const Castling& other, bool withGameState) const;
    friend bool operator==(const Castling& a, const Castling& b)
    {
-      return static_cast<ReversibleState>(a) == static_cast<ReversibleState>(b) &&
-             a.m_king == b.m_king && a.m_rook == b.m_rook;
+      return a.isEqual(b, false);
    }
 
  private:
@@ -197,7 +223,8 @@ inline void Castling::move(Position& pos)
    pos.move(m_king);
    pos.move(m_rook);
 
-   setState(std::nullopt, pos);
+   setEnPassantState(std::nullopt, pos);
+   collectCastlingState(pos);
 }
 
 inline void Castling::reverse(Position& pos)
@@ -206,6 +233,14 @@ inline void Castling::reverse(Position& pos)
    pos.move(m_king.reverse());
 
    resetState(pos);
+}
+
+inline bool Castling::isEqual(const Castling& other, bool /*withGameState*/) const
+{
+   // Ignore reversible state because it is the more intuitive way from a chess
+   // perspective and it is also difficult to set up in tests when comparing moves. If
+   // comparing the reversible state is needed in the future, add another parameter.
+   return m_king == other.m_king && m_rook == other.m_rook;
 }
 
 inline bool operator!=(const Castling& a, const Castling& b)
@@ -232,10 +267,10 @@ class EnPassant : public ReversibleState
    Piece taken() const { return m_takenPawn.piece(); }
    Square takenAt() const { return m_takenPawn.at(); }
 
+   bool isEqual(const EnPassant& other, bool withGameState) const;
    friend bool operator==(const EnPassant& a, const EnPassant& b)
    {
-      return static_cast<ReversibleState>(a) == static_cast<ReversibleState>(b) &&
-             a.m_movedPawn == b.m_movedPawn && a.m_takenPawn == b.m_takenPawn;
+      return a.isEqual(b, false);
    }
 
  private:
@@ -255,7 +290,8 @@ inline void EnPassant::move(Position& pos)
    pos.move(m_movedPawn);
    pos.remove(m_takenPawn);
 
-   setState(std::nullopt, pos);
+   setEnPassantState(std::nullopt, pos);
+   collectCastlingState(pos);
 }
 
 inline void EnPassant::reverse(Position& pos)
@@ -264,6 +300,14 @@ inline void EnPassant::reverse(Position& pos)
    pos.add(m_takenPawn);
 
    resetState(pos);
+}
+
+inline bool EnPassant::isEqual(const EnPassant& other, bool /*withGameState*/) const
+{
+   // Ignore reversible state because it is the more intuitive way from a chess
+   // perspective and it is also difficult to set up in tests when comparing moves. If
+   // comparing the reversible state is needed in the future, add another parameter.
+   return m_movedPawn == other.m_movedPawn && m_takenPawn == other.m_takenPawn;
 }
 
 inline bool operator!=(const EnPassant& a, const EnPassant& b)
@@ -291,11 +335,10 @@ class Promotion : public ReversibleState
    Piece promotedTo() const { return m_promoted.piece(); }
    std::optional<Piece> taken() const { return m_taken; }
 
+   bool isEqual(const Promotion& other, bool withGameState) const;
    friend bool operator==(const Promotion& a, const Promotion& b)
    {
-      return static_cast<ReversibleState>(a) == static_cast<ReversibleState>(b) &&
-             a.m_movedPawn == b.m_movedPawn && a.m_promoted == b.m_promoted &&
-             a.m_taken == b.m_taken;
+      return a.isEqual(b, false);
    }
 
  private:
@@ -318,7 +361,8 @@ inline void Promotion::move(Position& pos)
    pos.remove(m_movedPawn);
    pos.add(m_promoted);
 
-   setState(std::nullopt, pos);
+   setEnPassantState(std::nullopt, pos);
+   collectCastlingState(pos);
 }
 
 inline void Promotion::reverse(Position& pos)
@@ -329,6 +373,15 @@ inline void Promotion::reverse(Position& pos)
    pos.add(m_movedPawn);
 
    resetState(pos);
+}
+
+inline bool Promotion::isEqual(const Promotion& other, bool /*withGameState*/) const
+{
+   // Ignore reversible state because it is the more intuitive way from a chess
+   // perspective and it is also difficult to set up in tests when comparing moves. If
+   // comparing the reversible state is needed in the future, add another parameter.
+   return m_movedPawn == other.m_movedPawn && m_promoted == other.m_promoted &&
+          m_taken == other.m_taken;
 }
 
 inline bool operator!=(const Promotion& a, const Promotion& b)

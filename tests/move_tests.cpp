@@ -128,8 +128,72 @@ void testBasicMoveReverse()
 
       VERIFY(pos == originalPos, caseLabel);
    }
+   {
+      const std::string caseLabel =
+         "BasicMove::reverse with rook move disabling castling.";
+
+      Position originalPos{"Kbe8 Kwe1 Rwh1"};
+      Position pos = originalPos;
+
+      BasicMove moveAway{Relocation{"Rwh1h3"}};
+      moveAway.move(pos);
+      BasicMove moveBack{Relocation{"Rwh3h1"}};
+      moveBack.move(pos);
+
+      moveBack.reverse(pos);
+      moveAway.reverse(pos);
+
+      VERIFY(pos == originalPos, caseLabel);
+   }
 }
 
+void testBasicMoveIsEqual()
+{
+   {
+      const std::string caseLabel = "BasicMove::isEqual without considering game state";
+
+      VERIFY(BasicMove(Relocation(Qw, d7, d3))
+                .isEqual(BasicMove(Relocation(Qw, d7, d3)), false),
+             caseLabel);
+      VERIFY(!BasicMove(Relocation(Qw, d7, d3))
+                 .isEqual(BasicMove(Relocation(Qw, d7, d4)), false),
+             caseLabel);
+      VERIFY(BasicMove(Relocation(Qw, d7, d3), EnablesEnPassant)
+                .isEqual(BasicMove(Relocation(Qw, d7, d3), EnablesEnPassant), false),
+             caseLabel);
+      VERIFY(BasicMove(Relocation(Qw, d7, d3), EnablesEnPassant)
+                .isEqual(BasicMove(Relocation(Qw, d7, d3)), false),
+             caseLabel);
+      VERIFY(!BasicMove(Relocation(Qw, d7, d3), EnablesEnPassant)
+                 .isEqual(BasicMove(Relocation(Qw, d7, d4), EnablesEnPassant), false),
+             caseLabel);
+      VERIFY(!BasicMove(Relocation(Qw, d7, d3), EnablesEnPassant)
+                 .isEqual(BasicMove(Relocation(Qw, d7, d4)), false),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "BasicMove::isEqual with considering game state";
+
+      VERIFY(BasicMove(Relocation(Qw, d7, d3))
+                .isEqual(BasicMove(Relocation(Qw, d7, d3)), true),
+             caseLabel);
+      VERIFY(!BasicMove(Relocation(Qw, d7, d3))
+                 .isEqual(BasicMove(Relocation(Qw, d7, d4)), true),
+             caseLabel);
+      VERIFY(BasicMove(Relocation(Qw, d7, d3), EnablesEnPassant)
+                .isEqual(BasicMove(Relocation(Qw, d7, d3), EnablesEnPassant), true),
+             caseLabel);
+      VERIFY(!BasicMove(Relocation(Qw, d7, d3), EnablesEnPassant)
+                 .isEqual(BasicMove(Relocation(Qw, d7, d3)), true),
+             caseLabel);
+      VERIFY(!BasicMove(Relocation(Qw, d7, d3), EnablesEnPassant)
+                 .isEqual(BasicMove(Relocation(Qw, d7, d4), EnablesEnPassant), true),
+             caseLabel);
+      VERIFY(!BasicMove(Relocation(Qw, d7, d3), EnablesEnPassant)
+                 .isEqual(BasicMove(Relocation(Qw, d7, d4)), true),
+             caseLabel);
+   }
+}
 
 void testBasicMoveEquality()
 {
@@ -141,8 +205,9 @@ void testBasicMoveEquality()
       VERIFY(BasicMove(Relocation(Qw, d7, d3), Rb) ==
                 BasicMove(Relocation(Qw, d7, d3), Rb),
              caseLabel);
+      // Game state is not considered for default comparision.
       VERIFY(BasicMove(Relocation(Pb, e7, e5), EnablesEnPassant) ==
-                BasicMove(Relocation(Pb, e7, e5), EnablesEnPassant),
+                BasicMove(Relocation(Pb, e7, e5)),
              caseLabel);
    }
    {
@@ -152,9 +217,6 @@ void testBasicMoveEquality()
              caseLabel);
       VERIFY(!(BasicMove(Relocation(Qw, d7, d3), Rb) ==
                BasicMove(Relocation(Qw, d7, d3), Nb)),
-             caseLabel);
-      VERIFY(!(BasicMove(Relocation(Pb, e7, e5), EnablesEnPassant) ==
-               BasicMove(Relocation(Pb, e7, e5))),
              caseLabel);
    }
 }
@@ -170,9 +232,6 @@ void testBasicMoveInequality()
       VERIFY(!(BasicMove(Relocation(Qw, d7, d3), Rb) !=
                BasicMove(Relocation(Qw, d7, d3), Rb)),
              caseLabel);
-      VERIFY(!(BasicMove(Relocation(Pb, e7, e5), EnablesEnPassant) !=
-               BasicMove(Relocation(Pb, e7, e5), EnablesEnPassant)),
-             caseLabel);
    }
    {
       const std::string caseLabel = "BasicMove inequality for unequal moves";
@@ -181,9 +240,6 @@ void testBasicMoveInequality()
              caseLabel);
       VERIFY(BasicMove(Relocation(Qw, d7, d3), Rb) !=
                 BasicMove(Relocation(Qw, d7, d3), Nb),
-             caseLabel);
-      VERIFY(BasicMove(Relocation(Pb, e7, e5), EnablesEnPassant) !=
-                BasicMove(Relocation(Pb, e7, e5)),
              caseLabel);
    }
 }
@@ -301,6 +357,32 @@ void testCastlingReverse()
       m.reverse(pos);
 
       VERIFY(pos == originalPos, caseLabel);
+   }
+}
+
+void testCastlingIsEqual()
+{
+   {
+      const std::string caseLabel = "Castling::isEqual without considering game state";
+
+      // Currently Promotion moves don't have game state.
+      VERIFY(Castling(Kingside, Color::Black)
+                .isEqual(Castling(Kingside, Color::Black), false),
+             caseLabel);
+      VERIFY(!(Castling(Kingside, Color::Black)
+                  .isEqual(Castling(Queenside, Color::Black), false)),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "Castling::isEqual with considering game state";
+
+      // Currently Promotion moves don't have game state.
+      VERIFY(
+         Castling(Kingside, Color::Black).isEqual(Castling(Kingside, Color::Black), true),
+         caseLabel);
+      VERIFY(!(Castling(Kingside, Color::Black)
+                  .isEqual(Castling(Queenside, Color::Black), true)),
+             caseLabel);
    }
 }
 
@@ -470,6 +552,31 @@ void testEnPassantReverse()
    }
 }
 
+void testEnPassantIsEqual()
+{
+   {
+      const std::string caseLabel = "EnPassant::isEqual without considering game state";
+
+      // Currently EnPassant moves don't have game state.
+      VERIFY(EnPassant(Relocation(Pb, c4, d3))
+                .isEqual(EnPassant(Relocation(Pb, c4, d3)), false),
+             caseLabel);
+      VERIFY(!(EnPassant(Relocation(Pb, c4, b3))
+                  .isEqual(EnPassant(Relocation(Pb, c4, d3)), false)),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "EnPassant::isEqual with considering game state";
+
+      // Currently EnPassant moves don't have game state.
+      VERIFY(EnPassant(Relocation(Pb, c4, d3))
+                .isEqual(EnPassant(Relocation(Pb, c4, d3)), true),
+             caseLabel);
+      VERIFY(!(EnPassant(Relocation(Pb, c4, b3))
+                  .isEqual(EnPassant(Relocation(Pb, c4, d3)), true)),
+             caseLabel);
+   }
+}
 
 void testEnPassantEquality()
 {
@@ -640,6 +747,32 @@ void testPromotionReverse()
       m.reverse(pos);
 
       VERIFY(pos == originalPos, caseLabel);
+   }
+}
+
+void testPromotionIsEqual()
+{
+   {
+      const std::string caseLabel = "Promotion::isEqual without considering game state";
+
+      // Currently Promotion moves don't have game state.
+      VERIFY(Promotion(Relocation(Pb, c2, c1), Qb)
+                .isEqual(Promotion(Relocation(Pb, c2, c1), Qb), false),
+             caseLabel);
+      VERIFY(!(Promotion(Relocation(Pb, d2, d1), Qb)
+                  .isEqual(Promotion(Relocation(Pb, c2, c1), Qb), false)),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "Promotion::isEqual with considering game state";
+
+      // Currently Promotion moves don't have game state.
+      VERIFY(Promotion(Relocation(Pb, c2, c1), Qb)
+                .isEqual(Promotion(Relocation(Pb, c2, c1), Qb), true),
+             caseLabel);
+      VERIFY(!(Promotion(Relocation(Pb, d2, d1), Qb)
+                  .isEqual(Promotion(Relocation(Pb, c2, c1), Qb), true)),
+             caseLabel);
    }
 }
 
@@ -862,18 +995,22 @@ void testMoves()
    testBasicMoveEnPassantCtor();
    testBasicMoveMove();
    testBasicMoveReverse();
+   testBasicMoveIsEqual();
    testBasicMoveEquality();
    testBasicMoveInequality();
    testCastlingMove();
    testCastlingReverse();
+   testCastlingIsEqual();
    testCastlingEquality();
    testCastlingInequality();
    testEnPassantMove();
    testEnPassantReverse();
+   testEnPassantIsEqual();
    testEnPassantEquality();
    testEnPassantInequality();
    testPromotionMove();
    testPromotionReverse();
+   testPromotionIsEqual();
    testPromotionEquality();
    testPromotionInequality();
    testTo();

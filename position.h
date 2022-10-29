@@ -8,6 +8,7 @@
 #include "placement.h"
 #include "relocation.h"
 #include "square.h"
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <iterator>
@@ -28,6 +29,27 @@ namespace matt2
 class Position
 {
    friend class PlacementIterator;
+
+ public:
+   // Info needed to check if castling is allowed.
+   struct CastlingState
+   {
+      bool hasKingMoved = false;
+      bool hasKingsideRookMoved = false;
+      bool hasQueensideRookMoved = false;
+
+      static friend bool operator==(const CastlingState& a, const CastlingState& b)
+      {
+         return a.hasKingMoved == b.hasKingMoved &&
+                a.hasKingsideRookMoved == b.hasKingsideRookMoved &&
+                a.hasQueensideRookMoved == b.hasQueensideRookMoved;
+      }
+
+      static friend bool operator!=(const CastlingState& a, const CastlingState& b)
+      {
+         return !(a == b);
+      }
+   };
 
  public:
    Position() = default;
@@ -54,6 +76,7 @@ class Position
 
    bool operator==(const Position& other) const;
    bool operator!=(const Position& other) const;
+   bool isEqual(const Position& other, bool withGameState) const;
 
    size_t count(Color side) const;
    PlacementIterator begin(Color side) const;
@@ -67,6 +90,8 @@ class Position
 
    bool hasKingMoved(Color side) const;
    bool hasRookMoved(Color side, bool onKingside) const;
+   CastlingState castlingState(Color side) const;
+   void setCastlingState(Color side, const CastlingState& state);
 
    bool canAttack(Square sq, Color side) const;
    bool canAttack(Square sq, const Placement& placement) const;
@@ -82,19 +107,27 @@ class Position
    template <std::size_t N> class PiecePlacements
    {
     public:
+      PiecePlacements();
+
       void add(Square at);
       void remove(Square at);
       void move(Square from, Square to);
       std::vector<Square> locations() const;
       std::size_t count() const { return m_numPieces; }
-      Square operator[](std::size_t idx) const { return m_locations[idx]; }
+      Square operator[](std::size_t idx) const { return m_sortedLocations[idx]; }
 
       bool operator==(const PiecePlacements& other) const;
       bool operator!=(const PiecePlacements& other) const;
 
     private:
+      void sort();
+
+    private:
       static constexpr Square NoSquare = static_cast<Square>(-1);
-      std::array<Square, N> m_locations = {NoSquare};
+      // Locations of available pieces (of the tracked type). Sorted by square value, so
+      // that adding or removing pieces does not break equality of PiecePlacements
+      // instances.
+      std::array<Square, N> m_sortedLocations;
       Count m_numPieces = 0;
    };
 
@@ -108,11 +141,12 @@ class Position
       std::vector<Square> locations(Piece piece) const;
       std::size_t count() const;
       Square placement(std::size_t idx) const;
-      bool hasKingMoved() const { return m_hasKingMoved; }
+      bool hasKingMoved() const { return m_castlingState.hasKingMoved; }
       bool hasRookMoved(bool onKingside) const;
+      CastlingState castlingState() const { return m_castlingState; }
+      void setCastlingState(const CastlingState& state) { m_castlingState = state; }
 
-      bool operator==(const ColorPlacements& other) const;
-      bool operator!=(const ColorPlacements& other) const;
+      bool isEqual(const ColorPlacements& other, bool withCastlingState) const;
 
     private:
       void initKingMovedFlag(Color side, Square at);
@@ -127,10 +161,8 @@ class Position
       PiecePlacements<9> m_queens;
       PiecePlacements<8> m_pawns;
       std::optional<Square> m_king;
-      // Flags needed to check if castling is allowed.
-      bool m_hasKingMoved = false;
-      bool m_hasKingsideRookMoved = false;
-      bool m_hasQueensideRookMoved = false;
+      // Info needed to check if castling is allowed.
+      CastlingState m_castlingState;
    };
 
  private:
@@ -177,6 +209,16 @@ inline bool Position::hasRookMoved(Color side, bool onKingside) const
    return m_pieces[Position::toColorIdx(side)].hasRookMoved(onKingside);
 }
 
+inline Position::CastlingState Position::castlingState(Color side) const
+{
+   return pieces(side).castlingState();
+}
+
+inline void Position::setCastlingState(Color side, const CastlingState& state)
+{
+   pieces(side).setCastlingState(state);
+}
+
 inline Square Position::piece(Color side, std::size_t idx) const
 {
    return m_pieces[Position::toColorIdx(side)].placement(idx);
@@ -199,16 +241,22 @@ inline std::size_t Position::toColorIdx(Color side)
 
 inline bool Position::operator==(const Position& other) const
 {
-   // The data structure for piece locations does not necessarily restore to the same
-   // state when a move is reversed (because the remove operation when a piece is taken
-   // reorders the locations' array). Therefore, do not include it in the equality
-   // comparision.
-   return m_board == other.m_board && m_enPassantSquare == other.m_enPassantSquare;
+   return isEqual(other, false);
 }
 
 inline bool Position::operator!=(const Position& other) const
 {
    return !(*this == other);
+}
+
+inline bool Position::isEqual(const Position& other, bool withGameState) const
+{
+   bool isEqual = m_board == other.m_board &&
+                  m_pieces[White].isEqual(other.m_pieces[White], withGameState) &&
+                  m_pieces[Black].isEqual(other.m_pieces[Black], withGameState);
+   if (withGameState)
+      isEqual &= m_enPassantSquare == other.m_enPassantSquare;
+   return isEqual;
 }
 
 inline size_t Position::count(Color side) const
@@ -229,60 +277,63 @@ inline std::size_t Position::ColorPlacements::count() const
 
 inline bool Position::ColorPlacements::hasRookMoved(bool onKingside) const
 {
-   return onKingside ? m_hasKingsideRookMoved : m_hasQueensideRookMoved;
+   return onKingside ? m_castlingState.hasKingsideRookMoved
+                     : m_castlingState.hasQueensideRookMoved;
 }
 
-
-inline bool Position::ColorPlacements::operator==(const ColorPlacements& other) const
+inline bool Position::ColorPlacements::isEqual(const ColorPlacements& other,
+                                               bool withCastlingState) const
 {
-   return m_rooks == other.m_rooks && m_bishops == other.m_bishops &&
-          m_knights == other.m_knights && m_queens == other.m_queens &&
-          m_pawns == other.m_pawns && m_king == other.m_king;
+   bool isEqual = m_rooks == other.m_rooks && m_bishops == other.m_bishops &&
+                  m_knights == other.m_knights && m_queens == other.m_queens &&
+                  m_pawns == other.m_pawns && m_king == other.m_king;
+   if (withCastlingState)
+      isEqual &= m_castlingState == other.m_castlingState;
+   return isEqual;
 }
-
-
-inline bool Position::ColorPlacements::operator!=(const ColorPlacements& other) const
-{
-   return !(*this == other);
-}
-
 
 inline void Position::ColorPlacements::initKingMovedFlag(Color side, Square at)
 {
-   m_hasKingMoved = side == Color::White ? (at != e1) : (at != e8);
+   m_castlingState.hasKingMoved = side == Color::White ? (at != e1) : (at != e8);
 }
 
 
 ///////////////////
 // Implementation of Position::PiecePlacements.
 
+template <std::size_t N> Position::PiecePlacements<N>::PiecePlacements()
+{
+   std::fill(std::begin(m_sortedLocations), std::end(m_sortedLocations), NoSquare);
+}
+
 template <std::size_t N> void Position::PiecePlacements<N>::add(Square at)
 {
-   assert(m_numPieces < m_locations.max_size());
-   m_locations[m_numPieces++] = at;
+   assert(m_numPieces < m_sortedLocations.max_size());
+   m_sortedLocations[m_numPieces++] = at;
+   sort();
 }
 
 
 template <std::size_t N> void Position::PiecePlacements<N>::remove(Square at)
 {
-   auto pos = std::find(std::begin(m_locations), std::end(m_locations), at);
-   if (pos != std::end(m_locations))
+   auto pos = std::find(std::begin(m_sortedLocations), std::end(m_sortedLocations), at);
+   if (pos != std::end(m_sortedLocations))
    {
-      // Clear and swap with last populated element to keep populate elements at front.
-      *pos = NoSquare;
-      auto idx = std::distance(std::begin(m_locations), pos);
-      std::swap(m_locations[idx], m_locations[m_numPieces - 1]);
-
       --m_numPieces;
+      *pos = NoSquare;
+      sort();
    }
 }
 
 
 template <std::size_t N> void Position::PiecePlacements<N>::move(Square from, Square to)
 {
-   auto pos = std::find(std::begin(m_locations), std::end(m_locations), from);
-   if (pos != std::end(m_locations))
+   auto pos = std::find(std::begin(m_sortedLocations), std::end(m_sortedLocations), from);
+   if (pos != std::end(m_sortedLocations))
+   {
       *pos = to;
+      sort();
+   }
 }
 
 
@@ -292,7 +343,7 @@ std::vector<Square> Position::PiecePlacements<N>::locations() const
    std::vector<Square> locs;
    locs.reserve(m_numPieces);
 
-   auto first = std::begin(m_locations);
+   auto first = std::begin(m_sortedLocations);
    std::copy(first, first + m_numPieces, std::back_inserter(locs));
 
    return locs;
@@ -302,7 +353,8 @@ std::vector<Square> Position::PiecePlacements<N>::locations() const
 template <std::size_t N>
 bool Position::PiecePlacements<N>::operator==(const PiecePlacements& other) const
 {
-   return m_numPieces == other.m_numPieces && m_locations == other.m_locations;
+   return m_numPieces == other.m_numPieces &&
+          m_sortedLocations == other.m_sortedLocations;
 }
 
 
@@ -310,6 +362,11 @@ template <std::size_t N>
 bool Position::PiecePlacements<N>::operator!=(const PiecePlacements& other) const
 {
    return !(*this == other);
+}
+
+template <std::size_t N> void Position::PiecePlacements<N>::sort()
+{
+   std::sort(std::begin(m_sortedLocations), std::end(m_sortedLocations));
 }
 
 

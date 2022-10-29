@@ -11,6 +11,8 @@
 
 using namespace matt2;
 
+//#define ENABLE_PRINTING
+
 
 namespace
 {
@@ -47,7 +49,7 @@ std::string toString(const std::optional<Move>& move, double score)
 
 void printCalculatingStatus(Color side, size_t plies, const Position& pos)
 {
-#ifndef NDEBUG
+#ifdef ENABLE_PRINTING
    std::string s = "Calculating move for ";
    s += ::toString(side);
    s += " with depth ";
@@ -65,7 +67,7 @@ void printCalculatingStatus(Color side, size_t plies, const Position& pos)
 void printCalculatedStatus(Color side, size_t plies, const std::optional<Move>& move,
                            double score)
 {
-#ifndef NDEBUG
+#ifdef ENABLE_PRINTING
    std::string s = "Calculated move for ";
    s += ::toString(side);
    s += " with depth ";
@@ -84,7 +86,7 @@ void printCalculatedStatus(Color side, size_t plies, const std::optional<Move>& 
 void printEvaluatingStatus(Color side, size_t plies, size_t moveIdx_0based,
                            size_t numMoves, const Move& move, const Position& pos)
 {
-#ifndef NDEBUG
+#ifdef ENABLE_PRINTING
    std::string s = "Evaluating move #";
    s += std::to_string(moveIdx_0based + 1);
    s += "/";
@@ -111,7 +113,7 @@ void printEvaluatedStatus(Color side, size_t plies, size_t moveIdx_0based,
                           size_t numMoves, const Move& move, double score,
                           bool isBetterMove)
 {
-#ifndef NDEBUG
+#ifdef ENABLE_PRINTING
    std::string s = "Evaluated move #";
    s += std::to_string(moveIdx_0based + 1);
    s += "/";

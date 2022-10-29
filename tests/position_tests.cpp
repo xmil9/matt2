@@ -403,7 +403,9 @@ void testPositionEquality()
       const std::string caseLabel =
          "Position equality for positions that are permutations of the same pieces";
 
-      VERIFY(Position("Kwe1 Kbe8 Bwg6") == Position("Bwg6 Kwe1 Kbe8"), caseLabel);
+      VERIFY(Position("Kwe1 Kbe8 Bwg6 wa2 wa3 wa4") ==
+                Position("Bwg6 Kwe1 Kbe8 wa4 wa3 wa2"),
+             caseLabel);
    }
    {
       const std::string caseLabel = "Position equality for equal positions";
@@ -420,29 +422,55 @@ void testPositionEquality()
       Position a;
       VERIFY(a == a, caseLabel);
    }
+   {
+      const std::string caseLabel =
+         "Position equality for king moved away and back (eliminating castling)";
+
+      const Position unmoved{"Kbe8 Kwe1"};
+      Position moved = unmoved;
+      moved.move(Relocation{"Kwe1f1"});
+      moved.move(Relocation{"Kwf1e1"});
+
+      // We are not considering the game state that is stored with the position when
+      // comparing positions, so the positions are equal.
+      VERIFY(moved == unmoved, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Position equality for kingside rook moved away and back (eliminating castling)";
+
+      const Position unmoved{"Kbe8 Rbh8 Kwe1"};
+      Position moved = unmoved;
+      moved.move(Relocation{"Rbh8f8"});
+      moved.move(Relocation{"Rbf8h8"});
+
+      // We are not considering the game state that is stored with the position when
+      // comparing positions, so the positions are equal.
+      VERIFY(moved == unmoved, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position equality for queenside rook moved away and "
+                                    "back (eliminating castling)";
+
+      const Position unmoved{"Kbe8 Kwe1 Rwa1"};
+      Position moved = unmoved;
+      moved.move(Relocation{"Rwa1a6"});
+      moved.move(Relocation{"Rwa6a1"});
+
+      // We are not considering the game state that is stored with the position when
+      // comparing positions, so the positions are equal.
+      VERIFY(moved == unmoved, caseLabel);
+   }
 }
 
 
 void testPositionInequality()
 {
    {
-      const std::string caseLabel =
-         "Position inequality for positions with different pieces";
+      const std::string caseLabel = "Position inequality for unequal positions";
 
       VERIFY(Position("Kwe1 Kbe8 Bwg6") != Position("Kwe1 Kbe8 Bwg6 Nbb3"), caseLabel);
       VERIFY(Position("be3") != Position("Nwg6"), caseLabel);
-   }
-   {
-      const std::string caseLabel =
-         "Position inequality for positions same pieces on different squares";
-
-      VERIFY(Position("Kwe1 Kbe8 Bwg6") != Position("Kwa1 Kbe8 Bwg6"), caseLabel);
-   }
-   {
-      const std::string caseLabel =
-         "Position inequality for positions that are permutations of the same pieces";
-
-      VERIFY(!(Position("Kwe1 Kbe8 Bwg6") != Position("Bwg6 Kwe1 Kbe8")), caseLabel);
    }
    {
       const std::string caseLabel = "Position inequality for equal positions";

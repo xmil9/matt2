@@ -168,7 +168,7 @@ void Position::ColorPlacements::remove(const Placement& placement)
    if (isKing(piece))
    {
       m_king = std::nullopt;
-      m_hasKingMoved = true;
+      m_castlingState.hasKingMoved = true;
    }
    else if (isQueen(piece))
    {
@@ -203,7 +203,7 @@ void Position::ColorPlacements::move(const Placement& from, Square to)
    if (isKing(piece))
    {
       m_king = to;
-      m_hasKingMoved = true;
+      m_castlingState.hasKingMoved = true;
    }
    else if (isQueen(piece))
    {
@@ -303,25 +303,25 @@ void Position::ColorPlacements::initRookMovedFlag(Color side)
    const Square queensideLoc = side == Color::White ? a1 : a8;
 
    // Init flags for both rooks based on the current state of the position.
-   m_hasKingsideRookMoved = true;
-   m_hasQueensideRookMoved = true;
+   m_castlingState.hasKingsideRookMoved = true;
+   m_castlingState.hasQueensideRookMoved = true;
 
    for (std::size_t i = 0; i < m_rooks.count(); ++i)
    {
       if (m_rooks[i] == kingsideLoc)
-         m_hasKingsideRookMoved = false;
+         m_castlingState.hasKingsideRookMoved = false;
       if (m_rooks[i] == queensideLoc)
-         m_hasQueensideRookMoved = false;
+         m_castlingState.hasQueensideRookMoved = false;
    }
 }
 
 
 void Position::ColorPlacements::updateRookMovedFlag(Square from)
 {
-   if (!m_hasKingsideRookMoved && file(from) == fh)
-      m_hasKingsideRookMoved = true;
-   if (!m_hasQueensideRookMoved && file(from) == fa)
-      m_hasQueensideRookMoved = true;
+   if (!m_castlingState.hasKingsideRookMoved && file(from) == fh)
+      m_castlingState.hasKingsideRookMoved = true;
+   if (!m_castlingState.hasQueensideRookMoved && file(from) == fa)
+      m_castlingState.hasQueensideRookMoved = true;
 }
 
 
