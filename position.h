@@ -95,6 +95,7 @@ class Position
 
    bool canAttack(Square sq, Color side) const;
    bool canAttack(Square sq, const Placement& placement) const;
+   bool isMate(Color side) const;
 
  private:
    // Array indices for piece locations of each color.
@@ -174,6 +175,8 @@ class Position
    // Returns placements of pieces with the same color as a given piece.
    ColorPlacements& pieces(Color side);
    const ColorPlacements& pieces(Color side) const;
+
+   std::optional<Square> kingLocation(Piece king) const;
 
    static std::size_t toIdx(Square at) { return static_cast<std::size_t>(at); }
    static std::size_t toColorIdx(Piece piece) { return isWhite(piece) ? White : Black; }

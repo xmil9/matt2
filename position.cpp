@@ -54,7 +54,7 @@ void Position::add(const Placement& placement)
 {
    m_board[toIdx(placement.at())] = placement.piece();
    m_pieces[toColorIdx(placement.piece())].add(placement);
-   
+
    invalidateScore();
 }
 
@@ -63,7 +63,7 @@ void Position::remove(const Placement& placement)
 {
    m_board[toIdx(placement.at())] = std::nullopt;
    m_pieces[toColorIdx(placement.piece())].remove(placement);
-   
+
    invalidateScore();
 }
 
@@ -80,7 +80,9 @@ void Position::move(const Relocation& relocation)
 
 double Position::updateScore()
 {
-   m_score = calcPieceValueScore(*this);
+   m_score = calcMateScore(*this);
+   if (!m_score)
+      m_score = calcPieceValueScore(*this);
    return *m_score;
 }
 
@@ -122,6 +124,27 @@ bool Position::canAttack(Square sq, const Placement& placement) const
    return std::find(std::begin(attacked), std::end(attacked), sq) != std::end(attacked);
 }
 
+std::optional<Square> Position::kingLocation(Piece king) const
+{
+   const auto locs = locations(king);
+   assert(locs.size() <= 1);
+   return locs.empty() ? std::nullopt : std::optional(locs[0]);
+}
+
+bool Position::isMate(Color side) const
+{
+   const Piece king = side == Color::White ? Kw : Kb;
+   const auto kingSq = kingLocation(king);
+   if (!kingSq)
+      return true;
+
+   if (!canAttack(*kingSq, !side))
+      return false;
+
+   std::vector<Move> kingMoves;
+   collectKingMoves(king, *kingSq, *this, kingMoves);
+   return kingMoves.empty();
+}
 
 ///////////////////
 

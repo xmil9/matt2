@@ -6,6 +6,12 @@
 #include "position.h"
 #include <numeric>
 
+#ifdef max
+#undef max
+#endif
+#ifdef min
+#undef min
+#endif
 
 namespace matt2
 {
@@ -41,15 +47,25 @@ static double pieceValue(Piece piece)
 static double calcPieceValueScore(const Position& pos, Color side)
 {
    return std::accumulate(pos.begin(side), pos.end(side), 0.,
-                          [](double currValue, const Placement& placement) {
-                             return currValue + pieceValue(placement.piece());
-                          });
+                          [](double currValue, const Placement& placement)
+                          { return currValue + pieceValue(placement.piece()); });
 }
 
 
 double calcPieceValueScore(const Position& pos)
 {
    return calcPieceValueScore(pos, Color::White) - calcPieceValueScore(pos, Color::Black);
+}
+
+///////////////////
+
+std::optional<double> calcMateScore(const Position& pos)
+{
+   if (pos.isMate(Color::White))
+      return std::numeric_limits<double>::lowest();
+   if (pos.isMate(Color::Black))
+      return std::numeric_limits<double>::max();
+   return std::nullopt;
 }
 
 } // namespace matt2
