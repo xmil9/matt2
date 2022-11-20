@@ -57,15 +57,4 @@ double calcPieceValueScore(const Position& pos)
    return calcPieceValueScore(pos, Color::White) - calcPieceValueScore(pos, Color::Black);
 }
 
-///////////////////
-
-std::optional<double> calcMateScore(const Position& pos)
-{
-   if (pos.isMate(Color::White))
-      return std::numeric_limits<double>::lowest();
-   if (pos.isMate(Color::Black))
-      return std::numeric_limits<double>::max();
-   return std::nullopt;
-}
-
 } // namespace matt2

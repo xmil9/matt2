@@ -991,13 +991,6 @@ void testPositionCanAttackForColor()
    }
 }
 
-void testPositionIsMate()
-{
-   {
-      // todo
-   }
-}
-
 ///////////////////
 
 void testPlacementIterCopyCtor()
@@ -1387,7 +1380,6 @@ void testPosition()
    testPositionHasRookMoved();
    testPositionCanAttackForPlacement();
    testPositionCanAttackForColor();
-   testPositionIsMate();
 }
 
 void testPlacementIterator()

@@ -80,9 +80,7 @@ void Position::move(const Relocation& relocation)
 
 double Position::updateScore()
 {
-   m_score = calcMateScore(*this);
-   if (!m_score)
-      m_score = calcPieceValueScore(*this);
+   m_score = calcPieceValueScore(*this);
    return *m_score;
 }
 
@@ -129,21 +127,6 @@ std::optional<Square> Position::kingLocation(Piece king) const
    const auto locs = locations(king);
    assert(locs.size() <= 1);
    return locs.empty() ? std::nullopt : std::optional(locs[0]);
-}
-
-bool Position::isMate(Color side) const
-{
-   const Piece king = side == Color::White ? Kw : Kb;
-   const auto kingSq = kingLocation(king);
-   if (!kingSq)
-      return true;
-
-   if (!canAttack(*kingSq, !side))
-      return false;
-
-   std::vector<Move> kingMoves;
-   collectKingMoves(king, *kingSq, *this, kingMoves);
-   return kingMoves.empty();
 }
 
 ///////////////////

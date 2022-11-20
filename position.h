@@ -95,7 +95,6 @@ class Position
 
    bool canAttack(Square sq, Color side) const;
    bool canAttack(Square sq, const Placement& placement) const;
-   bool isMate(Color side) const;
 
  private:
    // Array indices for piece locations of each color.
