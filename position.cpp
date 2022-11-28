@@ -235,6 +235,76 @@ void Position::ColorPlacements::move(const Placement& from, Square to)
    }
 }
 
+std::size_t Position::ColorPlacements::pieceCount(Piece piece) const
+{
+   if (isKing(piece))
+   {
+      return m_king.has_value() ? 1 : 0;
+   }
+   else if (isQueen(piece))
+   {
+      return m_queens.count();
+   }
+   else if (isRook(piece))
+   {
+      return m_rooks.count();
+   }
+   else if (isBishop(piece))
+   {
+      return m_bishops.count();
+   }
+   else if (isKnight(piece))
+   {
+      return m_knights.count();
+   }
+   else if (isPawn(piece))
+   {
+      return m_pawns.count();
+   }
+
+   return 0;
+}
+
+Square Position::ColorPlacements::pieceLocation(Piece piece, std::size_t idx) const
+{
+   if (isKing(piece))
+   {
+      if (m_king.has_value() && idx == 0)
+         return *m_king;
+   }
+   else if (isQueen(piece))
+   {
+      if (idx < m_queens.count())
+         return m_queens[idx];
+   }
+   else if (isRook(piece))
+   {
+      if (idx < m_rooks.count())
+         return m_rooks[idx];
+   }
+   else if (isBishop(piece))
+   {
+      if (idx < m_bishops.count())
+         return m_bishops[idx];
+   }
+   else if (isKnight(piece))
+   {
+      if (idx < m_knights.count())
+         return m_knights[idx];
+   }
+   else if (isPawn(piece))
+   {
+      if (idx < m_pawns.count())
+         return m_pawns[idx];
+   }
+   else
+   {
+      throw std::runtime_error("Unknown piece.");
+   }
+
+   throw std::runtime_error("Piece index out of range.");
+}
+
 
 std::vector<Square> Position::ColorPlacements::locations(Piece piece) const
 {

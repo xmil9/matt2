@@ -17,6 +17,7 @@
 #include <vector>
 
 // clang-format off
+namespace matt2 { class PieceIterator; }
 namespace matt2 { class PlacementIterator; }
 // clang-format on
 
@@ -28,6 +29,7 @@ namespace matt2
 // Represents a position of pieces on the chess board.
 class Position
 {
+   friend class PieceIterator;
    friend class PlacementIterator;
 
  public:
@@ -81,6 +83,8 @@ class Position
    size_t count(Color side) const;
    PlacementIterator begin(Color side) const;
    PlacementIterator end(Color side) const;
+   PieceIterator begin(Color side, Piece piece) const;
+   PieceIterator end(Color side, Piece piece) const;
 
    std::optional<double> score() const { return m_score; }
    double updateScore();
@@ -138,6 +142,8 @@ class Position
       void add(const Placement& placement);
       void remove(const Placement& placement);
       void move(const Placement& from, Square to);
+      std::size_t pieceCount(Piece piece) const;
+      Square pieceLocation(Piece piece, std::size_t idx) const;
       std::vector<Square> locations(Piece piece) const;
       std::size_t count() const;
       Square placement(std::size_t idx) const;
@@ -382,8 +388,8 @@ class PlacementIterator
  public:
    using iterator_category = std::bidirectional_iterator_tag;
    using value_type = Placement;
-   using pointer = const Piece*;
-   using reference = const Piece&;
+   using pointer = const Placement*;
+   using reference = const Placement&;
 
  private:
    // Only the position class needs access to this ctor.
@@ -504,9 +510,128 @@ inline Square PlacementIterator::at() const
    return loc;
 }
 
+///////////////////
+
+// Iterator for pieces of a position.
+class PieceIterator
+{
+   friend class Position;
+
+ public:
+   using iterator_category = std::bidirectional_iterator_tag;
+   using value_type = Square;
+   using pointer = const Square*;
+   using reference = const Square&;
+
+ private:
+   // Only the position class needs access to this ctor.
+   PieceIterator(const Position* pos, Color side, Piece piece, std::size_t idx);
+
+ public:
+   PieceIterator() = default;
+   ~PieceIterator() = default;
+   PieceIterator(const PieceIterator&) = default;
+   PieceIterator& operator=(const PieceIterator&) = default;
+   PieceIterator(PieceIterator&&) = default;
+   PieceIterator& operator=(PieceIterator&&) = default;
+
+   value_type operator*() const;
+   PieceIterator& operator++();
+   PieceIterator operator++(int);
+   PieceIterator& operator--();
+   PieceIterator operator--(int);
+
+   friend bool operator==(const PieceIterator& a, const PieceIterator& b)
+   {
+      return a.m_pos == b.m_pos && a.m_side == b.m_side &&
+             a.m_piece == b.m_piece == a.m_idx == b.m_idx;
+   }
+
+   friend bool operator!=(const PieceIterator& a, const PieceIterator& b)
+   {
+      return !(a == b);
+   }
+
+   friend bool operator<(const PieceIterator& a, const PieceIterator& b)
+   {
+      assert(a.m_pos == b.m_pos && a.m_side == b.m_side && a.m_piece == b.m_piece);
+      return a.m_idx < b.m_idx;
+   }
+
+   friend bool operator>(const PieceIterator& a, const PieceIterator& b)
+   {
+      assert(a.m_pos == b.m_pos && a.m_side == b.m_side && a.m_piece == b.m_piece);
+      return a.m_idx > b.m_idx;
+   }
+
+   friend bool operator<=(const PieceIterator& a, const PieceIterator& b)
+   {
+      return !(a > b);
+   }
+
+   friend bool operator>=(const PieceIterator& a, const PieceIterator& b)
+   {
+      return !(a < b);
+   }
+
+   friend void swap(PieceIterator& a, PieceIterator& b)
+   {
+      std::swap(a.m_pos, b.m_pos);
+      std::swap(a.m_side, b.m_side);
+      std::swap(a.m_piece, b.m_piece);
+      std::swap(a.m_idx, b.m_idx);
+   }
+
+ public:
+   const Position* m_pos = nullptr;
+   Color m_side = Color::White;
+   Piece m_piece = Pw;
+   // Index of piece.
+   std::size_t m_idx = 0;
+};
+
+
+inline PieceIterator::PieceIterator(const Position* pos, Color side, Piece piece,
+                                    std::size_t idx)
+: m_pos{pos}, m_side{side}, m_piece{piece}, m_idx{idx}
+{
+   assert(color(piece) == m_side);
+   assert(m_pos);
+}
+
+inline PieceIterator::value_type PieceIterator::operator*() const
+{
+   return m_pos->pieces(m_side).pieceLocation(m_piece, m_idx);
+}
+
+inline PieceIterator& PieceIterator::operator++()
+{
+   ++m_idx;
+   return *this;
+}
+
+inline PieceIterator PieceIterator::operator++(int)
+{
+   auto before = *this;
+   ++(*this);
+   return before;
+}
+
+inline PieceIterator& PieceIterator::operator--()
+{
+   --m_idx;
+   return *this;
+}
+
+inline PieceIterator PieceIterator::operator--(int)
+{
+   auto before = *this;
+   --(*this);
+   return before;
+}
 
 ///////////////////
-// More implementation of Position because class PlacementIterator needs to be
+// More implementation of Position because iterator classes need to be
 // fully defined.
 
 inline PlacementIterator Position::begin(Color side) const
@@ -519,6 +644,15 @@ inline PlacementIterator Position::end(Color side) const
    return PlacementIterator{this, side, m_pieces[toColorIdx(side)].count()};
 }
 
+inline PieceIterator Position::begin(Color side, Piece piece) const
+{
+   return PieceIterator{this, side, piece, 0};
+}
+
+inline PieceIterator Position::end(Color side, Piece piece) const
+{
+   return PieceIterator{this, side, piece, m_pieces[toColorIdx(side)].pieceCount(piece)};
+}
 
 ///////////////////
 
