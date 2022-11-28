@@ -23,21 +23,22 @@ static double pieceValue(Piece piece)
    {
    case Pw:
    case Pb:
-      return 1.;
+      return 100.;
    case Nw:
    case Nb:
+      return 325.;
    case Bw:
    case Bb:
-      return 3.;
+      return 340.;
    case Rw:
    case Rb:
-      return 5.;
+      return 500.;
    case Qw:
    case Qb:
-      return 9.;
+      return 900.;
    case Kw:
    case Kb:
-      return 100.;
+      return 10000.;
    default:
       throw std::runtime_error("Unknown piece.");
    }
