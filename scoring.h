@@ -15,6 +15,11 @@ namespace matt2
 {
 ///////////////////
 
+// Score based only on piece values.
 double calcPieceValueScore(const Position& pos);
+
+// Score based on rules by Daily Chess webside.
+// https://www.dailychess.com/rival/programming/evaluation.php
+double calcDailyChessScore(const Position& pos);
 
 } // namespace matt2

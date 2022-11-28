@@ -44,6 +44,7 @@ static double pieceValue(Piece piece)
    }
 }
 
+///////////////////
 
 static double calcPieceValueScore(const Position& pos, Color side)
 {
@@ -52,10 +53,48 @@ static double calcPieceValueScore(const Position& pos, Color side)
                           { return currValue + pieceValue(placement.piece()); });
 }
 
-
 double calcPieceValueScore(const Position& pos)
 {
    return calcPieceValueScore(pos, Color::White) - calcPieceValueScore(pos, Color::Black);
+}
+
+///////////////////
+
+struct PawnStats
+{
+};
+
+class DailyChessScore
+{
+ public:
+   DailyChessScore(const Position& pos, Color side);
+   ~DailyChessScore() = default;
+   DailyChessScore(const DailyChessScore&) = delete;
+   DailyChessScore& operator=(const DailyChessScore&) = delete;
+
+ private:
+   const Position& m_pos;
+   Color m_side;
+};
+
+DailyChessScore::DailyChessScore(const Position& pos, Color side)
+: m_pos{pos}, m_side{side}
+{
+}
+
+///////////////////
+
+double calcDailyChessScore(const Position& pos, Color side)
+{
+   // todo
+   pos;
+   side;
+   return 0.;
+}
+
+double calcDailyChessScore(const Position& pos)
+{
+   return calcDailyChessScore(pos, Color::White) - calcDailyChessScore(pos, Color::Black);
 }
 
 } // namespace matt2
