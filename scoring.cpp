@@ -72,9 +72,21 @@ class DailyChessScore
    DailyChessScore(const DailyChessScore&) = delete;
    DailyChessScore& operator=(const DailyChessScore&) = delete;
 
+   double score() const { return m_score; }
+   double calc();
+
+ private:
+   double calcPawnScore();
+   double calcKnightScore();
+   double calcBishopScore();
+   double calcRookScore();
+   double calcQueenScore();
+   double calcKingScore();
+
  private:
    const Position& m_pos;
    Color m_side;
+   double m_score = 0.;
 };
 
 DailyChessScore::DailyChessScore(const Position& pos, Color side)
@@ -82,14 +94,54 @@ DailyChessScore::DailyChessScore(const Position& pos, Color side)
 {
 }
 
+double DailyChessScore::calc()
+{
+   m_score = 0.;
+   m_score += calcPawnScore();
+   m_score += calcKnightScore();
+   m_score += calcBishopScore();
+   m_score += calcRookScore();
+   m_score += calcQueenScore();
+   m_score += calcKingScore();
+   return m_score;
+}
+
+double DailyChessScore::calcPawnScore()
+{
+   return 0.;
+}
+
+double DailyChessScore::calcKnightScore()
+{
+   return 0.;
+}
+
+double DailyChessScore::calcBishopScore()
+{
+   return 0.;
+}
+
+double DailyChessScore::calcRookScore()
+{
+   return 0.;
+}
+
+double DailyChessScore::calcQueenScore()
+{
+   return 0.;
+}
+
+double DailyChessScore::calcKingScore()
+{
+   return 0.;
+}
+
 ///////////////////
 
 double calcDailyChessScore(const Position& pos, Color side)
 {
-   // todo
-   pos;
-   side;
-   return 0.;
+   DailyChessScore scoring{pos, side};
+   return scoring.calc();
 }
 
 double calcDailyChessScore(const Position& pos)
