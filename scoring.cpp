@@ -226,6 +226,39 @@ static double calcPassedPawnBonus(Color side, const FileStats_t& pawnStats,
                           });
 }
 
+static double calcPawnPositionBonus(Color side, const FileStats_t& pawnStats)
+{
+   // clang-format off
+   static const std::unordered_map<Square, double> WhitePosScore = {
+      {a2, 0.}, {b2, 0.},  {c2, 0.},  {d2, 0.},  {e2, 0.},  {f2, 0.},  {g2, 0.},  {h2, 0.},
+      {a3, 0.}, {b3, 2.},  {c3, 12.}, {d3, 22.}, {e3, 22.}, {f3, 12.}, {g3, 2.},  {h3, 0.},
+      {a4, 0.}, {b4, 4.},  {c4, 14.}, {d4, 24.}, {e4, 24.}, {f4, 14.}, {g4, 4.},  {h4, 0.},
+      {a5, 0.}, {b5, 6.},  {c5, 16.}, {d5, 26.}, {e5, 26.}, {f5, 16.}, {g5, 6.},  {h5, 0.},
+      {a6, 0.}, {b6, 8.},  {c6, 18.}, {d6, 28.}, {e6, 28.}, {f6, 18.}, {g6, 8.},  {h6, 0.},
+      {a7, 0.}, {b7, 10.}, {c7, 20.}, {d7, 30.}, {e7, 30.}, {f7, 20.}, {g7, 10.}, {h7, 0.},
+   };
+   static const std::unordered_map<Square, double> BlackPosScore = {
+      {a7, 0.}, {b7, 0.},  {c7, 0.},  {d7, 0.},  {e7, 0.},  {f7, 0.},  {g7, 0.},  {h7, 0.},
+      {a6, 0.}, {b6, 2.},  {c6, 12.}, {d6, 22.}, {e6, 22.}, {f6, 12.}, {g6, 2.},  {h6, 0.},
+      {a5, 0.}, {b5, 4.},  {c5, 14.}, {d5, 24.}, {e5, 24.}, {f5, 14.}, {g5, 4.},  {h5, 0.},
+      {a4, 0.}, {b4, 6.},  {c4, 16.}, {d4, 26.}, {e4, 26.}, {f4, 16.}, {g4, 6.},  {h4, 0.},
+      {a3, 0.}, {b3, 8.},  {c3, 18.}, {d3, 28.}, {e3, 28.}, {f3, 18.}, {g3, 8.},  {h3, 0.},
+      {a2, 0.}, {b2, 10.}, {c2, 20.}, {d2, 30.}, {e2, 30.}, {f2, 20.}, {g2, 10.}, {h2, 0.},
+   };
+   // clang-format on
+
+   const auto& posScore = side == Color::White ? WhitePosScore : BlackPosScore;
+   return std::accumulate(std::begin(pawnStats), std::end(pawnStats), 0.,
+                          [side, &posScore](double val, const auto& fileElem)
+                          {
+                             double fileBonus = 0.;
+                             const File& f = fileElem.first;
+                             for (Rank r : fileElem.second)
+                                fileBonus += posScore.at(makeSquare(f, r));
+                             return val + fileBonus;
+                          });
+}
+
 double DailyChessScore::calcPawnScore()
 {
    // Calc piece value and collect pawn stats.
@@ -235,9 +268,10 @@ double DailyChessScore::calcPawnScore()
    FileStats_t opponentStats;
    collectPawnStats(!m_side, m_pos, opponentStats);
 
+   score += calcPawnPositionBonus(m_side, pawnStats);
+   score += calcPassedPawnBonus(m_side, pawnStats, opponentStats);
    score -= calcDoublePawnPenalty(pawnStats);
    score -= calcIsolatedPawnPenalty(pawnStats);
-   score += calcPassedPawnBonus(m_side, pawnStats, opponentStats);
 
    return score;
 }

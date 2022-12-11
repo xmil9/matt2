@@ -259,7 +259,6 @@ inline Square operator++(Square& sq)
    return sq;
 }
 
-
 ///////////////////
 
 struct Offset
