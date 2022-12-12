@@ -544,7 +544,7 @@ class PieceIterator
    friend bool operator==(const PieceIterator& a, const PieceIterator& b)
    {
       return a.m_pos == b.m_pos && a.m_side == b.m_side &&
-             a.m_piece == b.m_piece == a.m_idx == b.m_idx;
+             a.m_piece == b.m_piece && a.m_idx == b.m_idx;
    }
 
    friend bool operator!=(const PieceIterator& a, const PieceIterator& b)

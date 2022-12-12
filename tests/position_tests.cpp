@@ -505,7 +505,7 @@ void testPositionCount()
    }
 }
 
-void testPositionBegin()
+void testPositionBeginForPlacementIterator()
 {
    {
       const std::string caseLabel = "Position::begin for white";
@@ -520,7 +520,7 @@ void testPositionBegin()
       VERIFY(sq == e1 || sq == g6, caseLabel);
    }
    {
-      const std::string caseLabel = "Position::begin for black";
+      const std::string caseLabel = "Position::begin(Side) for black";
 
       Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
       const auto iter = pos.begin(Color::Black);
@@ -532,7 +532,7 @@ void testPositionBegin()
       VERIFY(sq == e8 || sq == g7 || sq == a2, caseLabel);
    }
    {
-      const std::string caseLabel = "Position::begin for no pieces";
+      const std::string caseLabel = "Position::begin(Side) for no pieces";
 
       Position pos{"Kbe8"};
       const auto iter = pos.begin(Color::White);
@@ -541,10 +541,10 @@ void testPositionBegin()
    }
 }
 
-void testPositionEnd()
+void testPositionEndForPlacementIterator()
 {
    {
-      const std::string caseLabel = "Position::end for white";
+      const std::string caseLabel = "Position::end(Side) for white";
 
       Position pos{"Kwe1 Kbe8 Bwg6"};
       const auto end = pos.end(Color::White);
@@ -556,7 +556,7 @@ void testPositionEnd()
       VERIFY(begin == end, caseLabel);
    }
    {
-      const std::string caseLabel = "Position::end for black";
+      const std::string caseLabel = "Position::end(Side) for black";
 
       Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
       const auto end = pos.end(Color::Black);
@@ -1255,7 +1255,7 @@ void testPlacementIterInequality()
 void testPlacementIterLtComparision()
 {
    {
-      const std::string caseLabel = "Placement less-than comparision";
+      const std::string caseLabel = "PlacementIterator less-than comparision";
 
       Position pos{"Qwd4 wf3 Rwa1"};
       auto c = pos.begin(Color::White);
@@ -1274,7 +1274,7 @@ void testPlacementIterLtComparision()
 void testPlacementIterGtComparision()
 {
    {
-      const std::string caseLabel = "Placement greater-than comparision";
+      const std::string caseLabel = "PlacementIterator greater-than comparision";
 
       Position pos{"Qwd4 wf3 Rwa1"};
       auto c = pos.begin(Color::White);
@@ -1293,7 +1293,7 @@ void testPlacementIterGtComparision()
 void testPlacementIterLeComparision()
 {
    {
-      const std::string caseLabel = "Placement less-than-or-equal comparision";
+      const std::string caseLabel = "PlacementIterator less-than-or-equal comparision";
 
       Position pos{"Qwd4 wf3 Rwa1"};
       auto c = pos.begin(Color::White);
@@ -1315,7 +1315,7 @@ void testPlacementIterLeComparision()
 void testPlacementIterGeComparision()
 {
    {
-      const std::string caseLabel = "Placement greater-than-or-equal comparision";
+      const std::string caseLabel = "PlacementIterator greater-than-or-equal comparision";
 
       Position pos{"Kbe2 Bbd7 bb3"};
       auto c = pos.begin(Color::Black);
@@ -1337,7 +1337,7 @@ void testPlacementIterGeComparision()
 void testPlacementIterSwap()
 {
    {
-      const std::string caseLabel = "Placement swap";
+      const std::string caseLabel = "PlacementIterator swap";
 
       Position posA{"Qwd4 wf3 Rwa1"};
       auto a = posA.begin(Color::White);
@@ -1351,6 +1351,30 @@ void testPlacementIterSwap()
       VERIFY(a == origB, caseLabel);
       VERIFY(b == origA, caseLabel);
    }
+}
+
+void testPlacementIterIterateAllPlacements()
+{
+   const std::string caseLabel = "PlacementIterator iterate all placements";
+
+   Position pos{"Qwd4 wf3 Bbh4 Rwa1"};
+
+   auto it = pos.begin(Color::White);
+   auto e = pos.end(Color::White);
+
+   std::vector<Placement> iterated;
+   for (; it != e; ++it)
+      iterated.push_back(*it);
+
+   VERIFY(iterated.size() == pos.count(Color::White), caseLabel);
+   VERIFY(std::find(iterated.begin(), iterated.end(), Placement("Qwd4")) !=
+             iterated.end(),
+          caseLabel);
+   VERIFY(std::find(iterated.begin(), iterated.end(), Placement("wf3")) != iterated.end(),
+          caseLabel);
+   VERIFY(std::find(iterated.begin(), iterated.end(), Placement("Rwa1")) !=
+             iterated.end(),
+          caseLabel);
 }
 
 ///////////////////
@@ -1683,6 +1707,26 @@ void testPieceIterSwap()
    }
 }
 
+void testPieceIterIterateAllPieces()
+{
+   const std::string caseLabel = "PieceIterator iterate all pieces";
+
+   Position pos{"Qwd4 wf3 wg2 wh2 wb7 bh4 Rwa1"};
+
+   auto it = pos.begin(Color::White, Pw);
+   auto e = pos.end(Color::White, Pw);
+
+   std::vector<Square> iterated;
+   for (; it != e; ++it)
+      iterated.push_back(*it);
+
+   VERIFY(iterated.size() == 4, caseLabel);
+   VERIFY(std::find(iterated.begin(), iterated.end(), f3) != iterated.end(), caseLabel);
+   VERIFY(std::find(iterated.begin(), iterated.end(), g2) != iterated.end(), caseLabel);
+   VERIFY(std::find(iterated.begin(), iterated.end(), h2) != iterated.end(), caseLabel);
+   VERIFY(std::find(iterated.begin(), iterated.end(), b7) != iterated.end(), caseLabel);
+}
+
 } // namespace
 
 
@@ -1700,8 +1744,8 @@ void testPosition()
    testPositionEquality();
    testPositionInequality();
    testPositionCount();
-   testPositionBegin();
-   testPositionEnd();
+   testPositionBeginForPlacementIterator();
+   testPositionEndForPlacementIterator();
    testPositionScore();
    testPositionUpdateScore();
    testPositionEnPassantSquare();
@@ -1732,6 +1776,7 @@ void testPlacementIterator()
    testPlacementIterLeComparision();
    testPlacementIterGeComparision();
    testPlacementIterSwap();
+   testPlacementIterIterateAllPlacements();
 }
 
 void testPieceIterator()
@@ -1752,4 +1797,5 @@ void testPieceIterator()
    testPieceIterLeComparision();
    testPieceIterGeComparision();
    testPieceIterSwap();
+   testPieceIterIterateAllPieces();
 }
