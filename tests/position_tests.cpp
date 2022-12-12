@@ -1259,8 +1259,8 @@ void testPlacementIterLtComparision()
 
       Position pos{"Qwd4 wf3 Rwa1"};
       auto c = pos.begin(Color::White);
-      auto a = ++c;
-      auto b = ++c;
+      auto a = c++;
+      auto b = c++;
 
       VERIFY(a < b, caseLabel);
       VERIFY(a < c, caseLabel);
@@ -1278,8 +1278,8 @@ void testPlacementIterGtComparision()
 
       Position pos{"Qwd4 wf3 Rwa1"};
       auto c = pos.begin(Color::White);
-      auto a = ++c;
-      auto b = ++c;
+      auto a = c++;
+      auto b = c++;
 
       VERIFY(b > a, caseLabel);
       VERIFY(c > a, caseLabel);
@@ -1297,8 +1297,8 @@ void testPlacementIterLeComparision()
 
       Position pos{"Qwd4 wf3 Rwa1"};
       auto c = pos.begin(Color::White);
-      auto a = ++c;
-      auto b = ++c;
+      auto a = c++;
+      auto b = c++;
 
       VERIFY(a <= b, caseLabel);
       VERIFY(a <= c, caseLabel);
@@ -1319,8 +1319,8 @@ void testPlacementIterGeComparision()
 
       Position pos{"Kbe2 Bbd7 bb3"};
       auto c = pos.begin(Color::Black);
-      auto a = ++c;
-      auto b = ++c;
+      auto a = c++;
+      auto b = c++;
 
       VERIFY(b >= a, caseLabel);
       VERIFY(c >= a, caseLabel);
@@ -1341,15 +1341,345 @@ void testPlacementIterSwap()
 
       Position posA{"Qwd4 wf3 Rwa1"};
       auto a = posA.begin(Color::White);
+      const auto origA = a;
       Position posB{"Kbe2 Bbd7 bb3"};
       auto b = posB.begin(Color::Black);
+      const auto origB = b;
 
       swap(a, b);
 
-      VERIFY(a.piece() == Piece::Kb, caseLabel);
-      VERIFY(a.at() == Square::e2, caseLabel);
-      VERIFY(b.piece() == Piece::Qw, caseLabel);
-      VERIFY(b.at() == Square::d4, caseLabel);
+      VERIFY(a == origB, caseLabel);
+      VERIFY(b == origA, caseLabel);
+   }
+}
+
+///////////////////
+
+void testPieceIterCopyCtor()
+{
+   {
+      const std::string caseLabel = "PieceIterator copy ctor";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White, Pw);
+
+      auto copy{it};
+
+      VERIFY(copy == it, caseLabel);
+   }
+}
+
+void testPieceIterMoveCtor()
+{
+   {
+      const std::string caseLabel = "PieceIterator move ctor";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White, Pw);
+      Square sq = *it;
+
+      auto movedTo{std::move(it)};
+
+      VERIFY(*movedTo == sq, caseLabel);
+   }
+}
+
+void testPieceIterCopyAssignment()
+{
+   {
+      const std::string caseLabel = "PieceIterator copy assignment";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White, Pw);
+
+      PieceIterator copy;
+      copy = it;
+
+      VERIFY(copy == it, caseLabel);
+   }
+}
+
+void testPieceIterMoveAssignment()
+{
+   {
+      const std::string caseLabel = "PieceIterator move assignment";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White, Pw);
+      Square sq = *it;
+
+      PieceIterator movedTo;
+      movedTo = std::move(it);
+
+      VERIFY(*movedTo == sq, caseLabel);
+   }
+}
+
+void testPieceIterDereference()
+{
+   {
+      const std::string caseLabel = "PieceIterator::operator*()";
+
+      Position pos{"Qwd4 wf3"};
+      auto it = pos.begin(Color::White, Pw);
+
+      Square sq = *it;
+      VERIFY(sq == f3, caseLabel);
+   }
+}
+
+void testPieceIterPrefixInc()
+{
+   {
+      const std::string caseLabel = "PieceIterator::operator++()";
+
+      Position pos{"Qwd4 wf3 wb5"};
+      auto it = pos.begin(Color::White, Pw);
+
+      Square prev = *it;
+      ++it;
+      Square next = *it;
+
+      VERIFY(next != prev && (next == f3 || next == b5), caseLabel);
+   }
+}
+
+void testPieceIterPostfixInc()
+{
+   {
+      const std::string caseLabel = "PieceIterator::operator++(int)";
+
+      Position pos{"Qwd4 wf3 wb5"};
+      auto it = pos.begin(Color::White, Pw);
+
+      Square prev = *it;
+      it++;
+      Square next = *it;
+
+      VERIFY(next != prev && (next == f3 || next == b5), caseLabel);
+   }
+}
+
+void testPieceIterPrefixDec()
+{
+   {
+      const std::string caseLabel = "PieceIterator::operator--()";
+
+      Position pos{"Qwd4 wf3 wb5"};
+      auto it = pos.begin(Color::White, Pw);
+      ++it;
+
+      Square next = *it;
+      --it;
+      Square prev = *it;
+
+      VERIFY(next != prev && (next == f3 || next == b5), caseLabel);
+   }
+}
+
+void testPieceIterPostfixDec()
+{
+   {
+      const std::string caseLabel = "PieceIterator::operator--(int)";
+
+      Position pos{"Qwd4 wf3 wb5"};
+      auto it = pos.begin(Color::White, Pw);
+      ++it;
+
+      Square next = *it;
+      it--;
+      Square prev = *it;
+
+      VERIFY(next != prev && (next == f3 || next == b5), caseLabel);
+   }
+}
+
+void testPieceIterEquality()
+{
+   {
+      const std::string caseLabel = "PieceIterator equality for equal pieces";
+
+      Position pos{"Qwd4 wf3"};
+      auto a = pos.begin(Color::White, Pw);
+      auto b = pos.begin(Color::White, Pw);
+
+      VERIFY(a == b, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "PieceIterator equality for pieces from different positions";
+
+      Position posA{"Qwd4 wf3"};
+      Position posB{"Qwd4 wf3"};
+      auto a = posA.begin(Color::White, Pw);
+      auto b = posB.begin(Color::White, Pw);
+
+      VERIFY(!(a == b), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "PieceIterator equality for pieces of different sides";
+
+      Position pos{"Qwd4 wg6 bf3"};
+      auto a = pos.begin(Color::White, Pw);
+      auto b = pos.begin(Color::Black, Pb);
+
+      VERIFY(!(a == b), caseLabel);
+   }
+   {
+      const std::string caseLabel = "PieceIterator equality for different pieces";
+
+      Position pos{"Qwd4 wf3 wg6"};
+      auto a = pos.begin(Color::White, Pw);
+      auto b = a;
+      ++b;
+
+      VERIFY(!(a == b), caseLabel);
+   }
+}
+
+void testPieceIterInequality()
+{
+   {
+      const std::string caseLabel = "PieceIterator inequality for equal pieces";
+
+      Position pos{"Qwd4 wf3"};
+      auto a = pos.begin(Color::White, Pw);
+      auto b = pos.begin(Color::White, Pw);
+
+      VERIFY(!(a != b), caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "PieceIterator inequality for pieces from different positions";
+
+      Position posA{"Qwd4 wf3"};
+      Position posB{"Qwd4 wf3"};
+      auto a = posA.begin(Color::White, Pw);
+      auto b = posB.begin(Color::White, Pw);
+
+      VERIFY(a != b, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "PieceIterator inequality for pieces of different sides";
+
+      Position pos{"Qwd4 wg6 bf3"};
+      auto a = pos.begin(Color::White, Pw);
+      auto b = pos.begin(Color::Black, Pb);
+
+      VERIFY(a != b, caseLabel);
+   }
+   {
+      const std::string caseLabel = "PieceIterator inequality for different pieces";
+
+      Position pos{"Qwd4 wf3 wg6"};
+      auto a = pos.begin(Color::White, Pw);
+      auto b = a;
+      ++b;
+
+      VERIFY(a != b, caseLabel);
+   }
+}
+
+void testPieceIterLtComparision()
+{
+   {
+      const std::string caseLabel = "PieceIterator less-than comparision";
+
+      Position pos{"Qwd4 wf3 wg6 wb2"};
+      auto c = pos.begin(Color::White, Pw);
+      auto a = c++;
+      auto b = c++;
+
+      VERIFY(a < b, caseLabel);
+      VERIFY(a < c, caseLabel);
+      VERIFY(b < c, caseLabel);
+      VERIFY(!(b < a), caseLabel);
+      VERIFY(!(c < a), caseLabel);
+      VERIFY(!(c < b), caseLabel);
+   }
+}
+
+void testPieceIterGtComparision()
+{
+   {
+      const std::string caseLabel = "PieceIterator greater-than comparision";
+
+      Position pos{"Qwd4 wf3 wg6 wb2"};
+      auto c = pos.begin(Color::White, Pw);
+      auto a = c++;
+      auto b = c++;
+
+      VERIFY(b > a, caseLabel);
+      VERIFY(c > a, caseLabel);
+      VERIFY(c > b, caseLabel);
+      VERIFY(!(a > b), caseLabel);
+      VERIFY(!(a > c), caseLabel);
+      VERIFY(!(b > c), caseLabel);
+   }
+}
+
+void testPieceIterLeComparision()
+{
+   {
+      const std::string caseLabel = "PieceIterator less-than-or-equal comparision";
+
+      Position pos{"Qwd4 wf3 wg6 wb2"};
+      auto c = pos.begin(Color::White, Pw);
+      auto a = c++;
+      auto b = c++;
+
+      VERIFY(a <= b, caseLabel);
+      VERIFY(a <= c, caseLabel);
+      VERIFY(b <= c, caseLabel);
+      VERIFY(a <= a, caseLabel);
+      VERIFY(b <= b, caseLabel);
+      VERIFY(c <= c, caseLabel);
+      VERIFY(!(b <= a), caseLabel);
+      VERIFY(!(c <= a), caseLabel);
+      VERIFY(!(c <= b), caseLabel);
+   }
+}
+
+void testPieceIterGeComparision()
+{
+   {
+      const std::string caseLabel = "PieceIterator greater-than-or-equal comparision";
+
+      Position pos{"Kbe2 bf3 bg6 bb2"};
+      auto c = pos.begin(Color::Black, Pb);
+      auto a = c++;
+      auto b = c++;
+
+      VERIFY(b >= a, caseLabel);
+      VERIFY(c >= a, caseLabel);
+      VERIFY(c >= b, caseLabel);
+      VERIFY(a >= a, caseLabel);
+      VERIFY(b >= b, caseLabel);
+      VERIFY(c >= c, caseLabel);
+      VERIFY(!(a >= b), caseLabel);
+      VERIFY(!(a >= c), caseLabel);
+      VERIFY(!(b >= c), caseLabel);
+   }
+}
+
+void testPieceIterSwap()
+{
+   {
+      const std::string caseLabel = "PieceIterator swap";
+
+      Position posA{"Qwd4 wf3 Rwa1"};
+      auto a = posA.begin(Color::White, Rw);
+      const auto origA = a;
+      Position posB{"Kbe2 Bbd7 bb3"};
+      auto b = posB.begin(Color::Black, Bb);
+      const auto origB = b;
+
+      swap(a, b);
+
+      VERIFY(a == origB, caseLabel);
+      VERIFY(b == origA, caseLabel);
    }
 }
 
@@ -1402,4 +1732,24 @@ void testPlacementIterator()
    testPlacementIterLeComparision();
    testPlacementIterGeComparision();
    testPlacementIterSwap();
+}
+
+void testPieceIterator()
+{
+   testPieceIterCopyCtor();
+   testPieceIterMoveCtor();
+   testPieceIterCopyAssignment();
+   testPieceIterMoveAssignment();
+   testPieceIterDereference();
+   testPieceIterPrefixInc();
+   testPieceIterPostfixInc();
+   testPieceIterPrefixDec();
+   testPieceIterPostfixDec();
+   testPieceIterEquality();
+   testPieceIterInequality();
+   testPieceIterLtComparision();
+   testPieceIterGtComparision();
+   testPieceIterLeComparision();
+   testPieceIterGeComparision();
+   testPieceIterSwap();
 }

@@ -23,7 +23,9 @@ int main()
    testMoves();
    testNotations();
    testPiece();
+   testPieceIterator();
    testPlacement();
+   testPlacementIterator();
    testPosition();
    testRank();
    testRelocation();

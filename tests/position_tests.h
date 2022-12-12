@@ -6,3 +6,4 @@
 
 void testPosition();
 void testPlacementIterator();
+void testPieceIterator();
