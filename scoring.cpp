@@ -47,6 +47,13 @@ static double pieceValue(Piece piece)
 
 ///////////////////
 
+static double calcPieceValueScore(const Position& pos, Color side, Piece piece)
+{
+   return std::accumulate(pos.begin(side, piece), pos.end(side, piece), 0.,
+                          [piece](double currValue, Square /*sq*/)
+                          { return currValue + pieceValue(piece); });
+}
+
 static double calcPieceValueScore(const Position& pos, Color side)
 {
    return std::accumulate(pos.begin(side), pos.end(side), 0.,
@@ -278,27 +285,32 @@ double DailyChessScore::calcPawnScore()
 
 double DailyChessScore::calcKnightScore()
 {
-   return 0.;
+   double score = calcPieceValueScore(m_pos, m_side, m_side == Color::White ? Nw : Nb);
+   return score;
 }
 
 double DailyChessScore::calcBishopScore()
 {
-   return 0.;
+   double score = calcPieceValueScore(m_pos, m_side, m_side == Color::White ? Bw : Bb);
+   return score;
 }
 
 double DailyChessScore::calcRookScore()
 {
-   return 0.;
+   double score = calcPieceValueScore(m_pos, m_side, m_side == Color::White ? Rw : Rb);
+   return score;
 }
 
 double DailyChessScore::calcQueenScore()
 {
-   return 0.;
+   double score = calcPieceValueScore(m_pos, m_side, m_side == Color::White ? Qw : Qb);
+   return score;
 }
 
 double DailyChessScore::calcKingScore()
 {
-   return 0.;
+   double score = calcPieceValueScore(m_pos, m_side, m_side == Color::White ? Kw : Kb);
+   return score;
 }
 
 ///////////////////
