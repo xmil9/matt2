@@ -289,9 +289,53 @@ double DailyChessScore::calcKnightScore()
    return score;
 }
 
+static double calcMultipleBishopBonus(Color side, const Position& pos)
+{
+   if (pos.count(side, side == Color::White ? Bw : Bb) < 2)
+      return 0.;
+
+   constexpr double MultipleBishopBonus = 20.;
+   return MultipleBishopBonus;
+}
+
+static bool isPawnDiagonalNeighbor(Square sq, const Position& pos)
+{
+   const File f = file(sq);
+   const Rank r = rank(sq);
+
+   std::vector<std::optional<Piece>> diagNeighbors;
+   if (isValid(f, 1) && isValid(r, 1))
+      diagNeighbors.push_back(pos[makeSquare(f + 1, r + 1)]);
+   if (isValid(f, 1) && isValid(r, -1))
+      diagNeighbors.push_back(pos[makeSquare(f + 1, r - 1)]);
+   if (isValid(f, -1) && isValid(r, 1))
+      diagNeighbors.push_back(pos[makeSquare(f - 1, r + 1)]);
+   if (isValid(f, -1) && isValid(r, -1))
+      diagNeighbors.push_back(pos[makeSquare(f - 1, r - 1)]);
+
+   return std::count_if(std::begin(diagNeighbors), std::end(diagNeighbors),
+                        [](const std::optional<Piece>& piece)
+                        { return piece.has_value() && isPawn(*piece); }) > 0;
+}
+
+static double calcAdjacentPawnBishopPenalty(Color side, const Position& pos)
+{
+   const Piece bishop = side == Color::White ? Bw : Bb;
+   return std::accumulate(pos.begin(side, bishop), pos.end(side, bishop), 0.,
+                          [&pos](double val, Square sq)
+                          {
+                             constexpr double AdjacentPawnPenality = 5.;
+                             return val + isPawnDiagonalNeighbor(sq, pos)
+                                       ? AdjacentPawnPenality
+                                       : 0.;
+                          });
+}
+
 double DailyChessScore::calcBishopScore()
 {
    double score = calcPieceValueScore(m_pos, m_side, m_side == Color::White ? Bw : Bb);
+   score += calcMultipleBishopBonus(m_side, m_pos);
+   score -= calcAdjacentPawnBishopPenalty(m_side, m_pos);
    return score;
 }
 
