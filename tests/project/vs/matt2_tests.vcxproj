@@ -28,6 +28,7 @@
     <ClCompile Include="..\..\position_tests.cpp" />
     <ClCompile Include="..\..\relocation_tests.cpp" />
     <ClCompile Include="..\..\rules_tests.cpp" />
+    <ClCompile Include="..\..\scoring_tests.cpp" />
     <ClCompile Include="..\..\square_tests.cpp" />
     <ClCompile Include="..\..\test_util.cpp" />
   </ItemGroup>
@@ -40,6 +41,7 @@
     <ClInclude Include="..\..\position_tests.h" />
     <ClInclude Include="..\..\relocation_tests.h" />
     <ClInclude Include="..\..\rules_tests.h" />
+    <ClInclude Include="..\..\scoring_tests.h" />
     <ClInclude Include="..\..\square_tests.h" />
     <ClInclude Include="..\..\test_util.h" />
   </ItemGroup>
