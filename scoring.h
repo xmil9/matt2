@@ -15,6 +15,17 @@ namespace matt2
 {
 ///////////////////
 
+inline bool isBetterScore(double a, double b, bool calcMax)
+{
+   return calcMax ? a > b : a < b;
+}
+
+inline double getWorstScore(bool calcMax)
+{
+   return calcMax ? std::numeric_limits<double>::lowest()
+                  : std::numeric_limits<double>::max();
+}
+
 // Score based only on piece values.
 double calcPieceValueScore(const Position& pos);
 

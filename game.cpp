@@ -6,6 +6,7 @@
 #include "console.h"
 #include "notation.h"
 #include "rules.h"
+#include "scoring.h"
 #include <limits>
 #include <queue>
 
@@ -164,9 +165,6 @@ class MoveCalculator
    void collectMoves(Color side, std::vector<Move>& moves) const;
    void collectMoves(Piece piece, Square at, std::vector<Move>& moves) const;
 
-   static bool isBetterScore(double a, double b, bool calcMax);
-   static double worstScore(bool calcMax);
-
  private:
    Position& m_pos;
 };
@@ -183,17 +181,6 @@ std::optional<Move> MoveCalculator::next(Color side, std::size_t turns)
 }
 
 
-bool MoveCalculator::isBetterScore(double a, double b, bool calcMax)
-{
-   return calcMax ? a > b : a < b;
-}
-
-double MoveCalculator::worstScore(bool calcMax)
-{
-   return calcMax ? std::numeric_limits<double>::lowest()
-                  : std::numeric_limits<double>::max();
-}
-
 MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
                                                bool calcMax)
 {
@@ -208,7 +195,7 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
    moves.reserve(100);
    collectMoves(side, moves);
 
-   MoveScore bestMove{std::nullopt, worstScore(calcMax)};
+   MoveScore bestMove{std::nullopt, getWorstScore(calcMax)};
 
    // Track move index for debugging.
    std::size_t moveIdx = 0;
