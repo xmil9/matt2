@@ -83,6 +83,7 @@ class Position
    size_t count(Color side) const;
    PlacementIterator begin(Color side) const;
    PlacementIterator end(Color side) const;
+   size_t count(Color side, Piece piece) const;
    PieceIterator begin(Color side, Piece piece) const;
    PieceIterator end(Color side, Piece piece) const;
 
@@ -270,6 +271,11 @@ inline bool Position::isEqual(const Position& other, bool withGameState) const
 inline size_t Position::count(Color side) const
 {
    return m_pieces[toColorIdx(side)].count();
+}
+
+inline size_t Position::count(Color side, Piece piece) const
+{
+   return m_pieces[toColorIdx(side)].pieceCount(piece);
 }
 
 
