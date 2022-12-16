@@ -569,6 +569,93 @@ void testPositionEndForPlacementIterator()
    }
 }
 
+void testPositionCountForPieces()
+{
+   {
+      const std::string caseLabel = "Position::count(Side, Piece) for white";
+
+      VERIFY(Position("wa2 wg3 wf7").count(Color::White, Pw) == 3, caseLabel);
+      VERIFY(Position("Nwb4").count(Color::White, Nw) == 1, caseLabel);
+      VERIFY(Position("Bwa6 Bwb6").count(Color::White, Bw) == 2, caseLabel);
+      VERIFY(Position("Rwe5 Rwa5").count(Color::White, Rw) == 2, caseLabel);
+      VERIFY(Position("Qwf4").count(Color::White, Qw) == 1, caseLabel);
+      VERIFY(Position("Kwe1").count(Color::White, Kw) == 1, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::count(Side, Piece) for black";
+
+      VERIFY(Position("bb2 bg3 bf7").count(Color::Black, Pb) == 3, caseLabel);
+      VERIFY(Position("Nbb4").count(Color::Black, Nb) == 1, caseLabel);
+      VERIFY(Position("Bba6 Bbb6").count(Color::Black, Bb) == 2, caseLabel);
+      VERIFY(Position("Rbe5 Rba5").count(Color::Black, Rb) == 2, caseLabel);
+      VERIFY(Position("Qbf4").count(Color::Black, Qb) == 1, caseLabel);
+      VERIFY(Position("Kbe1").count(Color::Black, Kb) == 1, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::count(Side, Piece) for no pieces";
+
+      Position pos{"Kbe8 Kwe1"};
+      VERIFY(pos.count(Color::White, Pw) == 0, caseLabel);
+      VERIFY(pos.count(Color::Black, Bb) == 0, caseLabel);
+   }
+}
+
+void testPositionBeginForPieceIterator()
+{
+   {
+      const std::string caseLabel = "Position::begin(side, Piece) for white";
+
+      Position pos{"Kwe1 Kbe8 Bwg6"};
+      const auto iter = pos.begin(Color::White, Bw);
+
+      VERIFY(*iter == g6, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::begin(Side, Piece) for black";
+
+      Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
+      const auto iter = pos.begin(Color::Black, Rb);
+
+      VERIFY(*iter == a2, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::begin(Side, Piece) for no pieces";
+
+      Position pos{"Kbe8"};
+      const auto iter = pos.begin(Color::White, Nw);
+
+      VERIFY(iter == pos.end(Color::White, Nw), caseLabel);
+   }
+}
+
+void testPositionEndForPieceIterator()
+{
+   {
+      const std::string caseLabel = "Position::end(Side, Piece) for white";
+
+      Position pos{"Kwe1 Kbe8 Bwg6, Bwf6"};
+      const auto end = pos.end(Color::White, Bw);
+
+      auto begin = pos.begin(Color::White, Bw);
+      for (size_t i = 0; i < pos.count(Color::White, Bw); ++i)
+         ++begin;
+
+      VERIFY(begin == end, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::end(Side, Piece) for black";
+
+      Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2 bh3 ba4"};
+      const auto end = pos.end(Color::Black, Pb);
+
+      auto begin = pos.begin(Color::Black, Pb);
+      for (size_t i = 0; i < pos.count(Color::Black, Pb); ++i)
+         ++begin;
+
+      VERIFY(begin == end, caseLabel);
+   }
+}
+
 void testPositionScore()
 {
    {
@@ -1746,6 +1833,9 @@ void testPosition()
    testPositionCount();
    testPositionBeginForPlacementIterator();
    testPositionEndForPlacementIterator();
+   testPositionCountForPieces();
+   testPositionBeginForPieceIterator();
+   testPositionEndForPieceIterator();
    testPositionScore();
    testPositionUpdateScore();
    testPositionEnPassantSquare();
