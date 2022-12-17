@@ -55,6 +55,7 @@ constexpr Piece Pb = Piece::Pb;
 // Examples: "Kb", "Rw", "b" (for black pawn).
 Piece makePiece(std::string_view notation);
 
+// clang-format off
 inline bool isKing(Piece p) { return p == Kw || p == Kb; }
 inline bool isQueen(Piece p) { return p == Qw || p == Qb; }
 inline bool isRook(Piece p) { return p == Rw || p == Rb; }
@@ -66,5 +67,13 @@ inline Color color(Piece p) { return p < Kb ? Color::White : Color::Black; }
 inline bool isWhite(Piece p) { return color(p) == Color::White; }
 inline bool isBlack(Piece p) { return color(p) == Color::Black; }
 inline bool haveSameColor(Piece a, Piece b) { return color(a) == color(b); }
+
+inline Piece king(Color side) { return side == Color::White ? Kw : Kb; }
+inline Piece queen(Color side) { return side == Color::White ? Qw : Qb; }
+inline Piece rook(Color side) { return side == Color::White ? Rw : Rb; }
+inline Piece bishop(Color side) { return side == Color::White ? Bw : Bb; }
+inline Piece knight(Color side) { return side == Color::White ? Nw : Nb; }
+inline Piece pawn(Color side) { return side == Color::White ? Pw : Pb; }
+// clang-format on
 
 } // namespace matt2

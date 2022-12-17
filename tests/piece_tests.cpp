@@ -364,6 +364,66 @@ void testPieceHaveSameColor()
    }
 }
 
+void testKingPiece()
+{
+   {
+      const std::string caseLabel = "king(Side)";
+
+      VERIFY(king(Color::White) == Kw, caseLabel);
+      VERIFY(king(Color::Black) == Kb, caseLabel);
+   }
+}
+
+void testQueenPiece()
+{
+   {
+      const std::string caseLabel = "queen(Side)";
+
+      VERIFY(queen(Color::White) == Qw, caseLabel);
+      VERIFY(queen(Color::Black) == Qb, caseLabel);
+   }
+}
+
+void testRookPiece()
+{
+   {
+      const std::string caseLabel = "rook(Side)";
+
+      VERIFY(rook(Color::White) == Rw, caseLabel);
+      VERIFY(rook(Color::Black) == Rb, caseLabel);
+   }
+}
+
+void testBishopPiece()
+{
+   {
+      const std::string caseLabel = "bishop(Side)";
+
+      VERIFY(bishop(Color::White) == Bw, caseLabel);
+      VERIFY(bishop(Color::Black) == Bb, caseLabel);
+   }
+}
+
+void testKnightPiece()
+{
+   {
+      const std::string caseLabel = "knight(Side)";
+
+      VERIFY(knight(Color::White) == Nw, caseLabel);
+      VERIFY(knight(Color::Black) == Nb, caseLabel);
+   }
+}
+
+void testPawnPiece()
+{
+   {
+      const std::string caseLabel = "pawn(Side)";
+
+      VERIFY(pawn(Color::White) == Pw, caseLabel);
+      VERIFY(pawn(Color::Black) == Pb, caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -388,4 +448,10 @@ void testPiece()
    testPieceIsWhite();
    testPieceIsBlack();
    testPieceHaveSameColor();
+   testKingPiece();
+   testQueenPiece();
+   testRookPiece();
+   testBishopPiece();
+   testKnightPiece();
+   testPawnPiece();
 }

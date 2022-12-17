@@ -3,6 +3,7 @@
 // MIT license
 //
 #include "scoring.h"
+#include "piece.h"
 #include "position.h"
 #include <numeric>
 #include <unordered_map>
@@ -125,15 +126,15 @@ static double collectPawnStats(Color side, const Position& pos, FileStats_t& sta
    stats = {{fa, {}}, {fb, {}}, {fc, {}}, {fd, {}},
             {fe, {}}, {ff, {}}, {fg, {}}, {fh, {}}};
 
-   const Piece pawn = side == Color::White ? Pw : Pb;
-   auto end = pos.end(pawn);
-   for (auto it = pos.begin(pawn); it != end; ++it)
+   const Piece p = pawn(side);
+   auto end = pos.end(p);
+   for (auto it = pos.begin(p); it != end; ++it)
    {
       const Square sq = *it;
       const Rank r = rank(sq);
       stats[file(sq)].push_back(r);
 
-      pawnValue += pieceValue(pawn);
+      pawnValue += pieceValue(p);
    }
 
    return pawnValue;
@@ -290,7 +291,7 @@ double DailyChessScore::calcKnightScore()
 
 static double calcMultipleBishopBonus(Color side, const Position& pos)
 {
-   if (pos.count(side == Color::White ? Bw : Bb) < 2)
+   if (pos.count(bishop(side)) < 2)
       return 0.;
 
    constexpr double MultipleBishopBonus = 20.;
@@ -319,8 +320,8 @@ static bool isPawnDiagonalNeighbor(Square sq, const Position& pos)
 
 static double calcAdjacentPawnBishopPenalty(Color side, const Position& pos)
 {
-   const Piece bishop = side == Color::White ? Bw : Bb;
-   return std::accumulate(pos.begin(bishop), pos.end(bishop), 0.,
+   const Piece p = bishop(side);
+   return std::accumulate(pos.begin(p), pos.end(p), 0.,
                           [&pos](double val, Square sq)
                           {
                              constexpr double AdjacentPawnPenality = 5.;
@@ -332,7 +333,7 @@ static double calcAdjacentPawnBishopPenalty(Color side, const Position& pos)
 
 double DailyChessScore::calcBishopScore()
 {
-   double score = calcPieceValueScore(m_pos, m_side == Color::White ? Bw : Bb);
+   double score = calcPieceValueScore(m_pos, bishop(m_side));
    score += calcMultipleBishopBonus(m_side, m_pos);
    score -= calcAdjacentPawnBishopPenalty(m_side, m_pos);
    return score;
@@ -340,19 +341,19 @@ double DailyChessScore::calcBishopScore()
 
 double DailyChessScore::calcRookScore()
 {
-   double score = calcPieceValueScore(m_pos, m_side == Color::White ? Rw : Rb);
+   double score = calcPieceValueScore(m_pos, rook(m_side));
    return score;
 }
 
 double DailyChessScore::calcQueenScore()
 {
-   double score = calcPieceValueScore(m_pos, m_side == Color::White ? Qw : Qb);
+   double score = calcPieceValueScore(m_pos, queen(m_side));
    return score;
 }
 
 double DailyChessScore::calcKingScore()
 {
-   double score = calcPieceValueScore(m_pos, m_side == Color::White ? Kw : Kb);
+   double score = calcPieceValueScore(m_pos, king(m_side));
    return score;
 }
 
