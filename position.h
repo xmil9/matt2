@@ -83,9 +83,9 @@ class Position
    size_t count(Color side) const;
    PlacementIterator begin(Color side) const;
    PlacementIterator end(Color side) const;
-   size_t count(Color side, Piece piece) const;
-   PieceIterator begin(Color side, Piece piece) const;
-   PieceIterator end(Color side, Piece piece) const;
+   size_t count(Piece piece) const;
+   PieceIterator begin(Piece piece) const;
+   PieceIterator end(Piece piece) const;
 
    std::optional<double> score() const { return m_score; }
    double updateScore();
@@ -273,9 +273,9 @@ inline size_t Position::count(Color side) const
    return m_pieces[toColorIdx(side)].count();
 }
 
-inline size_t Position::count(Color side, Piece piece) const
+inline size_t Position::count(Piece piece) const
 {
-   return m_pieces[toColorIdx(side)].pieceCount(piece);
+   return m_pieces[toColorIdx(piece)].pieceCount(piece);
 }
 
 
@@ -531,7 +531,7 @@ class PieceIterator
 
  private:
    // Only the position class needs access to this ctor.
-   PieceIterator(const Position* pos, Color side, Piece piece, std::size_t idx);
+   PieceIterator(const Position* pos, Piece piece, std::size_t idx);
 
  public:
    PieceIterator() = default;
@@ -549,8 +549,7 @@ class PieceIterator
 
    friend bool operator==(const PieceIterator& a, const PieceIterator& b)
    {
-      return a.m_pos == b.m_pos && a.m_side == b.m_side &&
-             a.m_piece == b.m_piece && a.m_idx == b.m_idx;
+      return a.m_pos == b.m_pos && a.m_piece == b.m_piece && a.m_idx == b.m_idx;
    }
 
    friend bool operator!=(const PieceIterator& a, const PieceIterator& b)
@@ -560,13 +559,13 @@ class PieceIterator
 
    friend bool operator<(const PieceIterator& a, const PieceIterator& b)
    {
-      assert(a.m_pos == b.m_pos && a.m_side == b.m_side && a.m_piece == b.m_piece);
+      assert(a.m_pos == b.m_pos && a.m_piece == b.m_piece);
       return a.m_idx < b.m_idx;
    }
 
    friend bool operator>(const PieceIterator& a, const PieceIterator& b)
    {
-      assert(a.m_pos == b.m_pos && a.m_side == b.m_side && a.m_piece == b.m_piece);
+      assert(a.m_pos == b.m_pos && a.m_piece == b.m_piece);
       return a.m_idx > b.m_idx;
    }
 
@@ -583,31 +582,27 @@ class PieceIterator
    friend void swap(PieceIterator& a, PieceIterator& b)
    {
       std::swap(a.m_pos, b.m_pos);
-      std::swap(a.m_side, b.m_side);
       std::swap(a.m_piece, b.m_piece);
       std::swap(a.m_idx, b.m_idx);
    }
 
  public:
    const Position* m_pos = nullptr;
-   Color m_side = Color::White;
    Piece m_piece = Pw;
    // Index of piece.
    std::size_t m_idx = 0;
 };
 
 
-inline PieceIterator::PieceIterator(const Position* pos, Color side, Piece piece,
-                                    std::size_t idx)
-: m_pos{pos}, m_side{side}, m_piece{piece}, m_idx{idx}
+inline PieceIterator::PieceIterator(const Position* pos, Piece piece, std::size_t idx)
+: m_pos{pos}, m_piece{piece}, m_idx{idx}
 {
-   assert(color(piece) == m_side);
    assert(m_pos);
 }
 
 inline PieceIterator::value_type PieceIterator::operator*() const
 {
-   return m_pos->pieces(m_side).pieceLocation(m_piece, m_idx);
+   return m_pos->pieces(color(m_piece)).pieceLocation(m_piece, m_idx);
 }
 
 inline PieceIterator& PieceIterator::operator++()
@@ -647,17 +642,17 @@ inline PlacementIterator Position::begin(Color side) const
 
 inline PlacementIterator Position::end(Color side) const
 {
-   return PlacementIterator{this, side, m_pieces[toColorIdx(side)].count()};
+   return PlacementIterator{this, side, count(side)};
 }
 
-inline PieceIterator Position::begin(Color side, Piece piece) const
+inline PieceIterator Position::begin(Piece piece) const
 {
-   return PieceIterator{this, side, piece, 0};
+   return PieceIterator{this, piece, 0};
 }
 
-inline PieceIterator Position::end(Color side, Piece piece) const
+inline PieceIterator Position::end(Piece piece) const
 {
-   return PieceIterator{this, side, piece, m_pieces[toColorIdx(side)].pieceCount(piece)};
+   return PieceIterator{this, piece, count(piece)};
 }
 
 ///////////////////

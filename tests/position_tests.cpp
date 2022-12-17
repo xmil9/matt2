@@ -574,29 +574,29 @@ void testPositionCountForPieces()
    {
       const std::string caseLabel = "Position::count(Side, Piece) for white";
 
-      VERIFY(Position("wa2 wg3 wf7").count(Color::White, Pw) == 3, caseLabel);
-      VERIFY(Position("Nwb4").count(Color::White, Nw) == 1, caseLabel);
-      VERIFY(Position("Bwa6 Bwb6").count(Color::White, Bw) == 2, caseLabel);
-      VERIFY(Position("Rwe5 Rwa5").count(Color::White, Rw) == 2, caseLabel);
-      VERIFY(Position("Qwf4").count(Color::White, Qw) == 1, caseLabel);
-      VERIFY(Position("Kwe1").count(Color::White, Kw) == 1, caseLabel);
+      VERIFY(Position("wa2 wg3 wf7").count(Pw) == 3, caseLabel);
+      VERIFY(Position("Nwb4").count(Nw) == 1, caseLabel);
+      VERIFY(Position("Bwa6 Bwb6").count(Bw) == 2, caseLabel);
+      VERIFY(Position("Rwe5 Rwa5").count(Rw) == 2, caseLabel);
+      VERIFY(Position("Qwf4").count(Qw) == 1, caseLabel);
+      VERIFY(Position("Kwe1").count(Kw) == 1, caseLabel);
    }
    {
       const std::string caseLabel = "Position::count(Side, Piece) for black";
 
-      VERIFY(Position("bb2 bg3 bf7").count(Color::Black, Pb) == 3, caseLabel);
-      VERIFY(Position("Nbb4").count(Color::Black, Nb) == 1, caseLabel);
-      VERIFY(Position("Bba6 Bbb6").count(Color::Black, Bb) == 2, caseLabel);
-      VERIFY(Position("Rbe5 Rba5").count(Color::Black, Rb) == 2, caseLabel);
-      VERIFY(Position("Qbf4").count(Color::Black, Qb) == 1, caseLabel);
-      VERIFY(Position("Kbe1").count(Color::Black, Kb) == 1, caseLabel);
+      VERIFY(Position("bb2 bg3 bf7").count(Pb) == 3, caseLabel);
+      VERIFY(Position("Nbb4").count(Nb) == 1, caseLabel);
+      VERIFY(Position("Bba6 Bbb6").count(Bb) == 2, caseLabel);
+      VERIFY(Position("Rbe5 Rba5").count(Rb) == 2, caseLabel);
+      VERIFY(Position("Qbf4").count(Qb) == 1, caseLabel);
+      VERIFY(Position("Kbe1").count(Kb) == 1, caseLabel);
    }
    {
       const std::string caseLabel = "Position::count(Side, Piece) for no pieces";
 
       Position pos{"Kbe8 Kwe1"};
-      VERIFY(pos.count(Color::White, Pw) == 0, caseLabel);
-      VERIFY(pos.count(Color::Black, Bb) == 0, caseLabel);
+      VERIFY(pos.count(Pw) == 0, caseLabel);
+      VERIFY(pos.count(Bb) == 0, caseLabel);
    }
 }
 
@@ -606,7 +606,7 @@ void testPositionBeginForPieceIterator()
       const std::string caseLabel = "Position::begin(side, Piece) for white";
 
       Position pos{"Kwe1 Kbe8 Bwg6"};
-      const auto iter = pos.begin(Color::White, Bw);
+      const auto iter = pos.begin(Bw);
 
       VERIFY(*iter == g6, caseLabel);
    }
@@ -614,7 +614,7 @@ void testPositionBeginForPieceIterator()
       const std::string caseLabel = "Position::begin(Side, Piece) for black";
 
       Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
-      const auto iter = pos.begin(Color::Black, Rb);
+      const auto iter = pos.begin(Rb);
 
       VERIFY(*iter == a2, caseLabel);
    }
@@ -622,9 +622,9 @@ void testPositionBeginForPieceIterator()
       const std::string caseLabel = "Position::begin(Side, Piece) for no pieces";
 
       Position pos{"Kbe8"};
-      const auto iter = pos.begin(Color::White, Nw);
+      const auto iter = pos.begin(Nw);
 
-      VERIFY(iter == pos.end(Color::White, Nw), caseLabel);
+      VERIFY(iter == pos.end(Nw), caseLabel);
    }
 }
 
@@ -634,10 +634,10 @@ void testPositionEndForPieceIterator()
       const std::string caseLabel = "Position::end(Side, Piece) for white";
 
       Position pos{"Kwe1 Kbe8 Bwg6, Bwf6"};
-      const auto end = pos.end(Color::White, Bw);
+      const auto end = pos.end(Bw);
 
-      auto begin = pos.begin(Color::White, Bw);
-      for (size_t i = 0; i < pos.count(Color::White, Bw); ++i)
+      auto begin = pos.begin(Bw);
+      for (size_t i = 0; i < pos.count(Bw); ++i)
          ++begin;
 
       VERIFY(begin == end, caseLabel);
@@ -646,10 +646,10 @@ void testPositionEndForPieceIterator()
       const std::string caseLabel = "Position::end(Side, Piece) for black";
 
       Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2 bh3 ba4"};
-      const auto end = pos.end(Color::Black, Pb);
+      const auto end = pos.end(Pb);
 
-      auto begin = pos.begin(Color::Black, Pb);
-      for (size_t i = 0; i < pos.count(Color::Black, Pb); ++i)
+      auto begin = pos.begin(Pb);
+      for (size_t i = 0; i < pos.count(Pb); ++i)
          ++begin;
 
       VERIFY(begin == end, caseLabel);
@@ -1472,7 +1472,7 @@ void testPieceIterCopyCtor()
       const std::string caseLabel = "PieceIterator copy ctor";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White, Pw);
+      auto it = pos.begin(Pw);
 
       auto copy{it};
 
@@ -1486,7 +1486,7 @@ void testPieceIterMoveCtor()
       const std::string caseLabel = "PieceIterator move ctor";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White, Pw);
+      auto it = pos.begin(Pw);
       Square sq = *it;
 
       auto movedTo{std::move(it)};
@@ -1501,7 +1501,7 @@ void testPieceIterCopyAssignment()
       const std::string caseLabel = "PieceIterator copy assignment";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White, Pw);
+      auto it = pos.begin(Pw);
 
       PieceIterator copy;
       copy = it;
@@ -1516,7 +1516,7 @@ void testPieceIterMoveAssignment()
       const std::string caseLabel = "PieceIterator move assignment";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White, Pw);
+      auto it = pos.begin(Pw);
       Square sq = *it;
 
       PieceIterator movedTo;
@@ -1532,7 +1532,7 @@ void testPieceIterDereference()
       const std::string caseLabel = "PieceIterator::operator*()";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White, Pw);
+      auto it = pos.begin(Pw);
 
       Square sq = *it;
       VERIFY(sq == f3, caseLabel);
@@ -1545,7 +1545,7 @@ void testPieceIterPrefixInc()
       const std::string caseLabel = "PieceIterator::operator++()";
 
       Position pos{"Qwd4 wf3 wb5"};
-      auto it = pos.begin(Color::White, Pw);
+      auto it = pos.begin(Pw);
 
       Square prev = *it;
       ++it;
@@ -1561,7 +1561,7 @@ void testPieceIterPostfixInc()
       const std::string caseLabel = "PieceIterator::operator++(int)";
 
       Position pos{"Qwd4 wf3 wb5"};
-      auto it = pos.begin(Color::White, Pw);
+      auto it = pos.begin(Pw);
 
       Square prev = *it;
       it++;
@@ -1577,7 +1577,7 @@ void testPieceIterPrefixDec()
       const std::string caseLabel = "PieceIterator::operator--()";
 
       Position pos{"Qwd4 wf3 wb5"};
-      auto it = pos.begin(Color::White, Pw);
+      auto it = pos.begin(Pw);
       ++it;
 
       Square next = *it;
@@ -1594,7 +1594,7 @@ void testPieceIterPostfixDec()
       const std::string caseLabel = "PieceIterator::operator--(int)";
 
       Position pos{"Qwd4 wf3 wb5"};
-      auto it = pos.begin(Color::White, Pw);
+      auto it = pos.begin(Pw);
       ++it;
 
       Square next = *it;
@@ -1611,8 +1611,8 @@ void testPieceIterEquality()
       const std::string caseLabel = "PieceIterator equality for equal pieces";
 
       Position pos{"Qwd4 wf3"};
-      auto a = pos.begin(Color::White, Pw);
-      auto b = pos.begin(Color::White, Pw);
+      auto a = pos.begin(Pw);
+      auto b = pos.begin(Pw);
 
       VERIFY(a == b, caseLabel);
    }
@@ -1622,8 +1622,8 @@ void testPieceIterEquality()
 
       Position posA{"Qwd4 wf3"};
       Position posB{"Qwd4 wf3"};
-      auto a = posA.begin(Color::White, Pw);
-      auto b = posB.begin(Color::White, Pw);
+      auto a = posA.begin(Pw);
+      auto b = posB.begin(Pw);
 
       VERIFY(!(a == b), caseLabel);
    }
@@ -1632,8 +1632,8 @@ void testPieceIterEquality()
          "PieceIterator equality for pieces of different sides";
 
       Position pos{"Qwd4 wg6 bf3"};
-      auto a = pos.begin(Color::White, Pw);
-      auto b = pos.begin(Color::Black, Pb);
+      auto a = pos.begin(Pw);
+      auto b = pos.begin(Pb);
 
       VERIFY(!(a == b), caseLabel);
    }
@@ -1641,7 +1641,7 @@ void testPieceIterEquality()
       const std::string caseLabel = "PieceIterator equality for different pieces";
 
       Position pos{"Qwd4 wf3 wg6"};
-      auto a = pos.begin(Color::White, Pw);
+      auto a = pos.begin(Pw);
       auto b = a;
       ++b;
 
@@ -1655,8 +1655,8 @@ void testPieceIterInequality()
       const std::string caseLabel = "PieceIterator inequality for equal pieces";
 
       Position pos{"Qwd4 wf3"};
-      auto a = pos.begin(Color::White, Pw);
-      auto b = pos.begin(Color::White, Pw);
+      auto a = pos.begin(Pw);
+      auto b = pos.begin(Pw);
 
       VERIFY(!(a != b), caseLabel);
    }
@@ -1666,8 +1666,8 @@ void testPieceIterInequality()
 
       Position posA{"Qwd4 wf3"};
       Position posB{"Qwd4 wf3"};
-      auto a = posA.begin(Color::White, Pw);
-      auto b = posB.begin(Color::White, Pw);
+      auto a = posA.begin(Pw);
+      auto b = posB.begin(Pw);
 
       VERIFY(a != b, caseLabel);
    }
@@ -1676,8 +1676,8 @@ void testPieceIterInequality()
          "PieceIterator inequality for pieces of different sides";
 
       Position pos{"Qwd4 wg6 bf3"};
-      auto a = pos.begin(Color::White, Pw);
-      auto b = pos.begin(Color::Black, Pb);
+      auto a = pos.begin(Pw);
+      auto b = pos.begin(Pb);
 
       VERIFY(a != b, caseLabel);
    }
@@ -1685,7 +1685,7 @@ void testPieceIterInequality()
       const std::string caseLabel = "PieceIterator inequality for different pieces";
 
       Position pos{"Qwd4 wf3 wg6"};
-      auto a = pos.begin(Color::White, Pw);
+      auto a = pos.begin(Pw);
       auto b = a;
       ++b;
 
@@ -1699,7 +1699,7 @@ void testPieceIterLtComparision()
       const std::string caseLabel = "PieceIterator less-than comparision";
 
       Position pos{"Qwd4 wf3 wg6 wb2"};
-      auto c = pos.begin(Color::White, Pw);
+      auto c = pos.begin(Pw);
       auto a = c++;
       auto b = c++;
 
@@ -1718,7 +1718,7 @@ void testPieceIterGtComparision()
       const std::string caseLabel = "PieceIterator greater-than comparision";
 
       Position pos{"Qwd4 wf3 wg6 wb2"};
-      auto c = pos.begin(Color::White, Pw);
+      auto c = pos.begin(Pw);
       auto a = c++;
       auto b = c++;
 
@@ -1737,7 +1737,7 @@ void testPieceIterLeComparision()
       const std::string caseLabel = "PieceIterator less-than-or-equal comparision";
 
       Position pos{"Qwd4 wf3 wg6 wb2"};
-      auto c = pos.begin(Color::White, Pw);
+      auto c = pos.begin(Pw);
       auto a = c++;
       auto b = c++;
 
@@ -1759,7 +1759,7 @@ void testPieceIterGeComparision()
       const std::string caseLabel = "PieceIterator greater-than-or-equal comparision";
 
       Position pos{"Kbe2 bf3 bg6 bb2"};
-      auto c = pos.begin(Color::Black, Pb);
+      auto c = pos.begin(Pb);
       auto a = c++;
       auto b = c++;
 
@@ -1781,10 +1781,10 @@ void testPieceIterSwap()
       const std::string caseLabel = "PieceIterator swap";
 
       Position posA{"Qwd4 wf3 Rwa1"};
-      auto a = posA.begin(Color::White, Rw);
+      auto a = posA.begin(Rw);
       const auto origA = a;
       Position posB{"Kbe2 Bbd7 bb3"};
-      auto b = posB.begin(Color::Black, Bb);
+      auto b = posB.begin(Bb);
       const auto origB = b;
 
       swap(a, b);
@@ -1800,8 +1800,8 @@ void testPieceIterIterateAllPieces()
 
    Position pos{"Qwd4 wf3 wg2 wh2 wb7 bh4 Rwa1"};
 
-   auto it = pos.begin(Color::White, Pw);
-   auto e = pos.end(Color::White, Pw);
+   auto it = pos.begin(Pw);
+   auto e = pos.end(Pw);
 
    std::vector<Square> iterated;
    for (; it != e; ++it)
