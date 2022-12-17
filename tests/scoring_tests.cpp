@@ -369,9 +369,51 @@ void testDCPawnScoring()
    }
 }
 
+void testDCBishopScoring()
+{
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Score for more bishops is higher";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Bwe5 Bwd5")),
+                           calcDailyChessScore(Position("Bwe5")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Bbe5 Bbe4")),
+                           calcDailyChessScore(Position("Bbe5")), false),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Multiple bishops receive a bonus";
+
+      const double multipleScore = calcDailyChessScore(Position("Bwe5 Bwd5"));
+      const double singleScore = calcDailyChessScore(Position("Bwe5"));
+      VERIFY(multipleScore > 2. * singleScore, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Penality if own pawn is diagonal neighbor of bishop";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Bwe5")) +
+                              calcDailyChessScore(Position("wd4")),
+                           calcDailyChessScore(Position("Bwe5 wd4")), true),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Penality if opposing pawn is diagonal neighbor of bishop";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Bbf3")) -
+                              calcDailyChessScore(Position("wg4")),
+                           calcDailyChessScore(Position("Bbf3 wg4")), false),
+             caseLabel);
+   }
+}
+
 void testDailyChessScoring()
 {
    testDCPawnScoring();
+   testDCBishopScoring();
 }
 
 } // namespace
