@@ -339,9 +339,38 @@ double DailyChessScore::calcBishopScore()
    return score;
 }
 
+static double calcRookKingTropismBonus(Color side, const Position& pos)
+{
+   const Piece enemyKing = king(!side);
+   const auto enemyKingIter = pos.begin(enemyKing);
+   // Make sure enemy king is on board.
+   if (enemyKingIter == pos.end(enemyKing))
+      return 0.;
+   const Square enemyKingSq = *enemyKingIter;
+
+   const Piece ownRook = rook(side);
+   if (pos.count(ownRook) == 0)
+      return 0.;
+
+   // Find min distance of any rook along file or rank to the enemy king.
+   constexpr int MaxDist = 7;
+   const int minDist = std::accumulate(pos.begin(ownRook), pos.end(ownRook), MaxDist,
+                                       [enemyKingSq](int minDist, Square rookSq)
+                                       {
+                                          const int dist =
+                                             minDistance(rookSq, enemyKingSq);
+                                          return dist < minDist ? dist : minDist;
+                                       });
+
+   // Higher bonus the closer the distance is.
+   constexpr double EnemyKingDistanceBonus = 5.;
+   return (MaxDist - minDist) * EnemyKingDistanceBonus;
+}
+
 double DailyChessScore::calcRookScore()
 {
    double score = calcPieceValueScore(m_pos, rook(m_side));
+   score += calcRookKingTropismBonus(m_side, m_pos);
    return score;
 }
 
