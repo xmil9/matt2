@@ -6,6 +6,9 @@
 #include <cassert>
 #include <string>
 
+#ifdef min
+#undef min
+#endif
 
 namespace matt2
 {
@@ -74,6 +77,11 @@ inline bool isAdjacent(File a, File b)
    return isLowerAdjacent(a, b) || isHigherAdjacent(a, b);
 }
 
+inline int distance(File a, File b)
+{
+   return static_cast<char>(a) - static_cast<char>(b);
+}
+
 ///////////////////
 
 // Identifiers for each rank of a chess board.
@@ -139,6 +147,10 @@ inline bool isAdjacent(Rank a, Rank b)
    return isLowerAdjacent(a, b) || isHigherAdjacent(a, b);
 }
 
+inline int distance(Rank a, Rank b)
+{
+   return static_cast<char>(a) - static_cast<char>(b);
+}
 
 ///////////////////
 
@@ -267,6 +279,15 @@ struct Offset
    int dr = 0;
 };
 
+inline bool operator==(Offset a, Offset b)
+{
+   return a.df == b.df && a.dr == b.dr;
+}
+
+inline bool operator!=(Offset a, Offset b)
+{
+   return !(a == b);
+}
 
 inline bool isOnBoard(Square sq, Offset off)
 {
@@ -276,6 +297,18 @@ inline bool isOnBoard(Square sq, Offset off)
 inline Square operator+(Square sq, Offset off)
 {
    return makeSquare(file(sq) + off.df, rank(sq) + off.dr);
+}
+
+inline Offset offset(Square a, Square b)
+{
+   return {distance(file(a), file(b)), distance(rank(a), rank(b))};
+}
+
+// Calculates the minimum absolute distance across file and rank between two squares.
+inline int minDistance(Square a, Square b)
+{
+   const Offset off = offset(a, b);
+   return std::min(std::abs(off.df), std::abs(off.dr));
 }
 
 } // namespace matt2

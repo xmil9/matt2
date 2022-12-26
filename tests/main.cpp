@@ -20,7 +20,7 @@ int main()
 {
    testColor();
    testFile();
-   testGame();
+   //testGame();
    testMoves();
    testNotations();
    testPiece();

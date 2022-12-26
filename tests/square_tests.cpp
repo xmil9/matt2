@@ -338,6 +338,28 @@ void testFileIsAdjacent()
    }
 }
 
+void testFileDistance()
+{
+   {
+      const std::string caseLabel = "distance(File, File)";
+
+      VERIFY(distance(fa, fa) == 0, caseLabel);
+      VERIFY(distance(fa, fb) == -1, caseLabel);
+      VERIFY(distance(fa, fc) == -2, caseLabel);
+      VERIFY(distance(fa, fd) == -3, caseLabel);
+      VERIFY(distance(fa, fe) == -4, caseLabel);
+      VERIFY(distance(fa, ff) == -5, caseLabel);
+      VERIFY(distance(fa, fg) == -6, caseLabel);
+      VERIFY(distance(fa, fh) == -7, caseLabel);
+      VERIFY(distance(fb, fa) == 1, caseLabel);
+      VERIFY(distance(fc, fa) == 2, caseLabel);
+      VERIFY(distance(fd, fa) == 3, caseLabel);
+      VERIFY(distance(fe, fa) == 4, caseLabel);
+      VERIFY(distance(ff, fa) == 5, caseLabel);
+      VERIFY(distance(fg, fa) == 6, caseLabel);
+      VERIFY(distance(fh, fa) == 7, caseLabel);
+   }
+}
 
 ///////////////////
 
@@ -664,6 +686,29 @@ void testRankIsAdjacent()
    }
 }
 
+void testRankDistance()
+{
+   {
+      const std::string caseLabel = "distance(Rank, Rank)";
+
+      VERIFY(distance(r1, r1) == 0, caseLabel);
+      VERIFY(distance(r1, r2) == -1, caseLabel);
+      VERIFY(distance(r1, r3) == -2, caseLabel);
+      VERIFY(distance(r1, r4) == -3, caseLabel);
+      VERIFY(distance(r1, r5) == -4, caseLabel);
+      VERIFY(distance(r1, r6) == -5, caseLabel);
+      VERIFY(distance(r1, r7) == -6, caseLabel);
+      VERIFY(distance(r1, r8) == -7, caseLabel);
+      VERIFY(distance(r2, r1) == 1, caseLabel);
+      VERIFY(distance(r3, r1) == 2, caseLabel);
+      VERIFY(distance(r4, r1) == 3, caseLabel);
+      VERIFY(distance(r5, r1) == 4, caseLabel);
+      VERIFY(distance(r6, r1) == 5, caseLabel);
+      VERIFY(distance(r7, r1) == 6, caseLabel);
+      VERIFY(distance(r8, r1) == 7, caseLabel);
+   }
+}
+
 
 ///////////////////
 
@@ -755,7 +800,8 @@ void testMakeSquareFromNotation()
       }
    }
    {
-      const std::string caseLabel = "makeSquare from notation for notation with only a file";
+      const std::string caseLabel =
+         "makeSquare from notation for notation with only a file";
 
       try
       {
@@ -772,7 +818,8 @@ void testMakeSquareFromNotation()
       }
    }
    {
-      const std::string caseLabel = "makeSquare from notation for notation with only a rank";
+      const std::string caseLabel =
+         "makeSquare from notation for notation with only a rank";
 
       try
       {
@@ -806,7 +853,8 @@ void testMakeSquareFromNotation()
       }
    }
    {
-      const std::string caseLabel = "makeSquare from notation for capitalized file letter";
+      const std::string caseLabel =
+         "makeSquare from notation for capitalized file letter";
 
       try
       {
@@ -986,6 +1034,28 @@ void testSquareIncrementOperator()
 
 ///////////////////
 
+void testOffsetEquality()
+{
+   {
+      const std::string caseLabel = "operator==(Offset, Offset)";
+
+      VERIFY(Offset(3, -5) == Offset(3, -5), caseLabel);
+      VERIFY(!(Offset(3, 3) == Offset(3, 4)), caseLabel);
+      VERIFY(!(Offset(3, 3) == Offset(1, 3)), caseLabel);
+   }
+}
+
+void testOffsetInequality()
+{
+   {
+      const std::string caseLabel = "operator!=(Offset, Offset)";
+
+      VERIFY(!(Offset(3, -5) != Offset(3, -5)), caseLabel);
+      VERIFY(Offset(3, 3) == Offset(3, 4), caseLabel);
+      VERIFY(Offset(3, 3) == Offset(1, 3), caseLabel);
+   }
+}
+
 void testOffsetIsOnBoard()
 {
    {
@@ -1057,6 +1127,31 @@ void testOffsetAdditionToSquare()
    }
 }
 
+void testOffsetOffset()
+{
+   {
+      const std::string caseLabel = "offset(Square, Square)";
+
+      VERIFY(offset(a1, h8) == Offset(-7, -7), caseLabel);
+      VERIFY(offset(h8, a1) == Offset(7, 7), caseLabel);
+      VERIFY(offset(d4, d4) == Offset(0, 0), caseLabel);
+      VERIFY(offset(b7, e3) == Offset(-2, 4), caseLabel);
+   }
+}
+
+void testOffsetMinDistance()
+{
+   {
+      const std::string caseLabel = "minDistance(Square, Square)";
+
+      VERIFY(minDistance(a1, h8) == 7, caseLabel);
+      VERIFY(minDistance(h8, a1) == 7, caseLabel);
+      VERIFY(minDistance(a1, a1) == 0, caseLabel);
+      VERIFY(minDistance(g2, d3) == 3, caseLabel);
+      VERIFY(minDistance(g2, f6) == 4, caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -1071,6 +1166,7 @@ void testFile()
    testFileIsLowerAdjacent();
    testFileIsHigherAdjacent();
    testFileIsAdjacent();
+   testFileDistance();
 }
 
 
@@ -1083,6 +1179,7 @@ void testRank()
    testRankIsLowerAdjacent();
    testRankIsHigherAdjacent();
    testRankIsAdjacent();
+   testRankDistance();
 }
 
 
@@ -1099,6 +1196,10 @@ void testSquare()
 
 void testOffset()
 {
+   testOffsetEquality();
+   testOffsetInequality();
    testOffsetIsOnBoard();
    testOffsetAdditionToSquare();
+   testOffsetOffset();
+   testOffsetMinDistance();
 }
