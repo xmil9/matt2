@@ -410,10 +410,37 @@ void testDCBishopScoring()
    }
 }
 
+void testDCRookScoring()
+{
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Score for more rooks is higher";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Rwe5 Rwd5")),
+                           calcDailyChessScore(Position("Rwe5")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Rbe5 Rbe4")),
+                           calcDailyChessScore(Position("Rbe5")), false),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Bonus for rook proximity to enemy king";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Kbd5 Rwe5")),
+                           calcDailyChessScore(Position("Kbd5 Rwf6")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Kwh8 Rbb2")),
+                           calcDailyChessScore(Position("Kwh8 Rba1")), false),
+             caseLabel);
+   }
+}
+
 void testDailyChessScoring()
 {
    testDCPawnScoring();
    testDCBishopScoring();
+   testDCRookScoring();
 }
 
 } // namespace
