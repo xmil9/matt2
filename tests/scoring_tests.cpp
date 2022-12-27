@@ -434,6 +434,16 @@ void testDCRookScoring()
                            calcDailyChessScore(Position("Kwh8 Rba1")), false),
              caseLabel);
    }
+   {
+      const std::string caseLabel = "Daily chess scoring - Bonus for rook on 7th rank";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Rwd7")),
+                           calcDailyChessScore(Position("Rwd6")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Rbd2")),
+                           calcDailyChessScore(Position("Rbd3")), false),
+             caseLabel);
+   }
 }
 
 void testDailyChessScoring()
