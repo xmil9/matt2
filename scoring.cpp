@@ -5,6 +5,8 @@
 #include "scoring.h"
 #include "piece.h"
 #include "position.h"
+#include <algorithm>
+#include <functional>
 #include <numeric>
 #include <unordered_map>
 
@@ -371,11 +373,52 @@ static double calcRookSeventhRankBonus(Color side, const Position& pos)
 {
    const Piece r = rook(side);
    const Rank seventhRank = side == Color::White ? r7 : r2;
-   const bool on7th = std::any_of(pos.begin(r), pos.end(r),
-               [seventhRank](Square sq) { return rank(sq) == seventhRank; });
+   const bool on7th =
+      std::any_of(pos.begin(r), pos.end(r),
+                  [seventhRank](Square sq) { return rank(sq) == seventhRank; });
 
    constexpr double SeventhRankBonus = 20.;
    return on7th ? SeventhRankBonus : 0.;
+}
+
+template <typename Iter, typename Line>
+static bool anySharedLine(Iter first, Iter last, std::function<Line(Square)> extractLine)
+{
+   // Sort by line.
+   std::sort(first, last,
+             [&extractLine](Square a, Square b)
+             { return extractLine(a) < extractLine(b); });
+
+   // Check if any consecutive lines are the same, i.e. shared between those pieces.
+   return std::adjacent_find(first, last,
+                             [&extractLine](Square a, Square b)
+                             { return extractLine(a) == extractLine(b); }) != last;
+}
+
+static double calcRookSharedLineBonus(Color side, const Position& pos)
+{
+   const Piece r = rook(side);
+
+   std::vector<Square> locs;
+   std::transform(pos.begin(r), pos.end(r), std::back_inserter(locs),
+                  [](Square sq) { return sq; });
+
+   if (locs.size() < 2)
+      return 0.;
+
+   constexpr double SharedLineBonus = 20.;
+
+   const bool onSameRank = anySharedLine<std::vector<Square>::iterator, Rank>(
+      std::begin(locs), std::end(locs), rank);
+   if (onSameRank)
+      return SharedLineBonus;
+
+   const bool onSameFile = anySharedLine<std::vector<Square>::iterator, File>(
+      std::begin(locs), std::end(locs), file);
+   if (onSameFile)
+      return SharedLineBonus;
+
+   return 0.;
 }
 
 double DailyChessScore::calcRookScore()
@@ -383,6 +426,7 @@ double DailyChessScore::calcRookScore()
    double score = calcPieceValueScore(m_pos, rook(m_side));
    score += calcRookKingTropismBonus(m_side, m_pos);
    score += calcRookSeventhRankBonus(m_side, m_pos);
+   score += calcRookSharedLineBonus(m_side, m_pos);
    return score;
 }
 
