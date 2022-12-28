@@ -341,6 +341,16 @@ double DailyChessScore::calcBishopScore()
    return score;
 }
 
+static std::vector<File> collectPieceFilesSorted(Piece p, const Position& pos)
+{
+   std::vector<File> files;
+   std::transform(pos.begin(p), pos.end(p), std::back_inserter(files),
+                  [](Square sq) { return file(sq); });
+   std::sort(std::begin(files), std::end(files));
+
+   return files;
+}
+
 static double calcRookKingTropismBonus(Color side, const Position& pos)
 {
    const Piece ownRook = rook(side);
@@ -381,45 +391,56 @@ static double calcRookSeventhRankBonus(Color side, const Position& pos)
    return on7th ? SeventhRankBonus : 0.;
 }
 
-template <typename Iter, typename Line>
-requires std::is_same<Line, File>::value || std::is_same<Line, Rank>::value
-static bool anySharedLine(Iter first, Iter last, std::function<Line(Square)> extractLine)
+static double calcRookSharedFileBonus(const std::vector<File>& sortedRookFiles)
 {
-   // Sort by line.
-   std::sort(first, last,
-             [&extractLine](Square a, Square b)
-             { return extractLine(a) < extractLine(b); });
-
-   // Check if any consecutive lines are the same, i.e. shared between those pieces.
-   return std::adjacent_find(first, last,
-                             [&extractLine](Square a, Square b)
-                             { return extractLine(a) == extractLine(b); }) != last;
-}
-
-static double calcRookSharedFileBonus(Color side, const Position& pos)
-{
-   const Piece r = rook(side);
-
-   std::vector<Square> locs;
-   std::transform(pos.begin(r), pos.end(r), std::back_inserter(locs),
-                  [](Square sq) { return sq; });
-
-   if (locs.size() < 2)
-      return 0.;
-
-   const bool onSameFile = anySharedLine<std::vector<Square>::iterator, File>(
-      std::begin(locs), std::end(locs), file);
+   // Check if any consecutive files are the same, i.e. shared between those pieces.
+   const auto last = std::end(sortedRookFiles);
+   const bool onSameFile = std::adjacent_find(std::begin(sortedRookFiles), last) != last;
 
    constexpr double SharedFileBonus = 15.;
    return onSameFile ? SharedFileBonus : 0.;
 }
 
+static double calcRookPawnsOnFileBonus(Color side, const Position& pos,
+                                       const std::vector<File>& sortedRookFiles)
+{
+   const std::vector<File> ownPawnFilesSorted = collectPieceFilesSorted(pawn(side), pos);
+   auto ownFirst = std::begin(ownPawnFilesSorted);
+   auto ownLast = std::end(ownPawnFilesSorted);
+
+   const std::vector<File> enemyPawnFilesSorted =
+      collectPieceFilesSorted(pawn(!side), pos);
+   auto enemyFirst = std::begin(enemyPawnFilesSorted);
+   auto enemyLast = std::end(enemyPawnFilesSorted);
+
+   size_t numFilesWithoutPawn = 0;
+   size_t numFilesWithOnlyEnemyPawn = 0;
+   for (File rookFile : sortedRookFiles)
+   {
+      const bool hasOwnPawn = std::find(ownFirst, ownLast, rookFile) != ownLast;
+      const bool hasEnemyPawn = std::find(enemyFirst, enemyLast, rookFile) != enemyLast;
+
+      if (!hasOwnPawn && !hasEnemyPawn)
+         ++numFilesWithoutPawn;
+      if (!hasOwnPawn && hasEnemyPawn)
+         ++numFilesWithOnlyEnemyPawn;
+   }
+
+   constexpr double NoPawnsOnFileBonus = 10.;
+   constexpr double OnlyEnemyPawnsOnFileBonus = 3.;
+   return numFilesWithoutPawn * NoPawnsOnFileBonus +
+          numFilesWithOnlyEnemyPawn * OnlyEnemyPawnsOnFileBonus;
+}
+
 double DailyChessScore::calcRookScore()
 {
+   std::vector<File> sortedRookFiles = collectPieceFilesSorted(rook(m_side), m_pos);
+
    double score = calcPieceValueScore(m_pos, rook(m_side));
    score += calcRookKingTropismBonus(m_side, m_pos);
    score += calcRookSeventhRankBonus(m_side, m_pos);
-   score += calcRookSharedFileBonus(m_side, m_pos);
+   score += calcRookSharedFileBonus(sortedRookFiles);
+   score += calcRookPawnsOnFileBonus(m_side, m_pos, sortedRookFiles);
    return score;
 }
 

@@ -455,6 +455,50 @@ void testDCRookScoring()
                            calcDailyChessScore(Position("Rbg5 Rbh1")), false),
              caseLabel);
    }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Bonus for no pawns on rook files";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Rwd3 we6")),
+                           calcDailyChessScore(Position("Rwd3 wd6")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Rbe5 bd3")),
+                           calcDailyChessScore(Position("Rbe5 be4")), false),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Bonus for no pawns on rook files for multiple rooks";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Rwd3 wd6 Rwc1 wf5")),
+                           calcDailyChessScore(Position("Rwd3 wd6 Rwc1 wc5")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Rba5 ba6 Rbb3 bg6")),
+                           calcDailyChessScore(Position("Rba5 ba6 Rbb3 bb6")), false),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Bonus for only enemy pawns on rook files";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Rwd3 bd6 we4")),
+                           calcDailyChessScore(Position("Rwd3 bd6 wd4")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Rbe5 we3 bd6")),
+                           calcDailyChessScore(Position("Rbe5 we3 be6")), false),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "Daily chess scoring - Bonus for only enemy pawns on "
+                                    "rook files for multiple rooks";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Rwd3 bd6 Rwf3 bf2 wc4")),
+                           calcDailyChessScore(Position("Rwd3 bd6 Rwf3 bf2 wf4")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Rbh5 wh3 Rbg5 wg3 bb4")),
+                           calcDailyChessScore(Position("Rbh5 wh3 Rbg5 wg3 bg4")), false),
+             caseLabel);
+   }
 }
 
 void testDailyChessScoring()
