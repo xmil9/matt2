@@ -382,6 +382,7 @@ static double calcRookSeventhRankBonus(Color side, const Position& pos)
 }
 
 template <typename Iter, typename Line>
+requires std::is_same<Line, File>::value || std::is_same<Line, Rank>::value
 static bool anySharedLine(Iter first, Iter last, std::function<Line(Square)> extractLine)
 {
    // Sort by line.
@@ -395,7 +396,7 @@ static bool anySharedLine(Iter first, Iter last, std::function<Line(Square)> ext
                              { return extractLine(a) == extractLine(b); }) != last;
 }
 
-static double calcRookSharedLineBonus(Color side, const Position& pos)
+static double calcRookSharedFileBonus(Color side, const Position& pos)
 {
    const Piece r = rook(side);
 
@@ -406,19 +407,11 @@ static double calcRookSharedLineBonus(Color side, const Position& pos)
    if (locs.size() < 2)
       return 0.;
 
-   constexpr double SharedLineBonus = 20.;
-
-   const bool onSameRank = anySharedLine<std::vector<Square>::iterator, Rank>(
-      std::begin(locs), std::end(locs), rank);
-   if (onSameRank)
-      return SharedLineBonus;
-
    const bool onSameFile = anySharedLine<std::vector<Square>::iterator, File>(
       std::begin(locs), std::end(locs), file);
-   if (onSameFile)
-      return SharedLineBonus;
 
-   return 0.;
+   constexpr double SharedFileBonus = 15.;
+   return onSameFile ? SharedFileBonus : 0.;
 }
 
 double DailyChessScore::calcRookScore()
@@ -426,7 +419,7 @@ double DailyChessScore::calcRookScore()
    double score = calcPieceValueScore(m_pos, rook(m_side));
    score += calcRookKingTropismBonus(m_side, m_pos);
    score += calcRookSeventhRankBonus(m_side, m_pos);
-   score += calcRookSharedLineBonus(m_side, m_pos);
+   score += calcRookSharedFileBonus(m_side, m_pos);
    return score;
 }
 

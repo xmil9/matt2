@@ -446,18 +446,12 @@ void testDCRookScoring()
    }
    {
       const std::string caseLabel =
-         "Daily chess scoring - Bonus for rooks on shared file or rank";
+         "Daily chess scoring - Bonus for rooks on shared file";
 
       VERIFY(isBetterScore(calcDailyChessScore(Position("Rwd3 Rwd6")),
                            calcDailyChessScore(Position("Rwd3 Rwe6")), true),
              caseLabel);
-      VERIFY(isBetterScore(calcDailyChessScore(Position("Rwd3 Rwa3")),
-                           calcDailyChessScore(Position("Rwd3 Rwe6")), true),
-             caseLabel);
       VERIFY(isBetterScore(calcDailyChessScore(Position("Rbg5 Rbg1")),
-                           calcDailyChessScore(Position("Rbg5 Rbh1")), false),
-             caseLabel);
-      VERIFY(isBetterScore(calcDailyChessScore(Position("Rbg5 Rba5")),
                            calcDailyChessScore(Position("Rbg5 Rbh1")), false),
              caseLabel);
    }
