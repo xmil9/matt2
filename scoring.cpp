@@ -118,6 +118,7 @@ double DailyChessScore::calc()
 }
 
 using Ranks_t = std::vector<Rank>;
+// Occupied ranks by file.
 using FileStats_t = std::unordered_map<File, Ranks_t>;
 
 static double collectPawnStats(Color side, const Position& pos, FileStats_t& stats)
@@ -285,9 +286,31 @@ double DailyChessScore::calcPawnScore()
    return score;
 }
 
+static double calcKnightCenterBonus(Color side, const Position& pos)
+{
+   // clang-format off
+   static const std::unordered_map<Square, double> PosScore = {
+      {a1, -14.}, {b1, -7.}, {c1, -7.}, {d1, -7.}, {e1, -7.}, {f1, -7.}, {g1, -7.}, {h1, -14.},
+      {a2, -7.},  {b2, 0.},  {c2, 0.},  {d2, 0.},  {e2, 0.},  {f2, 0.},  {g2, 0.},  {h2, -7.},
+      {a3, -7.},  {b3, 0.},  {c3, 4.},  {d3, 4.},  {e3, 4.},  {f3, 4.},  {g3, 0.},  {h3, -7.},
+      {a4, -7.},  {b4, 0.},  {c4, 4.},  {d4, 7.},  {e4, 7.},  {f4, 4.},  {g4, 0.},  {h4, -7.},
+      {a5, -7.},  {b5, 0.},  {c5, 4.},  {d5, 7.},  {e5, 7.},  {f5, 4.},  {g5, 0.},  {h5, -7.},
+      {a6, -7.},  {b6, 0.},  {c6, 4.},  {d6, 4.},  {e6, 4.},  {f6, 4.},  {g6, 0.},  {h6, -7.},
+      {a7, -7.},  {b7, 0.},  {c7, 0.},  {d7, 0.},  {e7, 0.},  {f7, 0.},  {g7, 0.},  {h7, -7.},
+      {a8, -14.}, {b8, -7.}, {c8, -7.}, {d8, -7.}, {e8, -7.}, {f8, -7.}, {g8, -7.}, {h8, -14.},
+   };
+   // clang-format on
+
+   const Piece kn = knight(side);
+   return std::accumulate(pos.begin(kn), pos.end(kn), 0.,
+                          [side](double val, Square sq)
+                          { return val + PosScore.at(sq); });
+}
+
 double DailyChessScore::calcKnightScore()
 {
    double score = calcPieceValueScore(m_pos, m_side == Color::White ? Nw : Nb);
+   score += calcKnightCenterBonus(m_side, m_pos);
    return score;
 }
 

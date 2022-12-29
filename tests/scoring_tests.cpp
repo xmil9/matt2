@@ -501,11 +501,50 @@ void testDCRookScoring()
    }
 }
 
+void testDCKnightScoring()
+{
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Score for more knights is higher";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Nwe5 Nwd5")),
+                           calcDailyChessScore(Position("Nwe5")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Nbe5 Nbe4")),
+                           calcDailyChessScore(Position("Nbe5")), false),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Bonus for knight closeness to center";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Nwb2")),
+                           calcDailyChessScore(Position("Nwa1")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Nwc3")),
+                           calcDailyChessScore(Position("Nwb1")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Nwe5")),
+                           calcDailyChessScore(Position("Nwc3")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Nbg6")),
+                           calcDailyChessScore(Position("Nbh8")), false),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Nbf6")),
+                           calcDailyChessScore(Position("Nbg8")), false),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Nbd4")),
+                           calcDailyChessScore(Position("Nbe6")), false),
+             caseLabel);
+   }
+}
+
 void testDailyChessScoring()
 {
    testDCPawnScoring();
    testDCBishopScoring();
    testDCRookScoring();
+   testDCKnightScoring();
 }
 
 } // namespace
