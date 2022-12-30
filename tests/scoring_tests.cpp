@@ -537,6 +537,25 @@ void testDCKnightScoring()
                            calcDailyChessScore(Position("Nbe6")), false),
              caseLabel);
    }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Bonus for knight closeness to enemy king";
+
+      // Note - It's a bit tricky to isolate the closeness score from other components of
+      //        a knights score, e.g. location on board!
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Nwd2 Kbd4")),
+                           calcDailyChessScore(Position("Nwc2 Kbd4")), true),
+             caseLabel);
+      VERIFY(calcDailyChessScore(Position("Nwg8 Kbd4")) ==
+                calcDailyChessScore(Position("Nwh7 Kbd4")),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Nbd2 Kwf5")),
+                           calcDailyChessScore(Position("Nbc2 Kwf5")), false),
+             caseLabel);
+      VERIFY(calcDailyChessScore(Position("Nbg8 Kwf5")) ==
+                calcDailyChessScore(Position("Nbh7 Kwf5")),
+             caseLabel);
+   }
 }
 
 void testDailyChessScoring()

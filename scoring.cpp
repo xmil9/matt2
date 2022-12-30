@@ -307,10 +307,43 @@ static double calcKnightCenterBonus(Color side, const Position& pos)
                           { return val + PosScore.at(sq); });
 }
 
+// Calculate bonus for an individual knight's closeness to the enemy king.
+static double calcKnightKingClosenessBonus(Square knightSq, Square enemyKingSq)
+{
+   constexpr int MaxDistSum = 14;
+
+   const Offset off = offset(knightSq, enemyKingSq);
+   const int distSum = std::abs(off.df) + std::abs(off.dr);
+
+   // Higher bonus the closer the distance is.
+   constexpr double EnemyKingDistanceBonus = 1.;
+   return (MaxDistSum - distSum) * EnemyKingDistanceBonus;
+}
+
+// Calculate bonus for an all knights' closeness to the enemy king.
+static double calcKnightKingClosenessBonus(Color side, const Position& pos)
+{
+   const Piece kn = knight(side);
+
+   const Piece enemyKing = king(!side);
+   const auto enemyKingIter = pos.begin(enemyKing);
+   // Make sure enemy king is on board.
+   if (enemyKingIter == pos.end(enemyKing))
+      return 0.;
+   const Square enemyKingSq = *enemyKingIter;
+
+   // Sum up bonus for all knights.
+   return std::accumulate(
+      pos.begin(kn), pos.end(kn), 0.,
+      [enemyKingSq](double val, Square knightSq)
+      { return val + calcKnightKingClosenessBonus(knightSq, enemyKingSq); });
+}
+
 double DailyChessScore::calcKnightScore()
 {
    double score = calcPieceValueScore(m_pos, m_side == Color::White ? Nw : Nb);
    score += calcKnightCenterBonus(m_side, m_pos);
+   score += calcKnightKingClosenessBonus(m_side, m_pos);
    return score;
 }
 
@@ -374,7 +407,7 @@ static std::vector<File> collectPieceFilesSorted(Piece p, const Position& pos)
    return files;
 }
 
-static double calcRookKingTropismBonus(Color side, const Position& pos)
+static double calcRookKingClosenessBonus(Color side, const Position& pos)
 {
    const Piece ownRook = rook(side);
    if (pos.count(ownRook) == 0)
@@ -460,7 +493,7 @@ double DailyChessScore::calcRookScore()
    std::vector<File> sortedRookFiles = collectPieceFilesSorted(rook(m_side), m_pos);
 
    double score = calcPieceValueScore(m_pos, rook(m_side));
-   score += calcRookKingTropismBonus(m_side, m_pos);
+   score += calcRookKingClosenessBonus(m_side, m_pos);
    score += calcRookSeventhRankBonus(m_side, m_pos);
    score += calcRookSharedFileBonus(sortedRookFiles);
    score += calcRookPawnsOnFileBonus(m_side, m_pos, sortedRookFiles);
