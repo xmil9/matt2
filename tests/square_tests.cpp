@@ -1031,6 +1031,196 @@ void testSquareIncrementOperator()
    }
 }
 
+///////////////////
+
+void testUpDiagonal()
+{
+   {
+      const std::string caseLabel = "upDiagonal(Square)";
+
+      VERIFY(upDiagonal(a1) == upDiagonal(b2), caseLabel);
+      VERIFY(upDiagonal(a1) == upDiagonal(c3), caseLabel);
+      VERIFY(upDiagonal(a1) == upDiagonal(d4), caseLabel);
+      VERIFY(upDiagonal(a1) == upDiagonal(e5), caseLabel);
+      VERIFY(upDiagonal(a1) == upDiagonal(f6), caseLabel);
+      VERIFY(upDiagonal(a1) == upDiagonal(g7), caseLabel);
+      VERIFY(upDiagonal(a1) == upDiagonal(h8), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(b1), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(c1), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(d1), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(e1), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(f1), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(g1), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(h1), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(a8), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(b8), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(c8), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(d8), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(e8), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(f8), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(g8), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(b7), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(d6), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(f5), caseLabel);
+      VERIFY(upDiagonal(a1) != upDiagonal(h3), caseLabel);
+
+      VERIFY(upDiagonal(c7) == upDiagonal(a5), caseLabel);
+      VERIFY(upDiagonal(c7) == upDiagonal(b6), caseLabel);
+      VERIFY(upDiagonal(c7) == upDiagonal(d8), caseLabel);
+      VERIFY(upDiagonal(c7) != upDiagonal(b5), caseLabel);
+      VERIFY(upDiagonal(c7) != upDiagonal(c6), caseLabel);
+      VERIFY(upDiagonal(c7) != upDiagonal(d7), caseLabel);
+      VERIFY(upDiagonal(c7) != upDiagonal(e4), caseLabel);
+      VERIFY(upDiagonal(c7) != upDiagonal(g1), caseLabel);
+      VERIFY(upDiagonal(c7) != upDiagonal(h2), caseLabel);
+   }
+}
+
+void testDownDiagonal()
+{
+   {
+      const std::string caseLabel = "downDiagonal(Square)";
+
+      VERIFY(downDiagonal(a8) == downDiagonal(b7), caseLabel);
+      VERIFY(downDiagonal(a8) == downDiagonal(c6), caseLabel);
+      VERIFY(downDiagonal(a8) == downDiagonal(d5), caseLabel);
+      VERIFY(downDiagonal(a8) == downDiagonal(e4), caseLabel);
+      VERIFY(downDiagonal(a8) == downDiagonal(f3), caseLabel);
+      VERIFY(downDiagonal(a8) == downDiagonal(g2), caseLabel);
+      VERIFY(downDiagonal(a8) == downDiagonal(h1), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(b8), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(c8), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(d8), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(e8), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(f8), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(g8), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(h8), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(a1), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(b1), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(c1), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(d1), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(e1), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(f1), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(g1), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(b3), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(d2), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(f4), caseLabel);
+      VERIFY(downDiagonal(a8) != downDiagonal(h5), caseLabel);
+
+      VERIFY(downDiagonal(d2) == downDiagonal(a5), caseLabel);
+      VERIFY(downDiagonal(d2) == downDiagonal(b4), caseLabel);
+      VERIFY(downDiagonal(d2) == downDiagonal(c3), caseLabel);
+      VERIFY(downDiagonal(d2) == downDiagonal(e1), caseLabel);
+      VERIFY(downDiagonal(d2) != downDiagonal(b5), caseLabel);
+      VERIFY(downDiagonal(d2) != downDiagonal(c6), caseLabel);
+      VERIFY(downDiagonal(d2) != downDiagonal(d7), caseLabel);
+      VERIFY(downDiagonal(d2) != downDiagonal(e4), caseLabel);
+      VERIFY(downDiagonal(d2) != downDiagonal(g1), caseLabel);
+      VERIFY(downDiagonal(d2) != downDiagonal(h2), caseLabel);
+   }
+}
+
+void testOnSameUpDiagonal()
+{
+   {
+      const std::string caseLabel = "onSameUpDiagonal(Square, Square)";
+
+      VERIFY(onSameUpDiagonal(a1, a1), caseLabel);
+      VERIFY(onSameUpDiagonal(a1, b2), caseLabel);
+      VERIFY(onSameUpDiagonal(a1, c3), caseLabel);
+      VERIFY(onSameUpDiagonal(a1, d4), caseLabel);
+      VERIFY(onSameUpDiagonal(a1, e5), caseLabel);
+      VERIFY(onSameUpDiagonal(a1, f6), caseLabel);
+      VERIFY(onSameUpDiagonal(a1, g7), caseLabel);
+      VERIFY(onSameUpDiagonal(a1, h8), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, b1), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, c1), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, d1), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, e1), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, f1), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, g1), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, h1), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, a8), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, b8), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, c8), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, d8), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, e8), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, f8), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, g8), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, b7), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, d6), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, f5), caseLabel);
+      VERIFY(!onSameUpDiagonal(a1, h3), caseLabel);
+
+      VERIFY(onSameUpDiagonal(c7, a5), caseLabel);
+      VERIFY(onSameUpDiagonal(c7, b6), caseLabel);
+      VERIFY(onSameUpDiagonal(c7, d8), caseLabel);
+      VERIFY(!onSameUpDiagonal(c7, b5), caseLabel);
+      VERIFY(!onSameUpDiagonal(c7, c6), caseLabel);
+      VERIFY(!onSameUpDiagonal(c7, d7), caseLabel);
+      VERIFY(!onSameUpDiagonal(c7, e4), caseLabel);
+      VERIFY(!onSameUpDiagonal(c7, g1), caseLabel);
+      VERIFY(!onSameUpDiagonal(c7, h2), caseLabel);
+   }
+}
+
+void testOnSameDownDiagonal()
+{
+   {
+      const std::string caseLabel = "onSameDownDiagonal(Square, Square)";
+
+      VERIFY(onSameDownDiagonal(a8, a8), caseLabel);
+      VERIFY(onSameDownDiagonal(a8, b7), caseLabel);
+      VERIFY(onSameDownDiagonal(a8, c6), caseLabel);
+      VERIFY(onSameDownDiagonal(a8, d5), caseLabel);
+      VERIFY(onSameDownDiagonal(a8, e4), caseLabel);
+      VERIFY(onSameDownDiagonal(a8, f3), caseLabel);
+      VERIFY(onSameDownDiagonal(a8, g2), caseLabel);
+      VERIFY(onSameDownDiagonal(a8, h1), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, b8), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, c8), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, d8), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, e8), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, f8), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, g8), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, h8), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, a1), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, b1), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, c1), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, d1), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, e1), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, f1), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, g1), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, b3), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, d2), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, f4), caseLabel);
+      VERIFY(!onSameDownDiagonal(a8, h5), caseLabel);
+
+      VERIFY(onSameDownDiagonal(d2, a5), caseLabel);
+      VERIFY(onSameDownDiagonal(d2, b4), caseLabel);
+      VERIFY(onSameDownDiagonal(d2, c3), caseLabel);
+      VERIFY(onSameDownDiagonal(d2, e1), caseLabel);
+      VERIFY(!onSameDownDiagonal(d2, b5), caseLabel);
+      VERIFY(!onSameDownDiagonal(d2, c6), caseLabel);
+      VERIFY(!onSameDownDiagonal(d2, d7), caseLabel);
+      VERIFY(!onSameDownDiagonal(d2, e4), caseLabel);
+      VERIFY(!onSameDownDiagonal(d2, g1), caseLabel);
+      VERIFY(!onSameDownDiagonal(d2, h2), caseLabel);
+   }
+}
+
+void testOnSameDiagonal()
+{
+   {
+      const std::string caseLabel = "onSameDiagonal(Square, Square)";
+
+      VERIFY(onSameDiagonal(d5, d5), caseLabel);
+      VERIFY(onSameDiagonal(d5, e4), caseLabel);
+      VERIFY(onSameDiagonal(d5, e6), caseLabel);
+      VERIFY(!onSameDiagonal(d5, e5), caseLabel);
+      VERIFY(!onSameDiagonal(d5, d4), caseLabel);
+   }
+}
 
 ///////////////////
 
@@ -1169,7 +1359,6 @@ void testFile()
    testFileDistance();
 }
 
-
 void testRank()
 {
    testRankIsValid();
@@ -1182,7 +1371,6 @@ void testRank()
    testRankDistance();
 }
 
-
 void testSquare()
 {
    testMakeSquareFromNotation();
@@ -1193,6 +1381,14 @@ void testSquare()
    testSquareIncrementOperator();
 }
 
+void testDiagonal()
+{
+   testUpDiagonal();
+   testDownDiagonal();
+   testOnSameUpDiagonal();
+   testOnSameDownDiagonal();
+   testOnSameDiagonal();
+}
 
 void testOffset()
 {

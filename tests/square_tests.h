@@ -7,3 +7,5 @@
 void testFile();
 void testRank();
 void testSquare();
+void testDiagonal();
+void testOffset();

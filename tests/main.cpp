@@ -19,10 +19,12 @@
 int main()
 {
    testColor();
+   testDiagonal();
    testFile();
    //testGame();
    testMoves();
    testNotations();
+   testOffset();
    testPiece();
    testPieceIterator();
    testPlacement();

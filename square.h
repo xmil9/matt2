@@ -273,6 +273,37 @@ inline Square operator++(Square& sq)
 
 ///////////////////
 
+using Diagonal = char;
+
+// Diagonal going upwards from lower to higher files.
+inline Diagonal upDiagonal(Square sq)
+{
+   return static_cast<char>(file(sq)) - static_cast<char>(rank(sq));
+}
+
+// Diagonal going downwards from lower to higher files.
+inline Diagonal downDiagonal(Square sq)
+{
+   return static_cast<char>(rank(sq)) + static_cast<char>(file(sq));
+}
+
+inline bool onSameUpDiagonal(Square a, Square b)
+{
+   return upDiagonal(a) == upDiagonal(b);
+}
+
+inline bool onSameDownDiagonal(Square a, Square b)
+{
+   return downDiagonal(a) == downDiagonal(b);
+}
+
+inline bool onSameDiagonal(Square a, Square b)
+{
+   return onSameUpDiagonal(a, b) || onSameDownDiagonal(a, b);
+}
+
+///////////////////
+
 struct Offset
 {
    int df = 0;
