@@ -500,9 +500,38 @@ double DailyChessScore::calcRookScore()
    return score;
 }
 
+static double calcQueenKingClosenessBonus(Color side, const Position& pos)
+{
+   const Piece q = queen(side);
+   if (pos.count(q) == 0)
+      return 0.;
+
+   const Piece enemyKing = king(!side);
+   const auto enemyKingIter = pos.begin(enemyKing);
+   // Make sure enemy king is on board.
+   if (enemyKingIter == pos.end(enemyKing))
+      return 0.;
+   const Square enemyKingSq = *enemyKingIter;
+
+   // Find min distance of any queen along file or rank to the enemy king.
+   constexpr int MaxDist = 7;
+   const int minDist = std::accumulate(pos.begin(q), pos.end(q), MaxDist,
+                                       [enemyKingSq](int minDist, Square queenSq)
+                                       {
+                                          const int dist =
+                                             minDistance(queenSq, enemyKingSq);
+                                          return dist < minDist ? dist : minDist;
+                                       });
+
+   // Higher bonus the closer the distance is.
+   constexpr double EnemyKingDistanceBonus = 5.;
+   return (MaxDist - minDist) * EnemyKingDistanceBonus;
+}
+
 double DailyChessScore::calcQueenScore()
 {
    double score = calcPieceValueScore(m_pos, queen(m_side));
+   score += calcQueenKingClosenessBonus(m_side, m_pos);
    return score;
 }
 

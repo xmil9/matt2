@@ -558,12 +558,39 @@ void testDCKnightScoring()
    }
 }
 
+void testDCQueenScoring()
+{
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Score for more queens is higher";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Qwe5 Qwd5")),
+                           calcDailyChessScore(Position("Qwe5")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Qbe5 Qbe4")),
+                           calcDailyChessScore(Position("Qbe5")), false),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Bonus for queen proximity to enemy king";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Kbd5 Qwe5")),
+                           calcDailyChessScore(Position("Kbd5 Qwf6")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Kwh8 Qbb2")),
+                           calcDailyChessScore(Position("Kwh8 Qba1")), false),
+             caseLabel);
+   }
+}
+
 void testDailyChessScoring()
 {
    testDCPawnScoring();
    testDCBishopScoring();
    testDCRookScoring();
    testDCKnightScoring();
+   testDCQueenScoring();
 }
 
 } // namespace
