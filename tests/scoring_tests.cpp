@@ -582,6 +582,17 @@ void testDCQueenScoring()
                            calcDailyChessScore(Position("Kwh8 Qba1")), false),
              caseLabel);
    }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Bonus for queen and friendly bishop on same diagonal";
+
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Qwe5 Bwc3")),
+                           calcDailyChessScore(Position("Qwe5 Bwd3")), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Qbb7 Bbg2")),
+                           calcDailyChessScore(Position("Qbb7 Bbf2")), false),
+             caseLabel);
+   }
 }
 
 void testDailyChessScoring()

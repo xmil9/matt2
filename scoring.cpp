@@ -528,10 +528,36 @@ static double calcQueenKingClosenessBonus(Color side, const Position& pos)
    return (MaxDist - minDist) * EnemyKingDistanceBonus;
 }
 
+static double calcQueenBishopDiagonalBonus(Color side, const Position& pos)
+{
+   const Piece q = queen(side);
+   const Piece b = bishop(side);
+
+   // Collect all friendly bishop squares.
+   std::vector<Square> bishopSquares;
+   std::transform(pos.begin(b), pos.end(b), std::back_inserter(bishopSquares),
+                  [](Square sq) { return sq; });
+
+   // For all queens calculate the bonus of shared diagonals with bishops.
+   return std::accumulate(pos.begin(q), pos.end(q), 0.,
+                          [&bishopSquares](double bonus, Square queenSq)
+                          {
+                             // Count shared diagonals with bishops.
+                             auto numSharedDiags = std::count_if(
+                                std::begin(bishopSquares), std::end(bishopSquares),
+                                [queenSq](Square bishopSq)
+                                { return onSameDiagonal(bishopSq, queenSq); });
+
+                             constexpr double QueenBishopDiagonalBonus = 1.;
+                             return bonus + numSharedDiags * QueenBishopDiagonalBonus;
+                          });
+}
+
 double DailyChessScore::calcQueenScore()
 {
    double score = calcPieceValueScore(m_pos, queen(m_side));
    score += calcQueenKingClosenessBonus(m_side, m_pos);
+   score += calcQueenBishopDiagonalBonus(m_side, m_pos);
    return score;
 }
 
