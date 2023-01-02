@@ -48,6 +48,28 @@ static double pieceValue(Piece piece)
    }
 }
 
+// Max distance between pieces along file or rank.
+constexpr int MaxFRDistance = 7;
+
+// Calculates the min distance along file or rank of a piece to the enemy's king.
+static std::optional<int> minDistanceToEnemyKing(Piece p, const Position& pos)
+{
+   if (pos.count(p) == 0)
+      return {};
+
+   auto enemyKingSq = pos.kingLocation(!color(p));
+   if (!enemyKingSq)
+      return {};
+
+   // Find min distance of any instance of the piece along file or rank to the enemy king.
+   return std::accumulate(pos.begin(p), pos.end(p), MaxFRDistance,
+                          [enemyKingSq](int minDist, Square sq)
+                          {
+                             const int dist = minDistance(sq, *enemyKingSq);
+                             return dist < minDist ? dist : minDist;
+                          });
+}
+
 ///////////////////
 
 static double calcPieceValueScore(const Position& pos, Piece piece)
@@ -310,7 +332,7 @@ static double calcKnightCenterBonus(Color side, const Position& pos)
 // Calculate bonus for an individual knight's closeness to the enemy king.
 static double calcKnightKingClosenessBonus(Square knightSq, Square enemyKingSq)
 {
-   constexpr int MaxDistSum = 14;
+   constexpr int MaxDistSum = 2 * MaxFRDistance;
 
    const Offset off = offset(knightSq, enemyKingSq);
    const int distSum = std::abs(off.df) + std::abs(off.dr);
@@ -406,27 +428,13 @@ static std::vector<File> collectPieceFilesSorted(Piece p, const Position& pos)
 
 static double calcRookKingClosenessBonus(Color side, const Position& pos)
 {
-   const Piece ownRook = rook(side);
-   if (pos.count(ownRook) == 0)
+   auto minDist = minDistanceToEnemyKing(rook(side), pos);
+   if (!minDist)
       return 0.;
-
-   auto enemyKingSq = pos.kingLocation(!side);
-   if (!enemyKingSq)
-      return 0.;
-
-   // Find min distance of any rook along file or rank to the enemy king.
-   constexpr int MaxDist = 7;
-   const int minDist = std::accumulate(pos.begin(ownRook), pos.end(ownRook), MaxDist,
-                                       [enemyKingSq](int minDist, Square rookSq)
-                                       {
-                                          const int dist =
-                                             minDistance(rookSq, *enemyKingSq);
-                                          return dist < minDist ? dist : minDist;
-                                       });
 
    // Higher bonus the closer the distance is.
    constexpr double EnemyKingDistanceBonus = 5.;
-   return (MaxDist - minDist) * EnemyKingDistanceBonus;
+   return (MaxFRDistance - *minDist) * EnemyKingDistanceBonus;
 }
 
 static double calcRookSeventhRankBonus(Color side, const Position& pos)
@@ -496,27 +504,13 @@ double DailyChessScore::calcRookScore()
 
 static double calcQueenKingClosenessBonus(Color side, const Position& pos)
 {
-   const Piece q = queen(side);
-   if (pos.count(q) == 0)
+   auto minDist = minDistanceToEnemyKing(queen(side), pos);
+   if (!minDist)
       return 0.;
-
-   auto enemyKingSq = pos.kingLocation(!side);
-   if (!enemyKingSq)
-      return 0.;
-
-   // Find min distance of any queen along file or rank to the enemy king.
-   constexpr int MaxDist = 7;
-   const int minDist = std::accumulate(pos.begin(q), pos.end(q), MaxDist,
-                                       [enemyKingSq](int minDist, Square queenSq)
-                                       {
-                                          const int dist =
-                                             minDistance(queenSq, *enemyKingSq);
-                                          return dist < minDist ? dist : minDist;
-                                       });
 
    // Higher bonus the closer the distance is.
    constexpr double EnemyKingDistanceBonus = 5.;
-   return (MaxDist - minDist) * EnemyKingDistanceBonus;
+   return (MaxFRDistance - *minDist) * EnemyKingDistanceBonus;
 }
 
 static double calcQueenBishopDiagonalBonus(Color side, const Position& pos)
