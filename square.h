@@ -35,7 +35,7 @@ constexpr File fh = File::fh;
 
 inline bool isValid(File f)
 {
-   // Rank enum is based on an unsigned value and can never be less than zero.
+   // File enum is based on an unsigned value and can never be less than zero.
    return static_cast<unsigned char>(f) <= static_cast<unsigned char>(fh);
 }
 

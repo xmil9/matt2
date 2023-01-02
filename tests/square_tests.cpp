@@ -1241,8 +1241,8 @@ void testOffsetInequality()
       const std::string caseLabel = "operator!=(Offset, Offset)";
 
       VERIFY(!(Offset(3, -5) != Offset(3, -5)), caseLabel);
-      VERIFY(Offset(3, 3) == Offset(3, 4), caseLabel);
-      VERIFY(Offset(3, 3) == Offset(1, 3), caseLabel);
+      VERIFY(Offset(3, 3) != Offset(3, 4), caseLabel);
+      VERIFY(Offset(3, 3) != Offset(1, 3), caseLabel);
    }
 }
 
@@ -1295,9 +1295,8 @@ void testOffsetIsOnBoard()
       VERIFY(isOnBoard(h8, {0, 0}), caseLabel);
       VERIFY(!isOnBoard(h8, {0, 1}), caseLabel);
 
-
-      VERIFY(!isOnBoard(d4, {-3, -3}), caseLabel);
-      VERIFY(!isOnBoard(d4, {3, 3}), caseLabel);
+      VERIFY(isOnBoard(d4, {-3, -3}), caseLabel);
+      VERIFY(isOnBoard(d4, {3, 3}), caseLabel);
       VERIFY(!isOnBoard(d4, {-4, 1}), caseLabel);
       VERIFY(!isOnBoard(d4, {5, 2}), caseLabel);
       VERIFY(!isOnBoard(d4, {2, -4}), caseLabel);
@@ -1325,7 +1324,7 @@ void testOffsetOffset()
       VERIFY(offset(a1, h8) == Offset(-7, -7), caseLabel);
       VERIFY(offset(h8, a1) == Offset(7, 7), caseLabel);
       VERIFY(offset(d4, d4) == Offset(0, 0), caseLabel);
-      VERIFY(offset(b7, e3) == Offset(-2, 4), caseLabel);
+      VERIFY(offset(b7, e3) == Offset(-3, 4), caseLabel);
    }
 }
 
@@ -1337,8 +1336,8 @@ void testOffsetMinDistance()
       VERIFY(minDistance(a1, h8) == 7, caseLabel);
       VERIFY(minDistance(h8, a1) == 7, caseLabel);
       VERIFY(minDistance(a1, a1) == 0, caseLabel);
-      VERIFY(minDistance(g2, d3) == 3, caseLabel);
-      VERIFY(minDistance(g2, f6) == 4, caseLabel);
+      VERIFY(minDistance(g2, d4) == 2, caseLabel);
+      VERIFY(minDistance(h2, f6) == 2, caseLabel);
    }
 }
 
