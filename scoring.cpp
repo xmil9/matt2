@@ -325,18 +325,15 @@ static double calcKnightKingClosenessBonus(Color side, const Position& pos)
 {
    const Piece kn = knight(side);
 
-   const Piece enemyKing = king(!side);
-   const auto enemyKingIter = pos.begin(enemyKing);
-   // Make sure enemy king is on board.
-   if (enemyKingIter == pos.end(enemyKing))
+   auto enemyKingSq = pos.kingLocation(!side);
+   if (!enemyKingSq)
       return 0.;
-   const Square enemyKingSq = *enemyKingIter;
 
    // Sum up bonus for all knights.
    return std::accumulate(
       pos.begin(kn), pos.end(kn), 0.,
       [enemyKingSq](double val, Square knightSq)
-      { return val + calcKnightKingClosenessBonus(knightSq, enemyKingSq); });
+      { return val + calcKnightKingClosenessBonus(knightSq, *enemyKingSq); });
 }
 
 double DailyChessScore::calcKnightScore()
@@ -413,12 +410,9 @@ static double calcRookKingClosenessBonus(Color side, const Position& pos)
    if (pos.count(ownRook) == 0)
       return 0.;
 
-   const Piece enemyKing = king(!side);
-   const auto enemyKingIter = pos.begin(enemyKing);
-   // Make sure enemy king is on board.
-   if (enemyKingIter == pos.end(enemyKing))
+   auto enemyKingSq = pos.kingLocation(!side);
+   if (!enemyKingSq)
       return 0.;
-   const Square enemyKingSq = *enemyKingIter;
 
    // Find min distance of any rook along file or rank to the enemy king.
    constexpr int MaxDist = 7;
@@ -426,7 +420,7 @@ static double calcRookKingClosenessBonus(Color side, const Position& pos)
                                        [enemyKingSq](int minDist, Square rookSq)
                                        {
                                           const int dist =
-                                             minDistance(rookSq, enemyKingSq);
+                                             minDistance(rookSq, *enemyKingSq);
                                           return dist < minDist ? dist : minDist;
                                        });
 
@@ -506,12 +500,9 @@ static double calcQueenKingClosenessBonus(Color side, const Position& pos)
    if (pos.count(q) == 0)
       return 0.;
 
-   const Piece enemyKing = king(!side);
-   const auto enemyKingIter = pos.begin(enemyKing);
-   // Make sure enemy king is on board.
-   if (enemyKingIter == pos.end(enemyKing))
+   auto enemyKingSq = pos.kingLocation(!side);
+   if (!enemyKingSq)
       return 0.;
-   const Square enemyKingSq = *enemyKingIter;
 
    // Find min distance of any queen along file or rank to the enemy king.
    constexpr int MaxDist = 7;
@@ -519,7 +510,7 @@ static double calcQueenKingClosenessBonus(Color side, const Position& pos)
                                        [enemyKingSq](int minDist, Square queenSq)
                                        {
                                           const int dist =
-                                             minDistance(queenSq, enemyKingSq);
+                                             minDistance(queenSq, *enemyKingSq);
                                           return dist < minDist ? dist : minDist;
                                        });
 

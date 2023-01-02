@@ -656,6 +656,24 @@ void testPositionEndForPieceIterator()
    }
 }
 
+void testPositionKingLocation()
+{
+   {
+      const std::string caseLabel = "Position::kingLocation(Side)";
+
+      Position pos{"Kwe1 Kbe8"};
+      VERIFY(pos.kingLocation(Color::White) == std::optional<Square>(e1), caseLabel);
+      VERIFY(pos.kingLocation(Color::Black) == std::optional<Square>(e8), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::kingLocation(Side) for no king";
+
+      Position pos{""};
+      VERIFY(pos.kingLocation(Color::White) == std::nullopt, caseLabel);
+      VERIFY(pos.kingLocation(Color::Black) == std::nullopt, caseLabel);
+   }
+}
+
 void testPositionScore()
 {
    {
@@ -1824,7 +1842,6 @@ void testPosition()
    testPositionDefaultCtor();
    testPositionNotationCtor();
    testPositionLocationIndexOperator();
-   testPositionLocations();
    testPositionAdd();
    testPositionRemove();
    testPositionMove();
@@ -1836,6 +1853,8 @@ void testPosition()
    testPositionCountForPieces();
    testPositionBeginForPieceIterator();
    testPositionEndForPieceIterator();
+   testPositionKingLocation();
+   testPositionLocations();
    testPositionScore();
    testPositionUpdateScore();
    testPositionEnPassantSquare();

@@ -60,10 +60,6 @@ class Position
    // Returns piece at given location on board.
    std::optional<Piece> operator[](Square at) const { return m_board[toIdx(at)]; }
 
-   // Returns all locations of a given piece.
-   // Caution - Not meant to be used in performance critical code.
-   std::vector<Square> locations(Piece piece) const;
-
    // Adds given piece at given square. Does not validate correctness of position.
    void add(std::string_view placement) { add(Placement{placement}); }
    void add(const Placement& placement);
@@ -86,6 +82,11 @@ class Position
    size_t count(Piece piece) const;
    PieceIterator begin(Piece piece) const;
    PieceIterator end(Piece piece) const;
+
+   std::optional<Square> kingLocation(Color side) const;
+   // Returns all locations of a given piece.
+   // Caution - Not meant to be used in performance critical code.
+   std::vector<Square> locations(Piece piece) const;
 
    std::optional<double> score() const { return m_score; }
    double updateScore();
@@ -181,8 +182,6 @@ class Position
    // Returns placements of pieces with the same color as a given piece.
    ColorPlacements& pieces(Color side);
    const ColorPlacements& pieces(Color side) const;
-
-   std::optional<Square> kingLocation(Piece king) const;
 
    static std::size_t toIdx(Square at) { return static_cast<std::size_t>(at); }
    static std::size_t toColorIdx(Piece piece) { return isWhite(piece) ? White : Black; }

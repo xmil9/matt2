@@ -122,11 +122,14 @@ bool Position::canAttack(Square sq, const Placement& placement) const
    return std::find(std::begin(attacked), std::end(attacked), sq) != std::end(attacked);
 }
 
-std::optional<Square> Position::kingLocation(Piece king) const
+std::optional<Square> Position::kingLocation(Color side) const
 {
-   const auto locs = locations(king);
-   assert(locs.size() <= 1);
-   return locs.empty() ? std::nullopt : std::optional(locs[0]);
+   const ColorPlacements& pieces = m_pieces[Position::toColorIdx(side)];
+   
+   const Piece k = king(side);
+   if (pieces.pieceCount(k) > 0)
+      return pieces.pieceLocation(k, 0);
+   return {};
 }
 
 ///////////////////
