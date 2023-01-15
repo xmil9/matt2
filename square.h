@@ -3,6 +3,7 @@
 // MIT license
 //
 #pragma once
+#include "piece.h"
 #include <cassert>
 #include <string>
 
@@ -359,6 +360,17 @@ inline Quadrant quadrant(Square sq)
    if (f == fa)
       return r == r1 ? Quadrant::a1 : Quadrant::a8;
    return r == r1 ? Quadrant::h1 : Quadrant::h8;
+}
+
+inline bool inQuadrant(Square sq, Quadrant q)
+{
+   return quadrant(sq) == q;
+}
+
+inline bool isFriendlyQuadrant(Quadrant q, Color side)
+{
+   return (side == Color::White && (q == Quadrant::a1 || q == Quadrant::h1)) ||
+          (side == Color::Black && (q == Quadrant::a8 || q == Quadrant::h8));
 }
 
 } // namespace matt2
