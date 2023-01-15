@@ -1341,6 +1341,80 @@ void testOffsetMinDistance()
    }
 }
 
+///////////////////
+
+void testQuadrantFromSquare()
+{
+   {
+      const std::string caseLabel = "quadrant(Square)";
+
+      VERIFY(quadrant(a1) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(a2) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(a3) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(a4) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(a5) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(a6) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(a7) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(a8) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(b1) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(b2) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(b3) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(b4) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(b5) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(b6) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(b7) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(b8) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(c1) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(c2) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(c3) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(c4) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(c5) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(c6) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(c7) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(c8) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(d1) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(d2) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(d3) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(d4) == Quadrant::a1, caseLabel);
+      VERIFY(quadrant(d5) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(d6) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(d7) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(d8) == Quadrant::a8, caseLabel);
+      VERIFY(quadrant(e1) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(e2) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(e3) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(e4) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(e5) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(e6) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(e7) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(e8) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(f1) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(f2) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(f3) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(f4) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(f5) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(f6) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(f7) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(f8) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(g1) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(g2) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(g3) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(g4) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(g5) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(g6) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(g7) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(g8) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(h1) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(h2) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(h3) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(h4) == Quadrant::h1, caseLabel);
+      VERIFY(quadrant(h5) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(h6) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(h7) == Quadrant::h8, caseLabel);
+      VERIFY(quadrant(h8) == Quadrant::h8, caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -1397,4 +1471,9 @@ void testOffset()
    testOffsetAdditionToSquare();
    testOffsetOffset();
    testOffsetMinDistance();
+}
+
+void testQuadrant()
+{
+   testQuadrantFromSquare();
 }

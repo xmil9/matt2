@@ -30,6 +30,7 @@ int main()
    testPlacement();
    testPlacementIterator();
    testPosition();
+   testQuadrant();
    testRank();
    testRelocation();
    testRules();

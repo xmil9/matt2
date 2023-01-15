@@ -9,3 +9,4 @@ void testRank();
 void testSquare();
 void testDiagonal();
 void testOffset();
+void testQuadrant();

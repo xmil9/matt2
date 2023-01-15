@@ -342,4 +342,23 @@ inline int minDistance(Square a, Square b)
    return std::min(std::abs(off.df), std::abs(off.dr));
 }
 
+///////////////////
+
+enum class Quadrant
+{
+   a1,
+   a8,
+   h1,
+   h8
+};
+
+inline Quadrant quadrant(Square sq)
+{
+   const File f = static_cast<char>(file(sq)) <= static_cast<char>(fd) ? fa : fh;
+   const Rank r = static_cast<char>(rank(sq)) <= static_cast<char>(r4) ? r1 : r8;
+   if (f == fa)
+      return r == r1 ? Quadrant::a1 : Quadrant::a8;
+   return r == r1 ? Quadrant::h1 : Quadrant::h8;
+}
+
 } // namespace matt2
