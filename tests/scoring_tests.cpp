@@ -595,6 +595,76 @@ void testDCQueenScoring()
    }
 }
 
+void testDCKingScoring()
+{
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Penalty for more enemy pieces in king's quadrant";
+
+      // a1 quadrant with more pieces for black.
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Kwa2 wb2 Bbd4 Nbg6")),
+                           calcDailyChessScore(Position("Kwa2 wb2 Bbd4 Nba4")), true),
+             caseLabel);
+      // h1 quadrant with more pieces for black.
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Kwg2 wh2 Rwh1 Bbe4 Rbh4 Nbg6")),
+                           calcDailyChessScore(Position("Kwg2 wh2 Rwh1 Bbe4 Rbh4 Nbg3")),
+                           true),
+             caseLabel);
+      // a8 quadrant with more pieces for white.
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Kba8 Nba7 Bwc5 wd4")),
+                           calcDailyChessScore(Position("Kba8 Nba7 Bwc5 wd5")), false),
+             caseLabel);
+      // h8 quadrant with more pieces for white.
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Kbg8 Nbf6 be7 Bwf5 we5 Rwg4")),
+                           calcDailyChessScore(Position("Kbg8 Nbf6 be7 Bwf5 we5 Rwg6")),
+                           false),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - No penalty for more enemy pieces in king's quadrant when "
+         "king is in enemy quadrant";
+
+      // White king in a8 quadrant.
+      VERIFY(!isBetterScore(calcDailyChessScore(Position("Kwa5 Bbd7 Nbe5")),
+                            calcDailyChessScore(Position("Kwa5 Bbd7 Nbc5")), true),
+             caseLabel);
+      // Black king in h1 quadrant.
+      VERIFY(!isBetterScore(calcDailyChessScore(Position("Kbg2 Nbf3 Bwf4 we4 Rwg5")),
+                            calcDailyChessScore(Position("Kbg2 Nbf3 Bwf4 we4 Rwg4")),
+                            false),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Higher penalty for more enemy pieces in king's quadrant";
+
+      // White king in h1 quadrant.
+      VERIFY(isBetterScore(
+                calcDailyChessScore(Position("Kwg2 wh2 Rwh1 Bbe4 Rbh4 Nbg3 Rbc3")),
+                calcDailyChessScore(Position("Kwg2 wh2 Rwh1 Bbe4 Rbh4 Nbg3 Rbe3")), true),
+             caseLabel);
+      // Black king in a8 quadrant.
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Kbg8 Bwf5 Rwg4")),
+                           calcDailyChessScore(Position("Kbg8 Bwf5 Rwg6")), false),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "Daily chess scoring - Queen counts as more than one "
+                                    "piece for in king's quadrant penalty";
+
+      // White king in h1 quadrant.
+      VERIFY(isBetterScore(
+                calcDailyChessScore(Position("Kwg2 wh2 Rwh1 Bbe4 Rbh4 Nbg3 Rbe3")),
+                calcDailyChessScore(Position("Kwg2 wh2 Rwh1 Bbe4 Rbh4 Nbg3 Qbe3")), true),
+             caseLabel);
+      // Black king in a8 quadrant.
+      VERIFY(isBetterScore(calcDailyChessScore(Position("Kbg8 Bwf5 Rwg6")),
+                           calcDailyChessScore(Position("Kbg8 Bwf5 Qwg6")), false),
+             caseLabel);
+   }
+}
+
 void testDailyChessScoring()
 {
    testDCPawnScoring();
@@ -602,6 +672,7 @@ void testDailyChessScoring()
    testDCRookScoring();
    testDCKnightScoring();
    testDCQueenScoring();
+   testDCKingScoring();
 }
 
 } // namespace

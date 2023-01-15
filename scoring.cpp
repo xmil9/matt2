@@ -92,10 +92,79 @@ double calcPieceValueScore(const Position& pos)
 }
 
 ///////////////////
-
-struct PawnStats
-{
-};
+// From https://www.dailychess.com/rival/programming/evaluation.php
+//
+// Static Board Evaluation
+//
+// The static evaluation function returns a score for the side to move from the given
+// position. A score is calculated for both sides and the function returns the score for
+// the side on the move minus the score for the side not on the move.
+//
+// The factors considered in the evaluation function have been chosen because they are
+// relatively quick to calculate.Very few of the ideas are entirely original; many
+// represent elementary chess knowledge and many have been used in other chess programs.
+// Sources that have been of particular influence are Slate & Atkin (1977), Newborn (1975)
+// and Hyatt et al (1985). Some of the factors have been added to overcome certain
+// weaknesses that the program has shown, others have been left out in the hope that the
+// gain in search speed would outweigh the loss in evaluation quality. The work of
+// Berliner et al (1990) suggests the opposite to the last assumption.
+//
+// The majority of factors considered by the evaluation function are described below with
+// exact point weightings given where considered appropriate.
+//
+// Pawn Scoring
+// Each pawn scores 100 points. A side is penalised seven points for having two or more
+// pawns on the same file (doubled pawns). A two point penalty is inflicted for isolated
+// pawns. Passed pawns are awarded a bonus that relates to the pawn's rank number. If
+// there is a hostile piece in front of a passed pawn, a value, also relating to the
+// pawn's rank number is deducted from the score. Pawns other than those on files one and
+// eight are awarded bonuses for advancement ranging from 3 points for a pawn on the third
+// rank, third file, to 34 points for a pawn on the seventh rank, fifth file.
+//
+// Bishop Scoring
+// Each bishop scores 340 points. Each of the squares diagonally adjacent to the bishop's
+// square are considered with a penalty being inflicted for each square that is occupied
+// by a pawn of either colour. A bonus is given for the presence of two bishops.
+//
+// Rook Scoring
+// Each rook scores 500 points. Rooks are awarded a bonus for king tropism that is based
+// on the minimum of the rank and file distances from the enemy king. Rooks on the seventh
+// rank score 20 points. If two friendly rooks share the same file, the side receives a
+// bonus of 15 points. If there are no pawns on the same file as a rook, a bonus of 10
+// points is given. If there are e nemy pawns on the same file but no friendly pawns, a
+// bonus of three points is given.
+//
+// Knight Scoring
+// Each knight scores 325 points. Knights are awarded bonuses for closeness to the centre
+// of the board ranging from -14 points for a corner square to +7 points for a centre
+// square. Knights are also awarded points for closeness to the enemy king. Unlike rooks,
+// a score is awarded based on the sum of the rank and file distances from the enemy king.
+//
+// Queen Scoring
+// Each queen scores 900 points. Queens are awarded points for closeness to the enemy
+// king. A experimental factor has been added for queen scoring since the game in which
+// position 3.4 occurred; a small bonus is awarded if a queen is on the same diagonal as a
+// friendly bishop.
+//
+//    King Safety If the number of enemy pieces and pawns in the friendly king's board
+//    quadrant is greater than the number of friendly pieces and pawns in the same
+//    quadrant, the side is penalised the difference multiplied by five. When considering
+//    enemy presence in the quadrant a queen is counted as three pieces.
+//
+//    If a side has not castled and
+//    castling is no longer possible,
+//    that side is penalised 15 points.If castling is still possible then a penalty is
+//       given if one of the rooks has moved; 12 points for the king's rook, 8 points for
+//       the queen's rook.
+//
+// The evaluation function does not detect checkmate. Evaluation of won, drawn of lost
+// positions is left to a function that is called when a position is found in the search
+// from which there are no available moves. The value of a won position is 10,000 points
+// although the depth at which such a position is discovered is subtracted from this
+// score. This encourages the program to take the shortest sequence of moves to win a
+// game. Similarly, the depth at which lost positions are discovered is added to the value
+// -10,000 to encourage to program to delay the loss for as long as possible in the
+// unsportsmanlike hope that the opponent will make a mistake.
 
 class DailyChessScore
 {
@@ -546,9 +615,55 @@ double DailyChessScore::calcQueenScore()
    return score;
 }
 
+static size_t countPiecesInQuadrant(Quadrant quad, Color side, const Position& pos,
+                                    size_t queenValue, size_t kingValue)
+{
+   size_t count = 0;
+
+   const auto end = pos.end(side);
+   for (auto iter = pos.begin(side); iter != end; ++iter)
+   {
+      if (inQuadrant(iter.at(), quad))
+      {
+         Piece p = iter.piece();
+         // Queen can have custom value.
+         if (isQueen(p))
+            count += queenValue;
+         // King can have custom value - used to exclude it from own piece count.
+         else if (isKing(p))
+            count += kingValue;
+         else
+            count += 1;
+      }
+   }
+
+   return count;
+}
+
+static double calcKingQuadrantPenality(Color side, const Position& pos)
+{
+   const auto kingSq = pos.kingLocation(side);
+   if (!kingSq)
+      return 0.;
+   // King has to be in quadrant on its side of the board.
+   const Quadrant kingQuad = quadrant(*kingSq);
+   if (!isFriendlyQuadrant(kingQuad, side))
+      return 0.;
+
+   constexpr size_t QueenValue = 3;
+   const size_t numFriendly = countPiecesInQuadrant(kingQuad, side, pos, QueenValue, 0);
+   const size_t numEnemy = countPiecesInQuadrant(kingQuad, !side, pos, QueenValue, 1);
+   if (numEnemy <= numFriendly)
+      return 0.;
+
+   constexpr double KingQuadrantPenaltyFactor = 5.;
+   return (numEnemy - numFriendly) * KingQuadrantPenaltyFactor;
+}
+
 double DailyChessScore::calcKingScore()
 {
    double score = calcPieceValueScore(m_pos, king(m_side));
+   score -= calcKingQuadrantPenality(m_side, m_pos);
    return score;
 }
 
