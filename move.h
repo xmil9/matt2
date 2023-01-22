@@ -222,6 +222,7 @@ inline void Castling::move(Position& pos)
 {
    pos.move(m_king);
    pos.move(m_rook);
+   pos.setHasCastled(color(m_king.piece()));
 
    setEnPassantState(std::nullopt, pos);
    collectCastlingState(pos);

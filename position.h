@@ -39,12 +39,16 @@ class Position
       bool hasKingMoved = false;
       bool hasKingsideRookMoved = false;
       bool hasQueensideRookMoved = false;
+      // Not used to check if castling is allowed (this is already handled by the 'moved'
+      // members) but for scoring.
+      bool hasCastled = false;
 
       static friend bool operator==(const CastlingState& a, const CastlingState& b)
       {
          return a.hasKingMoved == b.hasKingMoved &&
                 a.hasKingsideRookMoved == b.hasKingsideRookMoved &&
-                a.hasQueensideRookMoved == b.hasQueensideRookMoved;
+                a.hasQueensideRookMoved == b.hasQueensideRookMoved &&
+                a.hasCastled == b.hasCastled;
       }
 
       static friend bool operator!=(const CastlingState& a, const CastlingState& b)
@@ -94,6 +98,8 @@ class Position
    std::optional<Square> enPassantSquare() const { return m_enPassantSquare; }
    void setEnPassantSquare(std::optional<Square> square) { m_enPassantSquare = square; }
 
+   bool hasCastled(Color side) const;
+   void setHasCastled(Color side);
    bool hasKingMoved(Color side) const;
    bool hasRookMoved(Color side, bool onKingside) const;
    CastlingState castlingState(Color side) const;
@@ -149,6 +155,8 @@ class Position
       std::vector<Square> locations(Piece piece) const;
       std::size_t count() const;
       Square placement(std::size_t idx) const;
+      bool hasCastled() const { return m_castlingState.hasCastled; }
+      void setHasCastled() { m_castlingState.hasCastled = true; }
       bool hasKingMoved() const { return m_castlingState.hasKingMoved; }
       bool hasRookMoved(bool onKingside) const;
       CastlingState castlingState() const { return m_castlingState; }
@@ -205,6 +213,16 @@ class Position
 inline std::vector<Square> Position::locations(Piece piece) const
 {
    return pieces(color(piece)).locations(piece);
+}
+
+inline bool Position::hasCastled(Color side) const
+{
+   return m_pieces[Position::toColorIdx(side)].hasCastled();
+}
+
+inline void Position::setHasCastled(Color side)
+{
+   return m_pieces[Position::toColorIdx(side)].setHasCastled();
 }
 
 inline bool Position::hasKingMoved(Color side) const
