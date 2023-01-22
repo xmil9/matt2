@@ -246,6 +246,8 @@ static size_t countDoublePawns(const FileStats_t& stats)
                           { return val + isDoublePawn(fileElem.second) ? 1 : 0; });
 }
 
+// A side is penalised for having two or more pawns on the same file (doubled
+// pawns).
 static double calcDoublePawnPenalty(const FileStats_t& pawnStats)
 {
    constexpr double DoublePawnPenality = 7.;
@@ -276,6 +278,7 @@ static size_t countIsolatedPawns(const FileStats_t& stats)
                           });
 }
 
+// A penalty is inflicted for isolated pawns.
 static double calcIsolatedPawnPenalty(const FileStats_t& pawnStats)
 {
    constexpr double IsolatedPawnPenality = 2.;
@@ -313,6 +316,9 @@ static double calcPassedPawnBonus(Color side, File f, Rank r,
    return rankNumber * PassedPawnRankFactor;
 }
 
+// Passed pawns are awarded a bonus that relates to the pawn's rank number. If there is a
+// hostile piece in front of a passed pawn, a value, also relating to the pawn's rank
+// number is deducted from the score.
 static double calcPassedPawnBonus(Color side, const FileStats_t& pawnStats,
                                   const FileStats_t& opponentsStats)
 {
@@ -327,6 +333,7 @@ static double calcPassedPawnBonus(Color side, const FileStats_t& pawnStats,
                           });
 }
 
+// Pawns other than those on files one and eight are awarded bonuses for advancement.
 static double calcPawnPositionBonus(Color side, const FileStats_t& pawnStats)
 {
    // clang-format off
@@ -377,6 +384,7 @@ double DailyChessScore::calcPawnScore()
    return score;
 }
 
+// Knights are awarded bonuses for closeness to the centre of the board.
 static double calcKnightCenterBonus(Color side, const Position& pos)
 {
    // clang-format off
@@ -435,6 +443,7 @@ double DailyChessScore::calcKnightScore()
    return score;
 }
 
+// A bonus is given for the presence of two bishops.
 static double calcMultipleBishopBonus(Color side, const Position& pos)
 {
    if (pos.count(bishop(side)) < 2)
@@ -464,6 +473,8 @@ static bool isPawnDiagonalNeighbor(Square sq, const Position& pos)
                         { return piece.has_value() && isPawn(*piece); }) > 0;
 }
 
+// Each of the squares diagonally adjacent to the bishop's square are considered with a
+// penalty being inflicted for each square that is occupied by a pawn of either colour.
 static double calcAdjacentPawnBishopPenalty(Color side, const Position& pos)
 {
    const Piece p = bishop(side);
@@ -495,6 +506,8 @@ static std::vector<File> collectPieceFilesSorted(Piece p, const Position& pos)
    return files;
 }
 
+// Rooks are awarded a bonus for king tropism that is based on the minimum of the rank and
+// file distances from the enemy king.
 static double calcRookKingClosenessBonus(Color side, const Position& pos)
 {
    auto minDist = minDistanceToEnemyKing(rook(side), pos);
@@ -506,6 +519,7 @@ static double calcRookKingClosenessBonus(Color side, const Position& pos)
    return (MaxFRDistance - *minDist) * EnemyKingDistanceBonus;
 }
 
+// Rooks on the seventh rank receive a bonus.
 static double calcRookSeventhRankBonus(Color side, const Position& pos)
 {
    const Piece r = rook(side);
@@ -518,6 +532,7 @@ static double calcRookSeventhRankBonus(Color side, const Position& pos)
    return on7th ? SeventhRankBonus : 0.;
 }
 
+// If two friendly rooks share the same file, the side receives a bonus.
 static double calcRookSharedFileBonus(const std::vector<File>& sortedRookFiles)
 {
    // Check if any consecutive files are the same, i.e. shared between those pieces.
@@ -528,6 +543,9 @@ static double calcRookSharedFileBonus(const std::vector<File>& sortedRookFiles)
    return onSameFile ? SharedFileBonus : 0.;
 }
 
+// If there are no pawns on the same file as a rook, a bonus is given.
+// If there are enemy pawns on the same file but no friendly pawns, a smaller bonus is
+// given.
 static double calcRookPawnsOnFileBonus(Color side, const Position& pos,
                                        const std::vector<File>& sortedRookFiles)
 {
@@ -571,6 +589,7 @@ double DailyChessScore::calcRookScore()
    return score;
 }
 
+// Queens are awarded points for closeness to the enemy king.
 static double calcQueenKingClosenessBonus(Color side, const Position& pos)
 {
    auto minDist = minDistanceToEnemyKing(queen(side), pos);
@@ -582,6 +601,7 @@ static double calcQueenKingClosenessBonus(Color side, const Position& pos)
    return (MaxFRDistance - *minDist) * EnemyKingDistanceBonus;
 }
 
+// A small bonus is awarded if a queen is on the same diagonal as a friendly bishop.
 static double calcQueenBishopDiagonalBonus(Color side, const Position& pos)
 {
    const Piece q = queen(side);
@@ -640,6 +660,10 @@ static size_t countPiecesInQuadrant(Quadrant quad, Color side, const Position& p
    return count;
 }
 
+// If the number of enemy pieces and pawns in the friendly king's board quadrant is
+// greater than the number of friendly pieces and pawns in the same quadrant, the side is
+// penalised the difference multiplied by five. When considering enemy presence in the
+// quadrant a queen is counted as three pieces.
 static double calcKingQuadrantPenality(Color side, const Position& pos)
 {
    const auto kingSq = pos.kingLocation(side);
