@@ -263,6 +263,7 @@ void testCastlingMove()
       VERIFY(pos.locations(Rb).size() == 1, caseLabel);
       VERIFY(pos.locations(Rb)[0] == f8, caseLabel);
       VERIFY(pos.enPassantSquare() == std::nullopt, caseLabel);
+      VERIFY(pos.hasCastled(Color::Black), caseLabel);
    }
    {
       const std::string caseLabel = "Castling::move for castling white king-side";
@@ -278,6 +279,7 @@ void testCastlingMove()
       VERIFY(pos.locations(Rw).size() == 1, caseLabel);
       VERIFY(pos.locations(Rw)[0] == f1, caseLabel);
       VERIFY(pos.enPassantSquare() == std::nullopt, caseLabel);
+      VERIFY(pos.hasCastled(Color::White), caseLabel);
    }
    {
       const std::string caseLabel = "Castling::move for castling black queen-side";
@@ -293,6 +295,7 @@ void testCastlingMove()
       VERIFY(pos.locations(Rb).size() == 1, caseLabel);
       VERIFY(pos.locations(Rb)[0] == d8, caseLabel);
       VERIFY(pos.enPassantSquare() == std::nullopt, caseLabel);
+      VERIFY(pos.hasCastled(Color::Black), caseLabel);
    }
    {
       const std::string caseLabel = "Castling::move for castling white queen-side";
@@ -308,6 +311,7 @@ void testCastlingMove()
       VERIFY(pos.locations(Rw).size() == 1, caseLabel);
       VERIFY(pos.locations(Rw)[0] == d1, caseLabel);
       VERIFY(pos.enPassantSquare() == std::nullopt, caseLabel);
+      VERIFY(pos.hasCastled(Color::White), caseLabel);
    }
 }
 

@@ -737,6 +737,33 @@ void testPositionSetEnPassantFile()
    }
 }
 
+void testPositionHasCastledAndSetHasCastled()
+{
+   {
+      const std::string caseLabel = "Position::hasCastled is 'false' initially";
+
+      Position pos = StartPos;
+      VERIFY(!pos.hasCastled(Color::White), caseLabel);
+      VERIFY(!pos.hasCastled(Color::Black), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::setHasCastled for white";
+
+      Position pos{"Kwe1 Kbe8 Rwa1"};
+      pos.setHasCastled(Color::White);
+      VERIFY(pos.hasCastled(Color::White), caseLabel);
+      VERIFY(!pos.hasCastled(Color::Black), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Position::setHasCastled for black ";
+
+      Position pos{"Kwe1 Kbe8 Rbh8"};
+      pos.setHasCastled(Color::Black);
+      VERIFY(!pos.hasCastled(Color::White), caseLabel);
+      VERIFY(pos.hasCastled(Color::Black), caseLabel);
+   }
+}
+
 void testPositionHasKingMoved()
 {
    {
@@ -1859,6 +1886,7 @@ void testPosition()
    testPositionUpdateScore();
    testPositionEnPassantSquare();
    testPositionSetEnPassantFile();
+   testPositionHasCastledAndSetHasCastled();
    testPositionHasKingMoved();
    testPositionHasRookMoved();
    testPositionCanAttackForPlacement();
