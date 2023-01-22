@@ -23,4 +23,7 @@
     <ClCompile Include="..\..\move.cpp" />
     <ClCompile Include="..\..\notation.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\todo.txt" />
+  </ItemGroup>
 </Project>
