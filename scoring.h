@@ -20,7 +20,7 @@ inline bool isBetterScore(double a, double b, bool calcMax)
    return calcMax ? a > b : a < b;
 }
 
-inline double getWorstScore(bool calcMax)
+inline double getWorstScoreValue(bool calcMax)
 {
    return calcMax ? std::numeric_limits<double>::lowest()
                   : std::numeric_limits<double>::max();

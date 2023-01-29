@@ -34,10 +34,10 @@ void testIsBetterScore()
 void testGetWorstScore()
 {
    {
-      const std::string caseLabel = "getWorstScore";
+      const std::string caseLabel = "getWorstScoreValue";
 
-      VERIFY(getWorstScore(true) < -100000, caseLabel);
-      VERIFY(getWorstScore(false) > 100000, caseLabel);
+      VERIFY(getWorstScoreValue(true) < -100000, caseLabel);
+      VERIFY(getWorstScoreValue(false) > 100000, caseLabel);
    }
 }
 

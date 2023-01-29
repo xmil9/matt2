@@ -195,7 +195,7 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
    moves.reserve(100);
    collectMoves(side, moves);
 
-   MoveScore bestMove{std::nullopt, getWorstScore(calcMax)};
+   MoveScore bestMove{std::nullopt, getWorstScoreValue(calcMax)};
 
    // Track move index for debugging.
    std::size_t moveIdx = 0;
