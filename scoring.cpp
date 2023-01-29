@@ -5,6 +5,7 @@
 #include "scoring.h"
 #include "piece.h"
 #include "position.h"
+#include "rules.h"
 #include <algorithm>
 #include <functional>
 #include <numeric>
@@ -684,10 +685,41 @@ static double calcKingQuadrantPenality(Color side, const Position& pos)
    return (numEnemy - numFriendly) * KingQuadrantPenaltyFactor;
 }
 
+// If a side has not castled and castling is no longer possible, that side is penalised.
+// If castling is still possible then a penalty is given if one of the rooks has
+// moved; more points for the king's rook than for the queen's rook.
+static double calcKingCastlingPenality(Color side, const Position& pos)
+{
+   const bool canCastleKingside = canCastle(side, true, pos);
+   const bool canCastleQueenside = canCastle(side, false, pos);
+   const bool canCastle = canCastleKingside || canCastleQueenside;
+   const Position::CastlingState castleState = pos.castlingState(side);
+
+   if (!canCastle && !castleState.hasCastled)
+   {
+      constexpr double NeverCastledPenality = 15.;
+      return NeverCastledPenality;
+   }
+
+   if (canCastle)
+   {
+      constexpr double KingsideRookMovedBeforeCastlingPenality = 12.;
+      constexpr double QueensideRookMovedBeforeCastlingPenality = 8.;
+
+      if (castleState.hasKingsideRookMoved)
+         return KingsideRookMovedBeforeCastlingPenality;
+      else if (castleState.hasQueensideRookMoved)
+         return QueensideRookMovedBeforeCastlingPenality;
+   }
+
+   return 0.;
+}
+
 double DailyChessScore::calcKingScore()
 {
    double score = calcPieceValueScore(m_pos, king(m_side));
    score -= calcKingQuadrantPenality(m_side, m_pos);
+   score -= calcKingCastlingPenality(m_side, m_pos);
    return score;
 }
 

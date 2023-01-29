@@ -1,3 +1,3 @@
 + Tests for 'hasCastled'.
-- Use 'hasCastled' for king scoring.
++ Use 'hasCastled' for king scoring.
 - Expose scoring policies to make them easier testable.

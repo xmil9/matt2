@@ -663,6 +663,37 @@ void testDCKingScoring()
                            calcDailyChessScore(Position("Kbg8 Bwf5 Qwg6")), false),
              caseLabel);
    }
+   {
+      const std::string caseLabel = "Daily chess scoring - Never castled penalty";
+
+      Position hasNotCastled("Kwe2 Rwa1 Rwh1");
+      // No castling possible anymore.
+      hasNotCastled.hasKingMoved(Color::White);
+
+      Position hasCastled = hasNotCastled;
+      hasCastled.setHasCastled(Color::White);
+
+      VERIFY(isBetterScore(calcDailyChessScore(hasCastled),
+                           calcDailyChessScore(hasNotCastled), true),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Daily chess scoring - Penality when castling possible but rook moved";
+
+      Position original("Kwe1 Rwa1 Rwh1");
+      Position kingsideRookMoved("Kwe1 Rwa1 Rwg1");
+      kingsideRookMoved.hasRookMoved(Color::White, true);
+      Position queensideRookMoved("Kwe1 Rwb1 Rwh1");
+      queensideRookMoved.hasRookMoved(Color::White, false);
+
+      VERIFY(isBetterScore(calcDailyChessScore(original),
+                           calcDailyChessScore(kingsideRookMoved), true),
+             caseLabel);
+      VERIFY(isBetterScore(calcDailyChessScore(original),
+                           calcDailyChessScore(queensideRookMoved), true),
+             caseLabel);
+   }
 }
 
 void testDailyChessScoring()
