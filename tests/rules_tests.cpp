@@ -1513,6 +1513,76 @@ void testcollectAttackedBySide()
    }
 }
 
+void testCanCastle()
+{
+   {
+      const std::string caseLabel = "canCastle for white";
+
+      const Position pos{"Kwe1 Rwh1 Rwa1"};
+      VERIFY(canCastle(Color::White, true, pos), caseLabel);
+      VERIFY(canCastle(Color::White, false, pos), caseLabel);
+   }
+   {
+      const std::string caseLabel = "canCastle for black";
+
+      const Position pos{"Kbe8 Rbh8 Rba8"};
+      VERIFY(canCastle(Color::Black, true, pos), caseLabel);
+      VERIFY(canCastle(Color::Black, false, pos), caseLabel);
+   }
+   {
+      const std::string caseLabel = "canCastle after king moved";
+
+      Position pos{"Kbe8 Rbh8 Rba8"};
+      
+      Position::CastlingState state;
+      state.hasKingMoved = true;
+      pos.setCastlingState(Color::Black, state);
+
+      VERIFY(!canCastle(Color::Black, true, pos), caseLabel);
+      VERIFY(!canCastle(Color::Black, false, pos), caseLabel);
+   }
+   {
+      const std::string caseLabel = "canCastle without castling rook";
+
+      Position pos{"Kbe8"};
+
+      VERIFY(!canCastle(Color::Black, true, pos), caseLabel);
+      VERIFY(!canCastle(Color::Black, false, pos), caseLabel);
+   }
+   {
+      const std::string caseLabel = "canCastle after castling rook moved";
+
+      Position pos{"Kbe8 Rbh8 Rba8"};
+
+      Position::CastlingState state;
+      state.hasKingsideRookMoved = true;
+      state.hasQueensideRookMoved = true;
+      pos.setCastlingState(Color::Black, state);
+
+      VERIFY(!canCastle(Color::Black, true, pos), caseLabel);
+      VERIFY(!canCastle(Color::Black, false, pos), caseLabel);
+   }
+   {
+      const std::string caseLabel = "canCastle when castling squares are occupied";
+
+      VERIFY(!canCastle(Color::Black, true, Position("Kbe8 Rbh8 Bbf8")), caseLabel);
+      VERIFY(!canCastle(Color::Black, true, Position("Kbe8 Rbh8 Nbg8")), caseLabel);
+      VERIFY(!canCastle(Color::Black, false, Position("Kbe8 Rbh8 Qbd8")), caseLabel);
+      VERIFY(!canCastle(Color::Black, false, Position("Kbe8 Rbh8 Bbc8")), caseLabel);
+      VERIFY(!canCastle(Color::Black, false, Position("Kbe8 Rbh8 Nbb8")), caseLabel);
+   }
+   {
+      const std::string caseLabel = "canCastle when castling squares are attacked";
+
+      VERIFY(!canCastle(Color::White, true, Position("Kwe1 Rwh1 Rwa1 Rbe6")), caseLabel);
+      VERIFY(!canCastle(Color::White, true, Position("Kwe1 Rwh1 Rwa1 Rbf6")), caseLabel);
+      VERIFY(!canCastle(Color::White, true, Position("Kwe1 Rwh1 Rwa1 Rbg6")), caseLabel);
+      VERIFY(!canCastle(Color::White, false, Position("Kwe1 Rwh1 Rwa1 Rbe6")), caseLabel);
+      VERIFY(!canCastle(Color::White, false, Position("Kwe1 Rwh1 Rwa1 Rbd6")), caseLabel);
+      VERIFY(!canCastle(Color::White, false, Position("Kwe1 Rwh1 Rwa1 Rbc6")), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -1535,4 +1605,5 @@ void testRules()
    testCollectAttackedByKnight();
    testCollectAttackedByPawn();
    testcollectAttackedBySide();
+   testCanCastle();
 }

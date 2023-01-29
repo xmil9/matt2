@@ -281,15 +281,6 @@ bool haveCastlingRook(Color side, bool onKingside, const Position& pos)
    return piece.has_value() && isRook(*piece) && color(*piece) == side;
 }
 
-
-bool canCastle(Color side, bool onKingside, const Position& pos)
-{
-   return !pos.hasKingMoved(side) && haveCastlingRook(side, onKingside, pos) &&
-          !pos.hasRookMoved(side, onKingside) &&
-          !areCastlingSquaresOccupied(side, onKingside, pos) &&
-          !areCastlingSquaresAttacked(side, onKingside, pos);
-}
-
 } // namespace
 
 
@@ -553,6 +544,16 @@ void collectAttackedBySide(Color side, const Position& pos, std::vector<Square>&
    // Eliminate duplicates.
    std::sort(attacked.begin(), attacked.end());
    attacked.erase(std::unique(attacked.begin(), attacked.end()), attacked.end());
+}
+
+///////////////////
+
+bool canCastle(Color side, bool onKingside, const Position& pos)
+{
+   return !pos.hasKingMoved(side) && haveCastlingRook(side, onKingside, pos) &&
+          !pos.hasRookMoved(side, onKingside) &&
+          !areCastlingSquaresOccupied(side, onKingside, pos) &&
+          !areCastlingSquaresAttacked(side, onKingside, pos);
 }
 
 } // namespace matt2

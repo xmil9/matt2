@@ -54,4 +54,8 @@ void collectAttackedByPawn(Piece pawn, Square at, const Position& pos,
 void collectAttackedBySide(Color side, const Position& pos,
                            std::vector<Square>& attacked);
 
+///////////////////
+
+bool canCastle(Color side, bool onKingside, const Position& pos);
+
 } // namespace matt2
