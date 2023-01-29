@@ -12,6 +12,8 @@
     <ClInclude Include="..\..\scoring.h" />
     <ClInclude Include="..\..\console.h" />
     <ClInclude Include="..\..\notation.h" />
+    <ClInclude Include="..\..\piece_value_scoring.h" />
+    <ClInclude Include="..\..\daily_chess_scoring.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\position.cpp" />
@@ -22,6 +24,8 @@
     <ClCompile Include="..\..\scoring.cpp" />
     <ClCompile Include="..\..\move.cpp" />
     <ClCompile Include="..\..\notation.cpp" />
+    <ClCompile Include="..\..\piece_value_scoring.cpp" />
+    <ClCompile Include="..\..\daily_chess_scoring.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\todo.txt" />

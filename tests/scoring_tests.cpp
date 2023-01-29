@@ -3,6 +3,8 @@
 // MIT license
 //
 #include "scoring_tests.h"
+#include "daily_chess_scoring.h"
+#include "piece_value_scoring.h"
 #include "position.h"
 #include "scoring.h"
 #include "test_util.h"

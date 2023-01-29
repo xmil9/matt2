@@ -80,7 +80,7 @@ void Position::move(const Relocation& relocation)
 
 double Position::updateScore()
 {
-   m_score = calcDailyChessScore(*this);
+   m_score = calcScore(*this);
    return *m_score;
 }
 

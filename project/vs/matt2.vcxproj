@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\console.h" />
+    <ClInclude Include="..\..\daily_chess_scoring.h" />
     <ClInclude Include="..\..\game.h" />
     <ClInclude Include="..\..\move.h" />
     <ClInclude Include="..\..\notation.h" />
     <ClInclude Include="..\..\piece.h" />
+    <ClInclude Include="..\..\piece_value_scoring.h" />
     <ClInclude Include="..\..\scoring.h" />
     <ClInclude Include="..\..\placement.h" />
     <ClInclude Include="..\..\position.h" />
@@ -32,10 +34,12 @@
     <ClInclude Include="..\..\square.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\daily_chess_scoring.cpp" />
     <ClCompile Include="..\..\game.cpp" />
     <ClCompile Include="..\..\move.cpp" />
     <ClCompile Include="..\..\notation.cpp" />
     <ClCompile Include="..\..\piece.cpp" />
+    <ClCompile Include="..\..\piece_value_scoring.cpp" />
     <ClCompile Include="..\..\position.cpp" />
     <ClCompile Include="..\..\rules.cpp" />
     <ClCompile Include="..\..\scoring.cpp" />

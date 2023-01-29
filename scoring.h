@@ -3,7 +3,7 @@
 // MIT license
 //
 #pragma once
-#include <optional>
+#include <limits>
 
 namespace matt2
 {
@@ -26,11 +26,6 @@ inline double getWorstScoreValue(bool calcMax)
                   : std::numeric_limits<double>::max();
 }
 
-// Score based only on piece values.
-double calcPieceValueScore(const Position& pos);
-
-// Score based on rules by Daily Chess website.
-// https://www.dailychess.com/rival/programming/evaluation.php
-double calcDailyChessScore(const Position& pos);
+double calcScore(const Position& pos);
 
 } // namespace matt2
