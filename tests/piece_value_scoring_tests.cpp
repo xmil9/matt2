@@ -15,146 +15,181 @@ namespace
 {
 ///////////////////
 
-void testPawnScoring()
+void testLookupValue()
 {
    {
-      const std::string caseLabel =
-         "Piece value scoring - Score for more pawns is higher";
+      const std::string caseLabel = "lookupValue returns correct value";
 
-      VERIFY(calcPieceValueScore(Position("wa2 wb2")) >
-                calcPieceValueScore(Position("wa2")),
-             caseLabel);
+      constexpr PieceValueTable values{1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12.};
+
+      VERIFY(lookupValue(Kw, values) == 1., caseLabel);
+      VERIFY(lookupValue(Qw, values) == 2., caseLabel);
+      VERIFY(lookupValue(Rw, values) == 3., caseLabel);
+      VERIFY(lookupValue(Bw, values) == 4., caseLabel);
+      VERIFY(lookupValue(Nw, values) == 5., caseLabel);
+      VERIFY(lookupValue(Pw, values) == 6., caseLabel);
+      VERIFY(lookupValue(Kb, values) == 7., caseLabel);
+      VERIFY(lookupValue(Qb, values) == 8., caseLabel);
+      VERIFY(lookupValue(Rb, values) == 9., caseLabel);
+      VERIFY(lookupValue(Bb, values) == 10., caseLabel);
+      VERIFY(lookupValue(Nb, values) == 11., caseLabel);
+      VERIFY(lookupValue(Pb, values) == 12., caseLabel);
    }
 }
 
-void testKnightScoring()
+void testCalcPieceValueScoreForPiece()
 {
    {
       const std::string caseLabel =
-         "Piece value scoring - Score for more knights is higher";
+         "calcPieceValueScore(Position, Piece) for pawns with default piece values";
 
-      VERIFY(calcPieceValueScore(Position("Nwg2 Nwc7")) >
-                calcPieceValueScore(Position("Nwg2")),
+      VERIFY(calcPieceValueScore(Position("wa2 wb2"), Pw) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("wa2 wb2"), Pw) >
+                calcPieceValueScore(Position("wa2"), Pw),
+             caseLabel);
+      VERIFY(calcPieceValueScore(Position("bc7 bd4"), Pb) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("bc7 bd4"), Pb) >
+                calcPieceValueScore(Position("bd4"), Pb),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "calcPieceValueScore(Position, Piece, "
+                                    "PieceValueTable) for pawns with custom piece values";
+
+      constexpr PieceValueTable PieceValues{1., 1., 1., 1., 1., 20.,
+                                            1., 1., 1., 1., 1., 30.};
+
+      VERIFY(calcPieceValueScore(Position("wa2"), Pw, PieceValues) == 20., caseLabel);
+      VERIFY(calcPieceValueScore(Position("wa2 wb2"), Pw, PieceValues) == 40., caseLabel);
+      VERIFY(calcPieceValueScore(Position("ba7"), Pb, PieceValues) == 30., caseLabel);
+      VERIFY(calcPieceValueScore(Position("ba7 bb5"), Pb, PieceValues) == 60., caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "calcPieceValueScore(Position, Piece) for knights with default piece values";
+
+      VERIFY(calcPieceValueScore(Position("Nwa2 Nwb2"), Nw) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Nwa2 Nwb2"), Nw) >
+                calcPieceValueScore(Position("Nwa2"), Nw),
+             caseLabel);
+      VERIFY(calcPieceValueScore(Position("Nbc7 Nbd4"), Nb) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Nbc7 Nbd4"), Nb) >
+                calcPieceValueScore(Position("Nbc7"), Nb),
              caseLabel);
    }
    {
       const std::string caseLabel =
-         "Piece value scoring - Score for knight is higher than pawn";
+         "calcPieceValueScore(Position, Piece, "
+         "PieceValueTable) for knights with custom piece values";
 
-      VERIFY(calcPieceValueScore(Position("Nwg2")) > calcPieceValueScore(Position("wf2")),
+      constexpr PieceValueTable PieceValues{1., 1., 1., 1., 20., 1.,
+                                            1., 1., 1., 1., 30., 1.};
+
+      VERIFY(calcPieceValueScore(Position("Nwa2"), Nw, PieceValues) == 20., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Nwa2 Nwb2"), Nw, PieceValues) == 40.,
              caseLabel);
-   }
-}
-
-void testBishopScoring()
-{
-   {
-      const std::string caseLabel =
-         "Piece value scoring - Score for more bishops is higher";
-
-      VERIFY(calcPieceValueScore(Position("Bwg2 Bwc7")) >
-                calcPieceValueScore(Position("Bwg2")),
+      VERIFY(calcPieceValueScore(Position("Nba7"), Nb, PieceValues) == 30., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Nba7 Nbb5"), Nb, PieceValues) == 60.,
              caseLabel);
    }
    {
       const std::string caseLabel =
-         "Piece value scoring - Score for bishop is higher than pawn";
+         "calcPieceValueScore(Position, Piece) for bishops with default piece values";
 
-      VERIFY(calcPieceValueScore(Position("Bwg2")) > calcPieceValueScore(Position("wf2")),
+      VERIFY(calcPieceValueScore(Position("Bwa2 Bwb2"), Bw) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Bwa2 Bwb2"), Bw) >
+                calcPieceValueScore(Position("Bwa2"), Bw),
              caseLabel);
-   }
-}
-
-void testRookScoring()
-{
-   {
-      const std::string caseLabel =
-         "Piece value scoring - Score for more rooks is higher";
-
-      VERIFY(calcPieceValueScore(Position("Rwg2 Rwc7")) >
-                calcPieceValueScore(Position("Rwg2")),
+      VERIFY(calcPieceValueScore(Position("Bbc7 Bbd4"), Bb) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Bbc7 Bbd4"), Bb) >
+                calcPieceValueScore(Position("Bbc7"), Bb),
              caseLabel);
    }
    {
       const std::string caseLabel =
-         "Piece value scoring - Score for rook is higher than pawn";
+         "calcPieceValueScore(Position, Piece, "
+         "PieceValueTable) for bishops with custom piece values";
 
-      VERIFY(calcPieceValueScore(Position("Rwg2")) > calcPieceValueScore(Position("wf2")),
+      constexpr PieceValueTable PieceValues{1., 1., 1., 20., 1., 1.,
+                                            1., 1., 1., 30., 1., 1.};
+
+      VERIFY(calcPieceValueScore(Position("Bwa2"), Bw, PieceValues) == 20., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Bwa2 Bwb2"), Bw, PieceValues) == 40.,
+             caseLabel);
+      VERIFY(calcPieceValueScore(Position("Bba7"), Bb, PieceValues) == 30., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Bba7 Bbb5"), Bb, PieceValues) == 60.,
              caseLabel);
    }
    {
       const std::string caseLabel =
-         "Piece value scoring - Score for rook is higher than knight";
+         "calcPieceValueScore(Position, Piece) for rook with default piece values";
 
-      VERIFY(calcPieceValueScore(Position("Rwg2")) >
-                calcPieceValueScore(Position("Nwf2")),
+      VERIFY(calcPieceValueScore(Position("Rwa2 Rwb2"), Rw) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Rwa2 Rwb2"), Rw) >
+                calcPieceValueScore(Position("Rwa2"), Rw),
+             caseLabel);
+      VERIFY(calcPieceValueScore(Position("Rbc7 Rbd4"), Rb) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Rbc7 Rbd4"), Rb) >
+                calcPieceValueScore(Position("Rbd4"), Rb),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "calcPieceValueScore(Position, Piece, "
+                                    "PieceValueTable) for rook with custom piece values";
+
+      constexpr PieceValueTable PieceValues{1., 1., 20., 1., 1., 1.,
+                                            1., 1., 30., 1., 1., 1.};
+
+      VERIFY(calcPieceValueScore(Position("Rwa2"), Rw, PieceValues) == 20., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Rwa2 Rwb2"), Rw, PieceValues) == 40.,
+             caseLabel);
+      VERIFY(calcPieceValueScore(Position("Rba7"), Rb, PieceValues) == 30., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Rba7 Rbb5"), Rb, PieceValues) == 60.,
              caseLabel);
    }
    {
       const std::string caseLabel =
-         "Piece value scoring - Score for rook is higher than bishop";
+         "calcPieceValueScore(Position, Piece) for queen with default piece values";
 
-      VERIFY(calcPieceValueScore(Position("Rwg2")) >
-                calcPieceValueScore(Position("Bwf2")),
+      VERIFY(calcPieceValueScore(Position("Qwa2 Qwb2"), Qw) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Qwa2 Qwb2"), Qw) >
+                calcPieceValueScore(Position("Qwa2"), Qw),
              caseLabel);
-   }
-}
-
-void testQueenScoring()
-{
-   {
-      const std::string caseLabel =
-         "Piece value scoring - Score for queen is higher than pawn";
-
-      VERIFY(calcPieceValueScore(Position("Qwg2")) > calcPieceValueScore(Position("wf2")),
+      VERIFY(calcPieceValueScore(Position("Qbc7 Qbd4"), Qb) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Qbc7 Qbd4"), Qb) >
+                calcPieceValueScore(Position("Qbd4"), Qw),
              caseLabel);
    }
    {
-      const std::string caseLabel =
-         "Piece value scoring - Score for queen is higher than knight";
+      const std::string caseLabel = "calcPieceValueScore(Position, Piece, "
+                                    "PieceValueTable) for queen with custom piece values";
 
-      VERIFY(calcPieceValueScore(Position("Qwg2")) >
-                calcPieceValueScore(Position("Nwf2")),
+      constexpr PieceValueTable PieceValues{1., 20., 1., 1., 1., 1.,
+                                            1., 30., 1., 1., 1., 1.};
+
+      VERIFY(calcPieceValueScore(Position("Qwa2"), Qw, PieceValues) == 20., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Qwa2 Qwb2"), Qw, PieceValues) == 40.,
              caseLabel);
-   }
-   {
-      const std::string caseLabel =
-         "Piece value scoring - Score for queen is higher than bishop";
-
-      VERIFY(calcPieceValueScore(Position("Qwg2")) >
-                calcPieceValueScore(Position("Bwf2")),
+      VERIFY(calcPieceValueScore(Position("Qba7"), Qb, PieceValues) == 30., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Qba7 Qbb5"), Qb, PieceValues) == 60.,
              caseLabel);
    }
    {
       const std::string caseLabel =
-         "Piece value scoring - Score for queen is higher than rook";
+         "calcPieceValueScore(Position, Piece) for king with default piece values";
 
-      VERIFY(calcPieceValueScore(Position("Qwg2")) >
-                calcPieceValueScore(Position("Rwf2")),
-             caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kwb2"), Kw) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kbc7"), Kb) > 0., caseLabel);
    }
-}
-
-void testKingScoring()
-{
    {
-      const std::string caseLabel =
-         "Piece value scoring - Score for king is higher than any other piece";
+      const std::string caseLabel = "calcPieceValueScore(Position, Piece, "
+                                    "PieceValueTable) for king with custom piece values";
 
-      VERIFY(calcPieceValueScore(Position("Kwg2")) > calcPieceValueScore(Position("wf2")),
-             caseLabel);
-      VERIFY(calcPieceValueScore(Position("Kwg2")) >
-                calcPieceValueScore(Position("Nwf2")),
-             caseLabel);
-      VERIFY(calcPieceValueScore(Position("Kwg2")) >
-                calcPieceValueScore(Position("Bwf2")),
-             caseLabel);
-      VERIFY(calcPieceValueScore(Position("Kwg2")) >
-                calcPieceValueScore(Position("Rwf2")),
-             caseLabel);
-      VERIFY(calcPieceValueScore(Position("Kwg2")) >
-                calcPieceValueScore(Position("Qwf2")),
-             caseLabel);
+      constexpr PieceValueTable PieceValues{20., 1., 1., 1., 1., 1.,
+                                            30., 1., 1., 1., 1., 1.};
+
+      VERIFY(calcPieceValueScore(Position("Kwa2"), Kw, PieceValues) == 20., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kba7"), Kb, PieceValues) == 30., caseLabel);
    }
 }
 
@@ -164,10 +199,6 @@ void testKingScoring()
 
 void testPieceValueScoring()
 {
-   testPawnScoring();
-   testKnightScoring();
-   testBishopScoring();
-   testRookScoring();
-   testQueenScoring();
-   testKingScoring();
+   testLookupValue();
+   testCalcPieceValueScoreForPiece();
 }
