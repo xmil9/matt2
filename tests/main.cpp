@@ -2,10 +2,12 @@
 // Jun-2021, Michael Lindner
 // MIT license
 //
+#include "daily_chess_scoring_tests.h"
 #include "game_tests.h"
 #include "move_tests.h"
 #include "notation_tests.h"
 #include "piece_tests.h"
+#include "piece_value_scoring_tests.h"
 #include "placement_tests.h"
 #include "position_tests.h"
 #include "relocation_tests.h"
@@ -19,6 +21,7 @@
 int main()
 {
    testColor();
+   testDailyChessScoring();
    testDiagonal();
    testFile();
    //testGame();
@@ -27,6 +30,7 @@ int main()
    testOffset();
    testPiece();
    testPieceIterator();
+   testPieceValueScoring();
    testPlacement();
    testPlacementIterator();
    testPosition();

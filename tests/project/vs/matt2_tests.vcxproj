@@ -19,11 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\daily_chess_scoring_tests.cpp" />
     <ClCompile Include="..\..\game_tests.cpp" />
     <ClCompile Include="..\..\main.cpp" />
     <ClCompile Include="..\..\notation_tests.cpp" />
     <ClCompile Include="..\..\piece_tests.cpp" />
     <ClCompile Include="..\..\move_tests.cpp" />
+    <ClCompile Include="..\..\piece_value_scoring_tests.cpp" />
     <ClCompile Include="..\..\placement_tests.cpp" />
     <ClCompile Include="..\..\position_tests.cpp" />
     <ClCompile Include="..\..\relocation_tests.cpp" />
@@ -33,10 +35,12 @@
     <ClCompile Include="..\..\test_util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\daily_chess_scoring_tests.h" />
     <ClInclude Include="..\..\game_tests.h" />
     <ClInclude Include="..\..\notation_tests.h" />
     <ClInclude Include="..\..\piece_tests.h" />
     <ClInclude Include="..\..\move_tests.h" />
+    <ClInclude Include="..\..\piece_value_scoring_tests.h" />
     <ClInclude Include="..\..\placement_tests.h" />
     <ClInclude Include="..\..\position_tests.h" />
     <ClInclude Include="..\..\relocation_tests.h" />
