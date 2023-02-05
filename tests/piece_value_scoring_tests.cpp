@@ -193,6 +193,57 @@ void testCalcPieceValueScoreForPiece()
    }
 }
 
+void testCalcPieceValueScoreForSide()
+{
+   {
+      const std::string caseLabel =
+         "calcPieceValueScore(Position, Color) for default piece values";
+
+      VERIFY(calcPieceValueScore(Position(""), Color::White) == 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kwa2 Qwd1"), Color::White) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kwa2 Qwd1"), Color::Black) == 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kba6 be3"), Color::Black) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kba6 be3"), Color::White) == 0., caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "calcPieceValueScore(Position, Color, PieceValueTable) with custom piece values";
+
+      constexpr PieceValueTable PieceValues{10., 9., 8., 7., 6., 5.,
+                                            10., 9., 8., 7., 6., 5.};
+
+      VERIFY(calcPieceValueScore(Position(""), Color::White, PieceValues) == 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kwa2 Qwd1"), Color::White, PieceValues) == 19.,
+             caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kba7 be6 Nbf6"), Color::Black, PieceValues) ==
+                21.,
+             caseLabel);
+   }
+}
+
+void testCalcPieceValueScoreForPosition()
+{
+   {
+      const std::string caseLabel =
+         "calcPieceValueScore(Position) for default piece values";
+
+      VERIFY(calcPieceValueScore(Position("")) == 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kwa2 Qwd1 Kba6 be3")) > 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kwa2 Kba6 be3")) < 0., caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "calcPieceValueScore(Position, PieceValueTable) with custom piece values";
+
+      constexpr PieceValueTable PieceValues{10., 9., 8., 7., 6., 5.,
+                                            10., 9., 8., 7., 6., 5.};
+
+      VERIFY(calcPieceValueScore(Position(""), PieceValues) == 0., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kwa2 Qwd1 Kba6 be3"), PieceValues) == 4., caseLabel);
+      VERIFY(calcPieceValueScore(Position("Kwa2 Kba6 be3"), PieceValues) == -5., caseLabel);
+   }
+}
+
 } // namespace
 
 ///////////////////
@@ -201,4 +252,6 @@ void testPieceValueScoring()
 {
    testLookupValue();
    testCalcPieceValueScoreForPiece();
+   testCalcPieceValueScoreForSide();
+   testCalcPieceValueScoreForPosition();
 }
