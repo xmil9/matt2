@@ -14,6 +14,8 @@
 
 namespace matt2
 {
+namespace dcs
+{
 ///////////////////
 
 // Piece values.
@@ -130,7 +132,7 @@ static std::optional<int> minDistanceToEnemyKing(Piece p, const Position& pos)
 class DailyChessScore
 {
  public:
-   DailyChessScore(const Position& pos, Color side, DailyChessRules rules);
+   DailyChessScore(const Position& pos, Color side, Rules rules);
    ~DailyChessScore() = default;
    DailyChessScore(const DailyChessScore&) = delete;
    DailyChessScore& operator=(const DailyChessScore&) = delete;
@@ -147,16 +149,16 @@ class DailyChessScore
    double calcKingScore();
 
  private:
-   bool useRule(DailyChessRules rule) const;
+   bool useRule(Rules rule) const;
 
  private:
    const Position& m_pos;
    Color m_side = Color::White;
-   DailyChessRules m_rules = DailyChessRules::All;
+   Rules m_rules = Rules::All;
    double m_score = 0.;
 };
 
-DailyChessScore::DailyChessScore(const Position& pos, Color side, DailyChessRules rules)
+DailyChessScore::DailyChessScore(const Position& pos, Color side, Rules rules)
 : m_pos{pos}, m_side{side}, m_rules{rules}
 {
 }
@@ -342,15 +344,15 @@ double DailyChessScore::calcPawnScore()
    FileStats_t opponentStats;
    collectPawnStats(!m_side, m_pos, opponentStats);
 
-   if (useRule(DailyChessRules::PawnPieceValue))
+   if (useRule(Rules::PawnPieceValue))
       score += pieceValue;
-   if (useRule(DailyChessRules::PawnPositionBonus))
+   if (useRule(Rules::PawnPositionBonus))
       score += calcPawnPositionBonus(m_side, pawnStats);
-   if (useRule(DailyChessRules::PassedPawnBonus))
+   if (useRule(Rules::PassedPawnBonus))
       score += calcPassedPawnBonus(m_side, pawnStats, opponentStats);
-   if (useRule(DailyChessRules::DoublePawnPenalty))
+   if (useRule(Rules::DoublePawnPenalty))
       score -= calcDoublePawnPenalty(pawnStats);
-   if (useRule(DailyChessRules::IsolatedPawnPenalty))
+   if (useRule(Rules::IsolatedPawnPenalty))
       score -= calcIsolatedPawnPenalty(pawnStats);
 
    return score;
@@ -411,11 +413,11 @@ double DailyChessScore::calcKnightScore()
 {
    double score = 0.;
 
-   if (useRule(DailyChessRules::KnightPieceValue))
+   if (useRule(Rules::KnightPieceValue))
       score += pvs::score(m_pos, m_side == Color::White ? Nw : Nb, PieceValues);
-   if (useRule(DailyChessRules::KnightCenterBonus))
+   if (useRule(Rules::KnightCenterBonus))
       score += calcKnightCenterBonus(m_side, m_pos);
-   if (useRule(DailyChessRules::KnightKingClosenessBonus))
+   if (useRule(Rules::KnightKingClosenessBonus))
       score += calcKnightKingClosenessBonus(m_side, m_pos);
 
    return score;
@@ -470,11 +472,11 @@ double DailyChessScore::calcBishopScore()
 {
    double score = 0.;
 
-   if (useRule(DailyChessRules::BishopPieceValue))
+   if (useRule(Rules::BishopPieceValue))
       score += pvs::score(m_pos, bishop(m_side), PieceValues);
-   if (useRule(DailyChessRules::MultipleBishopBonus))
+   if (useRule(Rules::MultipleBishopBonus))
       score += calcMultipleBishopBonus(m_side, m_pos);
-   if (useRule(DailyChessRules::BishopAdjacentPawnPenality))
+   if (useRule(Rules::BishopAdjacentPawnPenality))
       score -= calcAdjacentPawnBishopPenalty(m_side, m_pos);
 
    return score;
@@ -567,15 +569,15 @@ double DailyChessScore::calcRookScore()
 
    double score = 0.;
 
-   if (useRule(DailyChessRules::RookPieceValue))
+   if (useRule(Rules::RookPieceValue))
       score += pvs::score(m_pos, rook(m_side), PieceValues);
-   if (useRule(DailyChessRules::RookKingClosenessBonus))
+   if (useRule(Rules::RookKingClosenessBonus))
       score += calcRookKingClosenessBonus(m_side, m_pos);
-   if (useRule(DailyChessRules::RookSeventhRankBonus))
+   if (useRule(Rules::RookSeventhRankBonus))
       score += calcRookSeventhRankBonus(m_side, m_pos);
-   if (useRule(DailyChessRules::RookSharedFileBonus))
+   if (useRule(Rules::RookSharedFileBonus))
       score += calcRookSharedFileBonus(sortedRookFiles);
-   if (useRule(DailyChessRules::RookPawnsOnFileBonus))
+   if (useRule(Rules::RookPawnsOnFileBonus))
       score += calcRookPawnsOnFileBonus(m_side, m_pos, sortedRookFiles);
 
    return score;
@@ -623,11 +625,11 @@ double DailyChessScore::calcQueenScore()
 {
    double score = 0.;
 
-   if (useRule(DailyChessRules::QueenPieceValue))
+   if (useRule(Rules::QueenPieceValue))
       score += pvs::score(m_pos, queen(m_side), PieceValues);
-   if (useRule(DailyChessRules::QueenKingClosenessValue))
+   if (useRule(Rules::QueenKingClosenessValue))
       score += calcQueenKingClosenessBonus(m_side, m_pos);
-   if (useRule(DailyChessRules::QueenBishopDiagonalClosenessValue))
+   if (useRule(Rules::QueenBishopDiagonalClosenessValue))
       score += calcQueenBishopDiagonalBonus(m_side, m_pos);
 
    return score;
@@ -718,17 +720,17 @@ double DailyChessScore::calcKingScore()
 {
    double score = 0.;
 
-   if (useRule(DailyChessRules::KingPieceValue))
+   if (useRule(Rules::KingPieceValue))
       score += pvs::score(m_pos, king(m_side), PieceValues);
-   if (useRule(DailyChessRules::KingQuadrantPenalty))
+   if (useRule(Rules::KingQuadrantPenalty))
       score -= calcKingQuadrantPenality(m_side, m_pos);
-   if (useRule(DailyChessRules::KingCastlingPenalty))
+   if (useRule(Rules::KingCastlingPenalty))
       score -= calcKingCastlingPenality(m_side, m_pos);
 
    return score;
 }
 
-bool DailyChessScore::useRule(DailyChessRules rule) const
+bool DailyChessScore::useRule(Rules rule) const
 {
    const uint64_t ruleFlag = static_cast<uint64_t>(rule);
    return (static_cast<uint64_t>(m_rules) & ruleFlag) == ruleFlag;
@@ -736,15 +738,15 @@ bool DailyChessScore::useRule(DailyChessRules rule) const
 
 ///////////////////
 
-double calcDailyChessScore(const Position& pos, Color side, DailyChessRules rules)
+double score(const Position& pos, Color side, Rules rules)
 {
    return DailyChessScore{pos, side, rules}.calc();
 }
 
-double calcDailyChessScore(const Position& pos, DailyChessRules rules)
+double score(const Position& pos, Rules rules)
 {
-   return calcDailyChessScore(pos, Color::White, rules) -
-          calcDailyChessScore(pos, Color::Black, rules);
+   return score(pos, Color::White, rules) - score(pos, Color::Black, rules);
 }
 
+} // namespace dcs
 } // namespace matt2

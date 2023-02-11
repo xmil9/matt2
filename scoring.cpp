@@ -11,7 +11,7 @@ namespace matt2
 
 double calcScore(const Position& pos)
 {
-   return calcDailyChessScore(pos);
+   return dcs::score(pos);
 }
 
 } // namespace matt2

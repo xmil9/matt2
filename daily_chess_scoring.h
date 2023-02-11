@@ -15,10 +15,13 @@ class Position;
 
 namespace matt2
 {
+namespace dcs
+{
+///////////////////
 
 // Flags for individual scoring rules
 // Exposed to allow more focused unit testing.
-enum class DailyChessRules : uint64_t
+enum class Rules : uint64_t
 {
    // Pawn
    PawnPieceValue = 0x01000001,
@@ -52,9 +55,8 @@ enum class DailyChessRules : uint64_t
    All = 0xffffffff
 };
 
-double calcDailyChessScore(const Position& pos, Color side,
-                           DailyChessRules rules = DailyChessRules::All);
-double calcDailyChessScore(const Position& pos,
-                           DailyChessRules rules = DailyChessRules::All);
+double score(const Position& pos, Color side, Rules rules = Rules::All);
+double score(const Position& pos, Rules rules = Rules::All);
 
+} // namespace dcs
 } // namespace matt2
