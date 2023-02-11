@@ -11,6 +11,8 @@
 
 namespace matt2
 {
+namespace pvs
+{
 ///////////////////
 
 // Default piece values.
@@ -29,22 +31,20 @@ constexpr PieceValueTable DefaultPieceValues{
 
 ///////////////////
 
-double calcPieceValueScore(const Position& pos, Piece piece,
-                           const std::optional<PieceValueTable>& pieceValues)
+double score(const Position& pos, Piece piece,
+             const std::optional<PieceValueTable>& values)
 {
-   const PieceValueTable& valueTable =
-      pieceValues.has_value() ? *pieceValues : DefaultPieceValues;
+   const PieceValueTable& valueTable = values.has_value() ? *values : DefaultPieceValues;
 
    return std::accumulate(pos.begin(piece), pos.end(piece), 0.,
                           [piece, &valueTable](double currValue, Square /*sq*/)
                           { return currValue + lookupValue(piece, valueTable); });
 }
 
-double calcPieceValueScore(const Position& pos, Color side,
-                           const std::optional<PieceValueTable>& pieceValues)
+double score(const Position& pos, Color side,
+             const std::optional<PieceValueTable>& values)
 {
-   const PieceValueTable& valueTable =
-      pieceValues.has_value() ? *pieceValues : DefaultPieceValues;
+   const PieceValueTable& valueTable = values.has_value() ? *values : DefaultPieceValues;
 
    return std::accumulate(
       pos.begin(side), pos.end(side), 0.,
@@ -52,11 +52,10 @@ double calcPieceValueScore(const Position& pos, Color side,
       { return currValue + lookupValue(placement.piece(), valueTable); });
 }
 
-double calcPieceValueScore(const Position& pos,
-                           const std::optional<PieceValueTable>& pieceValues)
+double score(const Position& pos, const std::optional<PieceValueTable>& values)
 {
-   return calcPieceValueScore(pos, Color::White, pieceValues) -
-          calcPieceValueScore(pos, Color::Black, pieceValues);
+   return score(pos, Color::White, values) - score(pos, Color::Black, values);
 }
 
+} // namespace pvs
 } // namespace matt2

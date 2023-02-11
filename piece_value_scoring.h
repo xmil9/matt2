@@ -14,32 +14,32 @@ class Position;
 
 namespace matt2
 {
+namespace pvs
+{
 ///////////////////
 
 // Lookup table for piece values. Indexed by Piece values.
 using PieceValueTable = std::array<double, 12>;
 
 // Simplify lookup for individual piece.
-inline double lookupValue(Piece piece, const PieceValueTable& pieceValues)
+inline double lookupValue(Piece piece, const PieceValueTable& values)
 {
-   return pieceValues[static_cast<size_t>(piece)];
+   return values[static_cast<size_t>(piece)];
 }
 
 ///////////////////
 
 // Calculate score for one type of piece.
-double
-calcPieceValueScore(const Position& pos, Piece piece,
-                    const std::optional<PieceValueTable>& valueTable = std::nullopt);
+double score(const Position& pos, Piece piece,
+             const std::optional<PieceValueTable>& values = std::nullopt);
 
 // Calculate score for one side.
-double
-calcPieceValueScore(const Position& pos, Color side,
-                    const std::optional<PieceValueTable>& pieceValues = std::nullopt);
+double score(const Position& pos, Color side,
+             const std::optional<PieceValueTable>& values = std::nullopt);
 
 // Calculate score for entire position.
-double
-calcPieceValueScore(const Position& pos,
-                    const std::optional<PieceValueTable>& valueTable = std::nullopt);
+double score(const Position& pos,
+             const std::optional<PieceValueTable>& values = std::nullopt);
 
+} // namespace pvs
 } // namespace matt2

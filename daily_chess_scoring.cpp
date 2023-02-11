@@ -25,7 +25,7 @@ constexpr double KnightValue = 325.;
 constexpr double PawnValue = 100.;
 
 // Piece value lookup table.
-constexpr PieceValueTable PieceValues{
+constexpr pvs::PieceValueTable PieceValues{
    KingValue, QueenValue, RookValue, BishopValue, KnightValue, PawnValue,
    KingValue, QueenValue, RookValue, BishopValue, KnightValue, PawnValue,
 };
@@ -193,7 +193,7 @@ static double collectPawnStats(Color side, const Position& pos, FileStats_t& sta
       const Rank r = rank(sq);
       stats[file(sq)].push_back(r);
 
-      pawnValue += lookupValue(p, PieceValues);
+      pawnValue += pvs::lookupValue(p, PieceValues);
    }
 
    return pawnValue;
@@ -412,7 +412,7 @@ double DailyChessScore::calcKnightScore()
    double score = 0.;
 
    if (useRule(DailyChessRules::KnightPieceValue))
-      score += calcPieceValueScore(m_pos, m_side == Color::White ? Nw : Nb, PieceValues);
+      score += pvs::score(m_pos, m_side == Color::White ? Nw : Nb, PieceValues);
    if (useRule(DailyChessRules::KnightCenterBonus))
       score += calcKnightCenterBonus(m_side, m_pos);
    if (useRule(DailyChessRules::KnightKingClosenessBonus))
@@ -471,7 +471,7 @@ double DailyChessScore::calcBishopScore()
    double score = 0.;
 
    if (useRule(DailyChessRules::BishopPieceValue))
-      score += calcPieceValueScore(m_pos, bishop(m_side), PieceValues);
+      score += pvs::score(m_pos, bishop(m_side), PieceValues);
    if (useRule(DailyChessRules::MultipleBishopBonus))
       score += calcMultipleBishopBonus(m_side, m_pos);
    if (useRule(DailyChessRules::BishopAdjacentPawnPenality))
@@ -568,7 +568,7 @@ double DailyChessScore::calcRookScore()
    double score = 0.;
 
    if (useRule(DailyChessRules::RookPieceValue))
-      score += calcPieceValueScore(m_pos, rook(m_side), PieceValues);
+      score += pvs::score(m_pos, rook(m_side), PieceValues);
    if (useRule(DailyChessRules::RookKingClosenessBonus))
       score += calcRookKingClosenessBonus(m_side, m_pos);
    if (useRule(DailyChessRules::RookSeventhRankBonus))
@@ -624,7 +624,7 @@ double DailyChessScore::calcQueenScore()
    double score = 0.;
 
    if (useRule(DailyChessRules::QueenPieceValue))
-      score += calcPieceValueScore(m_pos, queen(m_side), PieceValues);
+      score += pvs::score(m_pos, queen(m_side), PieceValues);
    if (useRule(DailyChessRules::QueenKingClosenessValue))
       score += calcQueenKingClosenessBonus(m_side, m_pos);
    if (useRule(DailyChessRules::QueenBishopDiagonalClosenessValue))
@@ -719,7 +719,7 @@ double DailyChessScore::calcKingScore()
    double score = 0.;
 
    if (useRule(DailyChessRules::KingPieceValue))
-      score += calcPieceValueScore(m_pos, king(m_side), PieceValues);
+      score += pvs::score(m_pos, king(m_side), PieceValues);
    if (useRule(DailyChessRules::KingQuadrantPenalty))
       score -= calcKingQuadrantPenality(m_side, m_pos);
    if (useRule(DailyChessRules::KingCastlingPenalty))
