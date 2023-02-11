@@ -12,7 +12,7 @@
 
 using namespace matt2;
 
-//#define ENABLE_PRINTING
+// #define ENABLE_PRINTING
 
 
 namespace
@@ -218,7 +218,7 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
       }
 
       // Use move m if it leads to a better score for the player.
-      const bool isBetterMove = isBetterScore(moveScore, bestMove.score, calcMax);
+      const bool isBetterMove = bt(moveScore, bestMove.score, calcMax);
       if (isBetterMove)
          bestMove = {m, moveScore};
 
