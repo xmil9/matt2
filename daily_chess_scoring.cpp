@@ -129,13 +129,13 @@ static std::optional<int> minDistanceToEnemyKing(Piece p, const Position& pos)
 // -10,000 to encourage to program to delay the loss for as long as possible in the
 // unsportsmanlike hope that the opponent will make a mistake.
 
-class DailyChessScore
+class Score
 {
  public:
-   DailyChessScore(const Position& pos, Color side, Rules rules);
-   ~DailyChessScore() = default;
-   DailyChessScore(const DailyChessScore&) = delete;
-   DailyChessScore& operator=(const DailyChessScore&) = delete;
+   Score(const Position& pos, Color side, Rules rules);
+   ~Score() = default;
+   Score(const Score&) = delete;
+   Score& operator=(const Score&) = delete;
 
    double score() const { return m_score; }
    double calc();
@@ -158,12 +158,12 @@ class DailyChessScore
    double m_score = 0.;
 };
 
-DailyChessScore::DailyChessScore(const Position& pos, Color side, Rules rules)
+Score::Score(const Position& pos, Color side, Rules rules)
 : m_pos{pos}, m_side{side}, m_rules{rules}
 {
 }
 
-double DailyChessScore::calc()
+double Score::calc()
 {
    m_score = 0.;
    m_score += calcPawnScore();
@@ -334,7 +334,7 @@ static double calcPawnPositionBonus(Color side, const FileStats_t& pawnStats)
                           });
 }
 
-double DailyChessScore::calcPawnScore()
+double Score::calcPawnScore()
 {
    double score = 0.;
 
@@ -409,7 +409,7 @@ static double calcKnightKingClosenessBonus(Color side, const Position& pos)
       { return val + calcKnightKingClosenessBonus(knightSq, *enemyKingSq); });
 }
 
-double DailyChessScore::calcKnightScore()
+double Score::calcKnightScore()
 {
    double score = 0.;
 
@@ -468,7 +468,7 @@ static double calcAdjacentPawnBishopPenalty(Color side, const Position& pos)
                           });
 }
 
-double DailyChessScore::calcBishopScore()
+double Score::calcBishopScore()
 {
    double score = 0.;
 
@@ -563,7 +563,7 @@ static double calcRookPawnsOnFileBonus(Color side, const Position& pos,
           numFilesWithOnlyEnemyPawn * OnlyEnemyPawnsOnFileBonus;
 }
 
-double DailyChessScore::calcRookScore()
+double Score::calcRookScore()
 {
    const std::vector<File> sortedRookFiles = collectPieceFilesSorted(rook(m_side), m_pos);
 
@@ -621,7 +621,7 @@ static double calcQueenBishopDiagonalBonus(Color side, const Position& pos)
                           });
 }
 
-double DailyChessScore::calcQueenScore()
+double Score::calcQueenScore()
 {
    double score = 0.;
 
@@ -716,7 +716,7 @@ static double calcKingCastlingPenality(Color side, const Position& pos)
    return 0.;
 }
 
-double DailyChessScore::calcKingScore()
+double Score::calcKingScore()
 {
    double score = 0.;
 
@@ -730,7 +730,7 @@ double DailyChessScore::calcKingScore()
    return score;
 }
 
-bool DailyChessScore::useRule(Rules rule) const
+bool Score::useRule(Rules rule) const
 {
    const uint64_t ruleFlag = static_cast<uint64_t>(rule);
    return (static_cast<uint64_t>(m_rules) & ruleFlag) == ruleFlag;
@@ -740,7 +740,7 @@ bool DailyChessScore::useRule(Rules rule) const
 
 double score(const Position& pos, Color side, Rules rules)
 {
-   return DailyChessScore{pos, side, rules}.calc();
+   return Score{pos, side, rules}.calc();
 }
 
 double score(const Position& pos, Rules rules)
