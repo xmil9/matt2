@@ -489,19 +489,19 @@ void testPositionCount()
       const std::string caseLabel = "Position::count for white";
 
       Position pos{"Kwe1 Kbe8 Bwg6"};
-      VERIFY(pos.count(Color::White) == 2, caseLabel);
+      VERIFY(pos.count(White) == 2, caseLabel);
    }
    {
       const std::string caseLabel = "Position::count for black";
 
       Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
-      VERIFY(pos.count(Color::Black) == 3, caseLabel);
+      VERIFY(pos.count(Black) == 3, caseLabel);
    }
    {
       const std::string caseLabel = "Position::count for no pieces";
 
       Position pos{"Kbe8"};
-      VERIFY(pos.count(Color::White) == 0, caseLabel);
+      VERIFY(pos.count(White) == 0, caseLabel);
    }
 }
 
@@ -511,7 +511,7 @@ void testPositionBeginForPlacementIterator()
       const std::string caseLabel = "Position::begin for white";
 
       Position pos{"Kwe1 Kbe8 Bwg6"};
-      const auto iter = pos.begin(Color::White);
+      const auto iter = pos.begin(White);
       const auto piece = iter.piece();
       const auto sq = iter.at();
 
@@ -523,7 +523,7 @@ void testPositionBeginForPlacementIterator()
       const std::string caseLabel = "Position::begin(Side) for black";
 
       Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
-      const auto iter = pos.begin(Color::Black);
+      const auto iter = pos.begin(Black);
       const auto piece = iter.piece();
       const auto sq = iter.at();
 
@@ -535,9 +535,9 @@ void testPositionBeginForPlacementIterator()
       const std::string caseLabel = "Position::begin(Side) for no pieces";
 
       Position pos{"Kbe8"};
-      const auto iter = pos.begin(Color::White);
+      const auto iter = pos.begin(White);
 
-      VERIFY(iter == pos.end(Color::White), caseLabel);
+      VERIFY(iter == pos.end(White), caseLabel);
    }
 }
 
@@ -547,10 +547,10 @@ void testPositionEndForPlacementIterator()
       const std::string caseLabel = "Position::end(Side) for white";
 
       Position pos{"Kwe1 Kbe8 Bwg6"};
-      const auto end = pos.end(Color::White);
+      const auto end = pos.end(White);
 
-      auto begin = pos.begin(Color::White);
-      for (size_t i = 0; i < pos.count(Color::White); ++i)
+      auto begin = pos.begin(White);
+      for (size_t i = 0; i < pos.count(White); ++i)
          ++begin;
 
       VERIFY(begin == end, caseLabel);
@@ -559,10 +559,10 @@ void testPositionEndForPlacementIterator()
       const std::string caseLabel = "Position::end(Side) for black";
 
       Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
-      const auto end = pos.end(Color::Black);
+      const auto end = pos.end(Black);
 
-      auto begin = pos.begin(Color::Black);
-      for (size_t i = 0; i < pos.count(Color::Black); ++i)
+      auto begin = pos.begin(Black);
+      for (size_t i = 0; i < pos.count(Black); ++i)
          ++begin;
 
       VERIFY(begin == end, caseLabel);
@@ -662,15 +662,15 @@ void testPositionKingLocation()
       const std::string caseLabel = "Position::kingLocation(Side)";
 
       Position pos{"Kwe1 Kbe8"};
-      VERIFY(pos.kingLocation(Color::White) == std::optional<Square>(e1), caseLabel);
-      VERIFY(pos.kingLocation(Color::Black) == std::optional<Square>(e8), caseLabel);
+      VERIFY(pos.kingLocation(White) == std::optional<Square>(e1), caseLabel);
+      VERIFY(pos.kingLocation(Black) == std::optional<Square>(e8), caseLabel);
    }
    {
       const std::string caseLabel = "Position::kingLocation(Side) for no king";
 
       Position pos{""};
-      VERIFY(pos.kingLocation(Color::White) == std::nullopt, caseLabel);
-      VERIFY(pos.kingLocation(Color::Black) == std::nullopt, caseLabel);
+      VERIFY(pos.kingLocation(White) == std::nullopt, caseLabel);
+      VERIFY(pos.kingLocation(Black) == std::nullopt, caseLabel);
    }
 }
 
@@ -743,24 +743,24 @@ void testPositionHasCastledAndSetHasCastled()
       const std::string caseLabel = "Position::hasCastled is 'false' initially";
 
       Position pos = StartPos;
-      VERIFY(!pos.hasCastled(Color::White), caseLabel);
-      VERIFY(!pos.hasCastled(Color::Black), caseLabel);
+      VERIFY(!pos.hasCastled(White), caseLabel);
+      VERIFY(!pos.hasCastled(Black), caseLabel);
    }
    {
       const std::string caseLabel = "Position::setHasCastled for white";
 
       Position pos{"Kwe1 Kbe8 Rwa1"};
-      pos.setHasCastled(Color::White);
-      VERIFY(pos.hasCastled(Color::White), caseLabel);
-      VERIFY(!pos.hasCastled(Color::Black), caseLabel);
+      pos.setHasCastled(White);
+      VERIFY(pos.hasCastled(White), caseLabel);
+      VERIFY(!pos.hasCastled(Black), caseLabel);
    }
    {
       const std::string caseLabel = "Position::setHasCastled for black ";
 
       Position pos{"Kwe1 Kbe8 Rbh8"};
-      pos.setHasCastled(Color::Black);
-      VERIFY(!pos.hasCastled(Color::White), caseLabel);
-      VERIFY(pos.hasCastled(Color::Black), caseLabel);
+      pos.setHasCastled(Black);
+      VERIFY(!pos.hasCastled(White), caseLabel);
+      VERIFY(pos.hasCastled(Black), caseLabel);
    }
 }
 
@@ -770,24 +770,24 @@ void testPositionHasKingMoved()
       const std::string caseLabel = "Position::hasKingMoved is 'false' initially";
 
       Position pos = StartPos;
-      VERIFY(!pos.hasKingMoved(Color::White), caseLabel);
-      VERIFY(!pos.hasKingMoved(Color::Black), caseLabel);
+      VERIFY(!pos.hasKingMoved(White), caseLabel);
+      VERIFY(!pos.hasKingMoved(Black), caseLabel);
    }
    {
       const std::string caseLabel = "Position::hasKingMoved for white king";
 
       Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
       pos.move(Relocation{"Kwe1e2"});
-      VERIFY(pos.hasKingMoved(Color::White), caseLabel);
-      VERIFY(!pos.hasKingMoved(Color::Black), caseLabel);
+      VERIFY(pos.hasKingMoved(White), caseLabel);
+      VERIFY(!pos.hasKingMoved(Black), caseLabel);
    }
    {
       const std::string caseLabel = "Position::hasKingMoved for black king";
 
       Position pos{"Kwe1 Kbe8 Bwg6 bg7 Rba2"};
       pos.move(Relocation{"Kbe8f8"});
-      VERIFY(!pos.hasKingMoved(Color::White), caseLabel);
-      VERIFY(pos.hasKingMoved(Color::Black), caseLabel);
+      VERIFY(!pos.hasKingMoved(White), caseLabel);
+      VERIFY(pos.hasKingMoved(Black), caseLabel);
    }
 }
 
@@ -797,10 +797,10 @@ void testPositionHasRookMoved()
       const std::string caseLabel = "Position::hasRookMoved is 'false' initially";
 
       Position pos = StartPos;
-      VERIFY(!pos.hasRookMoved(Color::White, true), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::White, false), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::Black, true), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::Black, false), caseLabel);
+      VERIFY(!pos.hasRookMoved(White, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(White, false), caseLabel);
+      VERIFY(!pos.hasRookMoved(Black, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Black, false), caseLabel);
    }
    {
       const std::string caseLabel =
@@ -809,10 +809,10 @@ void testPositionHasRookMoved()
       Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
       pos.move(Relocation{"Rwh1h5"});
 
-      VERIFY(pos.hasRookMoved(Color::White, true), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::White, false), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::Black, true), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::Black, false), caseLabel);
+      VERIFY(pos.hasRookMoved(White, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(White, false), caseLabel);
+      VERIFY(!pos.hasRookMoved(Black, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Black, false), caseLabel);
    }
    {
       const std::string caseLabel =
@@ -821,10 +821,10 @@ void testPositionHasRookMoved()
       Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
       pos.move(Relocation{"Rwa1b1"});
 
-      VERIFY(!pos.hasRookMoved(Color::White, true), caseLabel);
-      VERIFY(pos.hasRookMoved(Color::White, false), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::Black, true), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::Black, false), caseLabel);
+      VERIFY(!pos.hasRookMoved(White, true), caseLabel);
+      VERIFY(pos.hasRookMoved(White, false), caseLabel);
+      VERIFY(!pos.hasRookMoved(Black, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Black, false), caseLabel);
    }
    {
       const std::string caseLabel =
@@ -833,10 +833,10 @@ void testPositionHasRookMoved()
       Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
       pos.move(Relocation{"Rbh8f8"});
 
-      VERIFY(!pos.hasRookMoved(Color::White, true), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::White, false), caseLabel);
-      VERIFY(pos.hasRookMoved(Color::Black, true), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::Black, false), caseLabel);
+      VERIFY(!pos.hasRookMoved(White, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(White, false), caseLabel);
+      VERIFY(pos.hasRookMoved(Black, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(Black, false), caseLabel);
    }
    {
       const std::string caseLabel =
@@ -845,10 +845,10 @@ void testPositionHasRookMoved()
       Position pos{"Kwe1 Rwa1 Rwh1 Kbe8 Rba8 Rbh8"};
       pos.move(Relocation{"Rba8a4"});
 
-      VERIFY(!pos.hasRookMoved(Color::White, true), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::White, false), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::Black, true), caseLabel);
-      VERIFY(pos.hasRookMoved(Color::Black, false), caseLabel);
+      VERIFY(!pos.hasRookMoved(White, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(White, false), caseLabel);
+      VERIFY(!pos.hasRookMoved(Black, true), caseLabel);
+      VERIFY(pos.hasRookMoved(Black, false), caseLabel);
    }
    {
       const std::string caseLabel =
@@ -859,10 +859,10 @@ void testPositionHasRookMoved()
       pos.move(Relocation{"Rbh8f8"});
       pos.move(Relocation{"Rba8a4"});
 
-      VERIFY(pos.hasRookMoved(Color::White, true), caseLabel);
-      VERIFY(!pos.hasRookMoved(Color::White, false), caseLabel);
-      VERIFY(pos.hasRookMoved(Color::Black, true), caseLabel);
-      VERIFY(pos.hasRookMoved(Color::Black, false), caseLabel);
+      VERIFY(pos.hasRookMoved(White, true), caseLabel);
+      VERIFY(!pos.hasRookMoved(White, false), caseLabel);
+      VERIFY(pos.hasRookMoved(Black, true), caseLabel);
+      VERIFY(pos.hasRookMoved(Black, false), caseLabel);
    }
 }
 
@@ -1106,20 +1106,20 @@ void testPositionCanAttackForColor()
       const std::string caseLabel = "Position::canAttack for color with one piece";
 
       Position pos{"Qwd4"};
-      VERIFY(pos.canAttack(d1, Color::White), caseLabel);
-      VERIFY(!pos.canAttack(e1, Color::White), caseLabel);
+      VERIFY(pos.canAttack(d1, White), caseLabel);
+      VERIFY(!pos.canAttack(e1, White), caseLabel);
    }
    {
       const std::string caseLabel = "Position::canAttack for color with multiple pieces";
 
       Position pos{"Qwd4 wf3"};
       // One can attack
-      VERIFY(pos.canAttack(d1, Color::White), caseLabel);
-      VERIFY(pos.canAttack(g4, Color::White), caseLabel);
+      VERIFY(pos.canAttack(d1, White), caseLabel);
+      VERIFY(pos.canAttack(g4, White), caseLabel);
       // None can attack
-      VERIFY(!pos.canAttack(h5, Color::White), caseLabel);
+      VERIFY(!pos.canAttack(h5, White), caseLabel);
       // Both can attack
-      VERIFY(pos.canAttack(e4, Color::White), caseLabel);
+      VERIFY(pos.canAttack(e4, White), caseLabel);
    }
 }
 
@@ -1131,7 +1131,7 @@ void testPlacementIterCopyCtor()
       const std::string caseLabel = "PlacementIterator copy ctor";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White);
+      auto it = pos.begin(White);
 
       auto copy{it};
 
@@ -1145,7 +1145,7 @@ void testPlacementIterMoveCtor()
       const std::string caseLabel = "PlacementIterator move ctor";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White);
+      auto it = pos.begin(White);
       Placement placement = *it;
 
       auto movedTo{std::move(it)};
@@ -1160,7 +1160,7 @@ void testPlacementIterCopyAssignment()
       const std::string caseLabel = "PlacementIterator copy assignment";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White);
+      auto it = pos.begin(White);
 
       PlacementIterator copy;
       copy = it;
@@ -1175,7 +1175,7 @@ void testPlacementIterMoveAssignment()
       const std::string caseLabel = "PlacementIterator move assignment";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White);
+      auto it = pos.begin(White);
       Placement placement = *it;
 
       PlacementIterator movedTo;
@@ -1191,7 +1191,7 @@ void testPlacementIterDereference()
       const std::string caseLabel = "PlacementIterator::operator*()";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White);
+      auto it = pos.begin(White);
 
       Placement placement = *it;
       VERIFY(placement == Placement("Qwd4") || placement == Placement("wf3"), caseLabel);
@@ -1204,7 +1204,7 @@ void testPlacementIterPrefixInc()
       const std::string caseLabel = "PlacementIterator::operator++()";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White);
+      auto it = pos.begin(White);
 
       Placement prev = *it;
       ++it;
@@ -1221,7 +1221,7 @@ void testPlacementIterPostfixInc()
       const std::string caseLabel = "PlacementIterator::operator++(int)";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White);
+      auto it = pos.begin(White);
 
       Placement prev = *it;
       it++;
@@ -1238,7 +1238,7 @@ void testPlacementIterPrefixDec()
       const std::string caseLabel = "PlacementIterator::operator--()";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White);
+      auto it = pos.begin(White);
       ++it;
 
       Placement next = *it;
@@ -1256,7 +1256,7 @@ void testPlacementIterPostfixDec()
       const std::string caseLabel = "PlacementIterator::operator--(int)";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White);
+      auto it = pos.begin(White);
       ++it;
 
       Placement next = *it;
@@ -1274,7 +1274,7 @@ void testPlacementIterPieceAccessor()
       const std::string caseLabel = "PlacementIterator::piece()";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White);
+      auto it = pos.begin(White);
       Placement placement = *it;
 
       VERIFY(it.piece() == placement.piece(), caseLabel);
@@ -1287,7 +1287,7 @@ void testPlacementIterLocationAccessor()
       const std::string caseLabel = "PlacementIterator::at()";
 
       Position pos{"Qwd4 wf3"};
-      auto it = pos.begin(Color::White);
+      auto it = pos.begin(White);
       Placement placement = *it;
 
       VERIFY(it.at() == placement.at(), caseLabel);
@@ -1300,8 +1300,8 @@ void testPlacementIterEquality()
       const std::string caseLabel = "Placement iterator equality for equal placements";
 
       Position pos{"Qwd4 wf3"};
-      auto a = pos.begin(Color::White);
-      auto b = pos.begin(Color::White);
+      auto a = pos.begin(White);
+      auto b = pos.begin(White);
 
       VERIFY(a == b, caseLabel);
    }
@@ -1311,8 +1311,8 @@ void testPlacementIterEquality()
 
       Position posA{"Qwd4 wf3"};
       Position posB{"Qwd4 wf3"};
-      auto a = posA.begin(Color::White);
-      auto b = posB.begin(Color::White);
+      auto a = posA.begin(White);
+      auto b = posB.begin(White);
 
       VERIFY(!(a == b), caseLabel);
    }
@@ -1321,8 +1321,8 @@ void testPlacementIterEquality()
          "Placement iterator equality for placements of different sides";
 
       Position pos{"Qwd4 bf3"};
-      auto a = pos.begin(Color::White);
-      auto b = pos.begin(Color::Black);
+      auto a = pos.begin(White);
+      auto b = pos.begin(Black);
 
       VERIFY(!(a == b), caseLabel);
    }
@@ -1331,7 +1331,7 @@ void testPlacementIterEquality()
          "Placement iterator equality for placements of different pieces";
 
       Position pos{"Qwd4 wf3"};
-      auto a = pos.begin(Color::White);
+      auto a = pos.begin(White);
       auto b = a;
       ++b;
 
@@ -1345,8 +1345,8 @@ void testPlacementIterInequality()
       const std::string caseLabel = "Placement iterator inequality for equal placements";
 
       Position pos{"Qwd4 wf3"};
-      auto a = pos.begin(Color::White);
-      auto b = pos.begin(Color::White);
+      auto a = pos.begin(White);
+      auto b = pos.begin(White);
 
       VERIFY(!(a != b), caseLabel);
    }
@@ -1356,8 +1356,8 @@ void testPlacementIterInequality()
 
       Position posA{"Qwd4 wf3"};
       Position posB{"Qwd4 wf3"};
-      auto a = posA.begin(Color::White);
-      auto b = posB.begin(Color::White);
+      auto a = posA.begin(White);
+      auto b = posB.begin(White);
 
       VERIFY(a != b, caseLabel);
    }
@@ -1366,8 +1366,8 @@ void testPlacementIterInequality()
          "Placement iterator inequality for placements of different sides";
 
       Position pos{"Qwd4 bf3"};
-      auto a = pos.begin(Color::White);
-      auto b = pos.begin(Color::Black);
+      auto a = pos.begin(White);
+      auto b = pos.begin(Black);
 
       VERIFY(a != b, caseLabel);
    }
@@ -1376,7 +1376,7 @@ void testPlacementIterInequality()
          "Placement iterator inequality for placements of different pieces";
 
       Position pos{"Qwd4 wf3"};
-      auto a = pos.begin(Color::White);
+      auto a = pos.begin(White);
       auto b = a;
       ++b;
 
@@ -1390,7 +1390,7 @@ void testPlacementIterLtComparision()
       const std::string caseLabel = "PlacementIterator less-than comparision";
 
       Position pos{"Qwd4 wf3 Rwa1"};
-      auto c = pos.begin(Color::White);
+      auto c = pos.begin(White);
       auto a = c++;
       auto b = c++;
 
@@ -1409,7 +1409,7 @@ void testPlacementIterGtComparision()
       const std::string caseLabel = "PlacementIterator greater-than comparision";
 
       Position pos{"Qwd4 wf3 Rwa1"};
-      auto c = pos.begin(Color::White);
+      auto c = pos.begin(White);
       auto a = c++;
       auto b = c++;
 
@@ -1428,7 +1428,7 @@ void testPlacementIterLeComparision()
       const std::string caseLabel = "PlacementIterator less-than-or-equal comparision";
 
       Position pos{"Qwd4 wf3 Rwa1"};
-      auto c = pos.begin(Color::White);
+      auto c = pos.begin(White);
       auto a = c++;
       auto b = c++;
 
@@ -1450,7 +1450,7 @@ void testPlacementIterGeComparision()
       const std::string caseLabel = "PlacementIterator greater-than-or-equal comparision";
 
       Position pos{"Kbe2 Bbd7 bb3"};
-      auto c = pos.begin(Color::Black);
+      auto c = pos.begin(Black);
       auto a = c++;
       auto b = c++;
 
@@ -1472,10 +1472,10 @@ void testPlacementIterSwap()
       const std::string caseLabel = "PlacementIterator swap";
 
       Position posA{"Qwd4 wf3 Rwa1"};
-      auto a = posA.begin(Color::White);
+      auto a = posA.begin(White);
       const auto origA = a;
       Position posB{"Kbe2 Bbd7 bb3"};
-      auto b = posB.begin(Color::Black);
+      auto b = posB.begin(Black);
       const auto origB = b;
 
       swap(a, b);
@@ -1491,14 +1491,14 @@ void testPlacementIterIterateAllPlacements()
 
    Position pos{"Qwd4 wf3 Bbh4 Rwa1"};
 
-   auto it = pos.begin(Color::White);
-   auto e = pos.end(Color::White);
+   auto it = pos.begin(White);
+   auto e = pos.end(White);
 
    std::vector<Placement> iterated;
    for (; it != e; ++it)
       iterated.push_back(*it);
 
-   VERIFY(iterated.size() == pos.count(Color::White), caseLabel);
+   VERIFY(iterated.size() == pos.count(White), caseLabel);
    VERIFY(std::find(iterated.begin(), iterated.end(), Placement("Qwd4")) !=
              iterated.end(),
           caseLabel);

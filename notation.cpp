@@ -16,7 +16,7 @@ namespace an
 
 std::string& notateColor(std::string& out, Color c)
 {
-   return out += c == Color::White ? "w" : "b";
+   return out += c == White ? "w" : "b";
 }
 
 std::string& notatePiece(std::string& out, Piece p, bool withColor = false)
@@ -177,8 +177,8 @@ static std::string& notatePosition(std::string& out, const Position& pos)
 {
    static constexpr char PieceSep = ' ';
 
-   notatePlacements(out, pos, Color::White, PieceSep);
-   notatePlacements(out, pos, Color::Black, PieceSep);
+   notatePlacements(out, pos, White, PieceSep);
+   notatePlacements(out, pos, Black, PieceSep);
    trimTrailingChar(out, PieceSep);
    return out;
 }

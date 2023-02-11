@@ -110,8 +110,8 @@ class Position
 
  private:
    // Array indices for piece locations of each color.
-   static constexpr std::size_t White = 0;
-   static constexpr std::size_t Black = 1;
+   static constexpr std::size_t WhiteIdx = 0;
+   static constexpr std::size_t BlackIdx = 1;
 
    using Count = unsigned char;
 
@@ -192,7 +192,10 @@ class Position
    const ColorPlacements& pieces(Color side) const;
 
    static std::size_t toIdx(Square at) { return static_cast<std::size_t>(at); }
-   static std::size_t toColorIdx(Piece piece) { return isWhite(piece) ? White : Black; }
+   static std::size_t toColorIdx(Piece piece)
+   {
+      return isWhite(piece) ? WhiteIdx : BlackIdx;
+   }
    static std::size_t toColorIdx(Color side);
 
  private:
@@ -262,7 +265,7 @@ inline const Position::ColorPlacements& Position::pieces(Color side) const
 
 inline std::size_t Position::toColorIdx(Color side)
 {
-   return side == Color::White ? White : Black;
+   return side == White ? WhiteIdx : BlackIdx;
 }
 
 inline bool Position::operator==(const Position& other) const
@@ -278,8 +281,8 @@ inline bool Position::operator!=(const Position& other) const
 inline bool Position::isEqual(const Position& other, bool withGameState) const
 {
    bool isEqual = m_board == other.m_board &&
-                  m_pieces[White].isEqual(other.m_pieces[White], withGameState) &&
-                  m_pieces[Black].isEqual(other.m_pieces[Black], withGameState);
+                  m_pieces[WhiteIdx].isEqual(other.m_pieces[WhiteIdx], withGameState) &&
+                  m_pieces[BlackIdx].isEqual(other.m_pieces[BlackIdx], withGameState);
    if (withGameState)
       isEqual &= m_enPassantSquare == other.m_enPassantSquare;
    return isEqual;
@@ -325,7 +328,7 @@ inline bool Position::ColorPlacements::isEqual(const ColorPlacements& other,
 
 inline void Position::ColorPlacements::initKingMovedFlag(Color side, Square at)
 {
-   m_castlingState.hasKingMoved = side == Color::White ? (at != e1) : (at != e8);
+   m_castlingState.hasKingMoved = side == White ? (at != e1) : (at != e8);
 }
 
 
@@ -477,7 +480,7 @@ class PlacementIterator
 
  public:
    const Position* m_pos = nullptr;
-   Color m_side = Color::White;
+   Color m_side = White;
    // Index of piece.
    std::size_t m_idx = 0;
 };

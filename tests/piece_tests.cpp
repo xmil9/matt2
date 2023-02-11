@@ -19,8 +19,8 @@ void testColorNegation()
    {
       const std::string caseLabel = "Color negation";
 
-      VERIFY(!Color::White == Color::Black, caseLabel);
-      VERIFY(!Color::Black == Color::White, caseLabel);
+      VERIFY(!White == Black, caseLabel);
+      VERIFY(!Black == White, caseLabel);
    }
 }
 
@@ -271,18 +271,18 @@ void testPieceColor()
    {
       const std::string caseLabel = "color(Piece)";
 
-      VERIFY(color(Kw) == Color::White, caseLabel);
-      VERIFY(color(Qw) == Color::White, caseLabel);
-      VERIFY(color(Rw) == Color::White, caseLabel);
-      VERIFY(color(Bw) == Color::White, caseLabel);
-      VERIFY(color(Nw) == Color::White, caseLabel);
-      VERIFY(color(Pw) == Color::White, caseLabel);
-      VERIFY(color(Kb) == Color::Black, caseLabel);
-      VERIFY(color(Qb) == Color::Black, caseLabel);
-      VERIFY(color(Rb) == Color::Black, caseLabel);
-      VERIFY(color(Bb) == Color::Black, caseLabel);
-      VERIFY(color(Nb) == Color::Black, caseLabel);
-      VERIFY(color(Pb) == Color::Black, caseLabel);
+      VERIFY(color(Kw) == White, caseLabel);
+      VERIFY(color(Qw) == White, caseLabel);
+      VERIFY(color(Rw) == White, caseLabel);
+      VERIFY(color(Bw) == White, caseLabel);
+      VERIFY(color(Nw) == White, caseLabel);
+      VERIFY(color(Pw) == White, caseLabel);
+      VERIFY(color(Kb) == Black, caseLabel);
+      VERIFY(color(Qb) == Black, caseLabel);
+      VERIFY(color(Rb) == Black, caseLabel);
+      VERIFY(color(Bb) == Black, caseLabel);
+      VERIFY(color(Nb) == Black, caseLabel);
+      VERIFY(color(Pb) == Black, caseLabel);
    }
 }
 
@@ -369,8 +369,8 @@ void testKingPiece()
    {
       const std::string caseLabel = "king(Side)";
 
-      VERIFY(king(Color::White) == Kw, caseLabel);
-      VERIFY(king(Color::Black) == Kb, caseLabel);
+      VERIFY(king(White) == Kw, caseLabel);
+      VERIFY(king(Black) == Kb, caseLabel);
    }
 }
 
@@ -379,8 +379,8 @@ void testQueenPiece()
    {
       const std::string caseLabel = "queen(Side)";
 
-      VERIFY(queen(Color::White) == Qw, caseLabel);
-      VERIFY(queen(Color::Black) == Qb, caseLabel);
+      VERIFY(queen(White) == Qw, caseLabel);
+      VERIFY(queen(Black) == Qb, caseLabel);
    }
 }
 
@@ -389,8 +389,8 @@ void testRookPiece()
    {
       const std::string caseLabel = "rook(Side)";
 
-      VERIFY(rook(Color::White) == Rw, caseLabel);
-      VERIFY(rook(Color::Black) == Rb, caseLabel);
+      VERIFY(rook(White) == Rw, caseLabel);
+      VERIFY(rook(Black) == Rb, caseLabel);
    }
 }
 
@@ -399,8 +399,8 @@ void testBishopPiece()
    {
       const std::string caseLabel = "bishop(Side)";
 
-      VERIFY(bishop(Color::White) == Bw, caseLabel);
-      VERIFY(bishop(Color::Black) == Bb, caseLabel);
+      VERIFY(bishop(White) == Bw, caseLabel);
+      VERIFY(bishop(Black) == Bb, caseLabel);
    }
 }
 
@@ -409,8 +409,8 @@ void testKnightPiece()
    {
       const std::string caseLabel = "knight(Side)";
 
-      VERIFY(knight(Color::White) == Nw, caseLabel);
-      VERIFY(knight(Color::Black) == Nb, caseLabel);
+      VERIFY(knight(White) == Nw, caseLabel);
+      VERIFY(knight(Black) == Nb, caseLabel);
    }
 }
 
@@ -419,8 +419,8 @@ void testPawnPiece()
    {
       const std::string caseLabel = "pawn(Side)";
 
-      VERIFY(pawn(Color::White) == Pw, caseLabel);
-      VERIFY(pawn(Color::Black) == Pb, caseLabel);
+      VERIFY(pawn(White) == Pw, caseLabel);
+      VERIFY(pawn(Black) == Pb, caseLabel);
    }
 }
 

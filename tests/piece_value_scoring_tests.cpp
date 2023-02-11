@@ -171,11 +171,11 @@ void testCalcPieceValueScoreForSide()
    {
       const std::string caseLabel = "score(Position, Color) for default piece values";
 
-      VERIFY(score(Position(""), Color::White) == 0., caseLabel);
-      VERIFY(score(Position("Kwa2 Qwd1"), Color::White) > 0., caseLabel);
-      VERIFY(score(Position("Kwa2 Qwd1"), Color::Black) == 0., caseLabel);
-      VERIFY(score(Position("Kba6 be3"), Color::Black) > 0., caseLabel);
-      VERIFY(score(Position("Kba6 be3"), Color::White) == 0., caseLabel);
+      VERIFY(score(Position(""), White) == 0., caseLabel);
+      VERIFY(score(Position("Kwa2 Qwd1"), White) > 0., caseLabel);
+      VERIFY(score(Position("Kwa2 Qwd1"), Black) == 0., caseLabel);
+      VERIFY(score(Position("Kba6 be3"), Black) > 0., caseLabel);
+      VERIFY(score(Position("Kba6 be3"), White) == 0., caseLabel);
    }
    {
       const std::string caseLabel =
@@ -184,10 +184,9 @@ void testCalcPieceValueScoreForSide()
       constexpr PieceValueTable PieceValues{10., 9., 8., 7., 6., 5.,
                                             10., 9., 8., 7., 6., 5.};
 
-      VERIFY(score(Position(""), Color::White, PieceValues) == 0., caseLabel);
-      VERIFY(score(Position("Kwa2 Qwd1"), Color::White, PieceValues) == 19., caseLabel);
-      VERIFY(score(Position("Kba7 be6 Nbf6"), Color::Black, PieceValues) == 21.,
-             caseLabel);
+      VERIFY(score(Position(""), White, PieceValues) == 0., caseLabel);
+      VERIFY(score(Position("Kwa2 Qwd1"), White, PieceValues) == 19., caseLabel);
+      VERIFY(score(Position("Kba7 be6 Nbf6"), Black, PieceValues) == 21., caseLabel);
    }
 }
 

@@ -61,7 +61,7 @@ void testPawnScoring()
    }
    {
       const std::string caseLabel =
-         "Daily chess scoring - Passed pawns have higher score - White";
+         "Daily chess scoring - Passed pawns have higher score - WhiteIdx";
 
       const Position passed("wd5 bf7");
       const Position blocked("wd5 bd7");
@@ -74,7 +74,7 @@ void testPawnScoring()
    }
    {
       const std::string caseLabel =
-         "Daily chess scoring - Passed pawns have higher score - Black";
+         "Daily chess scoring - Passed pawns have higher score - BlackIdx";
 
       const Position passed("bf3 wc2");
       const Position blocked("bf3 wf2");
@@ -86,7 +86,7 @@ void testPawnScoring()
       VERIFY(bt(score(passed), score(neighborB), false), caseLabel);
    }
    {
-      const std::string caseLabel = "Daily chess scoring - Double pawn penalty - White";
+      const std::string caseLabel = "Daily chess scoring - Double pawn penalty - WhiteIdx";
 
       const Position doublePawns("wg4 wg5");
       const Position individualPawns("wg4 wf5");
@@ -94,7 +94,7 @@ void testPawnScoring()
       VERIFY(bt(score(individualPawns), score(doublePawns), true), caseLabel);
    }
    {
-      const std::string caseLabel = "Daily chess scoring - Double pawn penalty - Black";
+      const std::string caseLabel = "Daily chess scoring - Double pawn penalty - BlackIdx";
 
       const Position doublePawns("be3 be5");
       const Position individualPawns("be3 bd5");
@@ -102,7 +102,7 @@ void testPawnScoring()
       VERIFY(bt(score(individualPawns), score(doublePawns), false), caseLabel);
    }
    {
-      const std::string caseLabel = "Daily chess scoring - Isolated pawn penalty - White";
+      const std::string caseLabel = "Daily chess scoring - Isolated pawn penalty - WhiteIdx";
 
       const Position isolatedPawns("wg4 wc5");
       const Position connectedPawns("wg4 wf5");
@@ -110,7 +110,7 @@ void testPawnScoring()
       VERIFY(bt(score(connectedPawns), score(isolatedPawns), true), caseLabel);
    }
    {
-      const std::string caseLabel = "Daily chess scoring - Isolated pawn penalty - Black";
+      const std::string caseLabel = "Daily chess scoring - Isolated pawn penalty - BlackIdx";
 
       const Position isolatedPawns("bc6 be7");
       const Position connectedPawns("bc6 bd7");
@@ -361,10 +361,10 @@ void testKingScoring()
 
       Position hasNotCastled("Kwe2 Rwa1 Rwh1");
       // No castling possible anymore.
-      hasNotCastled.hasKingMoved(Color::White);
+      hasNotCastled.hasKingMoved(White);
 
       Position hasCastled = hasNotCastled;
-      hasCastled.setHasCastled(Color::White);
+      hasCastled.setHasCastled(White);
 
       VERIFY(bt(score(hasCastled), score(hasNotCastled), true), caseLabel);
    }
@@ -374,9 +374,9 @@ void testKingScoring()
 
       Position original("Kwe1 Rwa1 Rwh1");
       Position kingsideRookMoved("Kwe1 Rwa1 Rwg1");
-      kingsideRookMoved.hasRookMoved(Color::White, true);
+      kingsideRookMoved.hasRookMoved(White, true);
       Position queensideRookMoved("Kwe1 Rwb1 Rwh1");
-      queensideRookMoved.hasRookMoved(Color::White, false);
+      queensideRookMoved.hasRookMoved(White, false);
 
       VERIFY(bt(score(original), score(kingsideRookMoved), true), caseLabel);
       VERIFY(bt(score(original), score(queensideRookMoved), true), caseLabel);

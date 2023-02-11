@@ -38,16 +38,16 @@ void testBetterScoreForSide()
    {
       const std::string caseLabel = "bt for white";
 
-      VERIFY(bt(10., 5., Color::White), caseLabel);
-      VERIFY(bt(-5., -10., Color::White), caseLabel);
-      VERIFY(!bt(5., 10., Color::White), caseLabel);
+      VERIFY(bt(10., 5., White), caseLabel);
+      VERIFY(bt(-5., -10., White), caseLabel);
+      VERIFY(!bt(5., 10., White), caseLabel);
    }
    {
       const std::string caseLabel = "bt for black";
 
-      VERIFY(bt(5., 10., Color::Black), caseLabel);
-      VERIFY(bt(-10., -5., Color::Black), caseLabel);
-      VERIFY(!bt(10., 5., Color::Black), caseLabel);
+      VERIFY(bt(5., 10., Black), caseLabel);
+      VERIFY(bt(-10., -5., Black), caseLabel);
+      VERIFY(!bt(10., 5., Black), caseLabel);
    }
 }
 
@@ -80,22 +80,22 @@ void testCmpScoreForSide()
    {
       const std::string caseLabel = "cmp for white";
 
-      VERIFY(cmp(10., 5., Color::White) == 1, caseLabel);
-      VERIFY(cmp(-5., -10., Color::White) == 1, caseLabel);
-      VERIFY(cmp(5., 5., Color::White) == 0, caseLabel);
-      VERIFY(cmp(-1., -1., Color::White) == 0, caseLabel);
-      VERIFY(cmp(5., 10., Color::White) == -1, caseLabel);
-      VERIFY(cmp(-2., 2., Color::White) == -1, caseLabel);
+      VERIFY(cmp(10., 5., White) == 1, caseLabel);
+      VERIFY(cmp(-5., -10., White) == 1, caseLabel);
+      VERIFY(cmp(5., 5., White) == 0, caseLabel);
+      VERIFY(cmp(-1., -1., White) == 0, caseLabel);
+      VERIFY(cmp(5., 10., White) == -1, caseLabel);
+      VERIFY(cmp(-2., 2., White) == -1, caseLabel);
    }
    {
       const std::string caseLabel = "cmp for black";
 
-      VERIFY(cmp(5., 10., Color::Black) == 1, caseLabel);
-      VERIFY(cmp(-5., -4., Color::Black) == 1, caseLabel);
-      VERIFY(cmp(5., 5., Color::Black) == 0, caseLabel);
-      VERIFY(cmp(-1., -1., Color::Black) == 0, caseLabel);
-      VERIFY(cmp(5., 1., Color::Black) == -1, caseLabel);
-      VERIFY(cmp(2., -2., Color::Black) == -1, caseLabel);
+      VERIFY(cmp(5., 10., Black) == 1, caseLabel);
+      VERIFY(cmp(-5., -4., Black) == 1, caseLabel);
+      VERIFY(cmp(5., 5., Black) == 0, caseLabel);
+      VERIFY(cmp(-1., -1., Black) == 0, caseLabel);
+      VERIFY(cmp(5., 1., Black) == -1, caseLabel);
+      VERIFY(cmp(2., -2., Black) == -1, caseLabel);
    }
 }
 
@@ -114,8 +114,8 @@ void testGetWorstScoreForSide()
    {
       const std::string caseLabel = "getWorstScoreValue for side";
 
-      VERIFY(getWorstScoreValue(Color::White) < -100000, caseLabel);
-      VERIFY(getWorstScoreValue(Color::Black) > 100000, caseLabel);
+      VERIFY(getWorstScoreValue(White) < -100000, caseLabel);
+      VERIFY(getWorstScoreValue(Black) > 100000, caseLabel);
    }
 }
 

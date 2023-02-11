@@ -253,7 +253,7 @@ void testCastlingMove()
       const std::string caseLabel = "Castling::move for castling black king-side";
 
       Position pos{"Kbe8 Rbh8"};
-      Castling m{Kingside, Color::Black};
+      Castling m{Kingside, Black};
       m.move(pos);
 
       VERIFY(pos[g8] == Kb, caseLabel);
@@ -263,13 +263,13 @@ void testCastlingMove()
       VERIFY(pos.locations(Rb).size() == 1, caseLabel);
       VERIFY(pos.locations(Rb)[0] == f8, caseLabel);
       VERIFY(pos.enPassantSquare() == std::nullopt, caseLabel);
-      VERIFY(pos.hasCastled(Color::Black), caseLabel);
+      VERIFY(pos.hasCastled(Black), caseLabel);
    }
    {
       const std::string caseLabel = "Castling::move for castling white king-side";
 
       Position pos{"Kwe1 Rwh1"};
-      Castling m{Kingside, Color::White};
+      Castling m{Kingside, White};
       m.move(pos);
 
       VERIFY(pos[g1] == Kw, caseLabel);
@@ -279,13 +279,13 @@ void testCastlingMove()
       VERIFY(pos.locations(Rw).size() == 1, caseLabel);
       VERIFY(pos.locations(Rw)[0] == f1, caseLabel);
       VERIFY(pos.enPassantSquare() == std::nullopt, caseLabel);
-      VERIFY(pos.hasCastled(Color::White), caseLabel);
+      VERIFY(pos.hasCastled(White), caseLabel);
    }
    {
       const std::string caseLabel = "Castling::move for castling black queen-side";
 
       Position pos{"Kbe8 Rba8"};
-      Castling m{Queenside, Color::Black};
+      Castling m{Queenside, Black};
       m.move(pos);
 
       VERIFY(pos[c8] == Kb, caseLabel);
@@ -295,13 +295,13 @@ void testCastlingMove()
       VERIFY(pos.locations(Rb).size() == 1, caseLabel);
       VERIFY(pos.locations(Rb)[0] == d8, caseLabel);
       VERIFY(pos.enPassantSquare() == std::nullopt, caseLabel);
-      VERIFY(pos.hasCastled(Color::Black), caseLabel);
+      VERIFY(pos.hasCastled(Black), caseLabel);
    }
    {
       const std::string caseLabel = "Castling::move for castling white queen-side";
 
       Position pos{"Kwe1 Rwa1"};
-      Castling m{Queenside, Color::White};
+      Castling m{Queenside, White};
       m.move(pos);
 
       VERIFY(pos[c1] == Kw, caseLabel);
@@ -311,7 +311,7 @@ void testCastlingMove()
       VERIFY(pos.locations(Rw).size() == 1, caseLabel);
       VERIFY(pos.locations(Rw)[0] == d1, caseLabel);
       VERIFY(pos.enPassantSquare() == std::nullopt, caseLabel);
-      VERIFY(pos.hasCastled(Color::White), caseLabel);
+      VERIFY(pos.hasCastled(White), caseLabel);
    }
 }
 
@@ -323,7 +323,7 @@ void testCastlingReverse()
 
       const Position originalPos{"Kbe8 Rbh8"};
       Position pos = originalPos;
-      Castling m{Kingside, Color::Black};
+      Castling m{Kingside, Black};
       m.move(pos);
       m.reverse(pos);
 
@@ -334,7 +334,7 @@ void testCastlingReverse()
 
       const Position originalPos{"Kwe1 Rwh1"};
       Position pos = originalPos;
-      Castling m{Kingside, Color::White};
+      Castling m{Kingside, White};
       m.move(pos);
       m.reverse(pos);
 
@@ -345,7 +345,7 @@ void testCastlingReverse()
 
       const Position originalPos{"Kbe8 Rba8"};
       Position pos = originalPos;
-      Castling m{Queenside, Color::Black};
+      Castling m{Queenside, Black};
       m.move(pos);
       m.reverse(pos);
 
@@ -356,7 +356,7 @@ void testCastlingReverse()
 
       const Position originalPos{"Kwe1 Rwa1"};
       Position pos = originalPos;
-      Castling m{Queenside, Color::White};
+      Castling m{Queenside, White};
       m.move(pos);
       m.reverse(pos);
 
@@ -370,22 +370,18 @@ void testCastlingIsEqual()
       const std::string caseLabel = "Castling::isEqual without considering game state";
 
       // Currently Promotion moves don't have game state.
-      VERIFY(Castling(Kingside, Color::Black)
-                .isEqual(Castling(Kingside, Color::Black), false),
+      VERIFY(Castling(Kingside, Black).isEqual(Castling(Kingside, Black), false),
              caseLabel);
-      VERIFY(!(Castling(Kingside, Color::Black)
-                  .isEqual(Castling(Queenside, Color::Black), false)),
+      VERIFY(!(Castling(Kingside, Black).isEqual(Castling(Queenside, Black), false)),
              caseLabel);
    }
    {
       const std::string caseLabel = "Castling::isEqual with considering game state";
 
       // Currently Promotion moves don't have game state.
-      VERIFY(
-         Castling(Kingside, Color::Black).isEqual(Castling(Kingside, Color::Black), true),
-         caseLabel);
-      VERIFY(!(Castling(Kingside, Color::Black)
-                  .isEqual(Castling(Queenside, Color::Black), true)),
+      VERIFY(Castling(Kingside, Black).isEqual(Castling(Kingside, Black), true),
+             caseLabel);
+      VERIFY(!(Castling(Kingside, Black).isEqual(Castling(Queenside, Black), true)),
              caseLabel);
    }
 }
@@ -396,18 +392,14 @@ void testCastlingEquality()
    {
       const std::string caseLabel = "Castling equality for equal moves";
 
-      VERIFY(Castling(Kingside, Color::Black) == Castling(Kingside, Color::Black),
-             caseLabel);
-      VERIFY(Castling(Queenside, Color::White) == Castling(Queenside, Color::White),
-             caseLabel);
+      VERIFY(Castling(Kingside, Black) == Castling(Kingside, Black), caseLabel);
+      VERIFY(Castling(Queenside, White) == Castling(Queenside, White), caseLabel);
    }
    {
       const std::string caseLabel = "Castling equality for unequal moves";
 
-      VERIFY(!(Castling(Kingside, Color::Black) == Castling(Queenside, Color::Black)),
-             caseLabel);
-      VERIFY(!(Castling(Queenside, Color::White) == Castling(Queenside, Color::Black)),
-             caseLabel);
+      VERIFY(!(Castling(Kingside, Black) == Castling(Queenside, Black)), caseLabel);
+      VERIFY(!(Castling(Queenside, White) == Castling(Queenside, Black)), caseLabel);
    }
 }
 
@@ -417,18 +409,14 @@ void testCastlingInequality()
    {
       const std::string caseLabel = "Castling inequality for equal moves";
 
-      VERIFY(!(Castling(Kingside, Color::Black) != Castling(Kingside, Color::Black)),
-             caseLabel);
-      VERIFY(!(Castling(Queenside, Color::White) != Castling(Queenside, Color::White)),
-             caseLabel);
+      VERIFY(!(Castling(Kingside, Black) != Castling(Kingside, Black)), caseLabel);
+      VERIFY(!(Castling(Queenside, White) != Castling(Queenside, White)), caseLabel);
    }
    {
       const std::string caseLabel = "Castling inequality for unequal moves";
 
-      VERIFY(Castling(Kingside, Color::Black) != Castling(Queenside, Color::Black),
-             caseLabel);
-      VERIFY(Castling(Queenside, Color::White) != Castling(Queenside, Color::Black),
-             caseLabel);
+      VERIFY(Castling(Kingside, Black) != Castling(Queenside, Black), caseLabel);
+      VERIFY(Castling(Queenside, White) != Castling(Queenside, Black), caseLabel);
    }
 }
 
@@ -850,7 +838,7 @@ void testTo()
    {
       const std::string caseLabel = "to() for castling move on king's side";
 
-      Move m = Castling{Kingside, Color::White};
+      Move m = Castling{Kingside, White};
       VERIFY(to(m) == g1, caseLabel);
    }
    {
@@ -878,7 +866,7 @@ void testFrom()
    {
       const std::string caseLabel = "to() for castling move on king's side";
 
-      Move m = Castling{Kingside, Color::White};
+      Move m = Castling{Kingside, White};
       VERIFY(from(m) == e1, caseLabel);
    }
    {
@@ -911,7 +899,7 @@ void testMakeMove()
       const std::string caseLabel = "makeMove for castling move";
 
       Position pos{"Kwe1 Rwh1"};
-      Move m = Castling{Kingside, Color::White};
+      Move m = Castling{Kingside, White};
       makeMove(pos, m);
 
       const Position expected{"Kwg1 Rwf1"};
@@ -958,7 +946,7 @@ void testReverseMove()
 
       const Position original{"Kwe1 Rwh1"};
       Position pos = original;
-      Move m = Castling{Kingside, Color::White};
+      Move m = Castling{Kingside, White};
       makeMove(pos, m);
       reverseMove(pos, m);
 

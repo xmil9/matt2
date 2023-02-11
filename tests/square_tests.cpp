@@ -1419,7 +1419,7 @@ void testQuadrantInQuadrant()
 {
    {
       const std::string caseLabel = "inQuadrant(Square, Quadrant)";
-      
+
       VERIFY(inQuadrant(a1, Quadrant::a1), caseLabel);
       VERIFY(!inQuadrant(a1, Quadrant::a8), caseLabel);
       VERIFY(!inQuadrant(a1, Quadrant::h1), caseLabel);
@@ -1436,7 +1436,7 @@ void testQuadrantInQuadrant()
       VERIFY(!inQuadrant(a8, Quadrant::a1), caseLabel);
       VERIFY(!inQuadrant(a8, Quadrant::h1), caseLabel);
       VERIFY(!inQuadrant(a8, Quadrant::h8), caseLabel);
-      
+
       VERIFY(inQuadrant(d1, Quadrant::a1), caseLabel);
       VERIFY(!inQuadrant(d1, Quadrant::a8), caseLabel);
       VERIFY(!inQuadrant(d1, Quadrant::h1), caseLabel);
@@ -1453,7 +1453,7 @@ void testQuadrantInQuadrant()
       VERIFY(!inQuadrant(d8, Quadrant::a1), caseLabel);
       VERIFY(!inQuadrant(d8, Quadrant::h1), caseLabel);
       VERIFY(!inQuadrant(d8, Quadrant::h8), caseLabel);
-      
+
       VERIFY(inQuadrant(e1, Quadrant::h1), caseLabel);
       VERIFY(!inQuadrant(e1, Quadrant::a1), caseLabel);
       VERIFY(!inQuadrant(e1, Quadrant::a8), caseLabel);
@@ -1470,7 +1470,7 @@ void testQuadrantInQuadrant()
       VERIFY(!inQuadrant(e8, Quadrant::a1), caseLabel);
       VERIFY(!inQuadrant(e8, Quadrant::a8), caseLabel);
       VERIFY(!inQuadrant(e8, Quadrant::h1), caseLabel);
-      
+
       VERIFY(inQuadrant(h1, Quadrant::h1), caseLabel);
       VERIFY(!inQuadrant(h1, Quadrant::a1), caseLabel);
       VERIFY(!inQuadrant(h1, Quadrant::a8), caseLabel);
@@ -1494,15 +1494,15 @@ void testQuadrantIsFriendlyQuadrant()
 {
    {
       const std::string caseLabel = "isFriendlyQuadrant(Quadrant, Color)";
-      
-      VERIFY(isFriendlyQuadrant(Quadrant::a1, Color::White), caseLabel);
-      VERIFY(!isFriendlyQuadrant(Quadrant::a1, Color::Black), caseLabel);
-      VERIFY(isFriendlyQuadrant(Quadrant::h1, Color::White), caseLabel);
-      VERIFY(!isFriendlyQuadrant(Quadrant::h1, Color::Black), caseLabel);
-      VERIFY(isFriendlyQuadrant(Quadrant::a8, Color::Black), caseLabel);
-      VERIFY(!isFriendlyQuadrant(Quadrant::a8, Color::White), caseLabel);
-      VERIFY(isFriendlyQuadrant(Quadrant::h8, Color::Black), caseLabel);
-      VERIFY(!isFriendlyQuadrant(Quadrant::h8, Color::White), caseLabel);
+
+      VERIFY(isFriendlyQuadrant(Quadrant::a1, White), caseLabel);
+      VERIFY(!isFriendlyQuadrant(Quadrant::a1, Black), caseLabel);
+      VERIFY(isFriendlyQuadrant(Quadrant::h1, White), caseLabel);
+      VERIFY(!isFriendlyQuadrant(Quadrant::h1, Black), caseLabel);
+      VERIFY(isFriendlyQuadrant(Quadrant::a8, Black), caseLabel);
+      VERIFY(!isFriendlyQuadrant(Quadrant::a8, White), caseLabel);
+      VERIFY(isFriendlyQuadrant(Quadrant::h8, Black), caseLabel);
+      VERIFY(!isFriendlyQuadrant(Quadrant::h8, White), caseLabel);
    }
 }
 

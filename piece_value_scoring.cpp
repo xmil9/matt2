@@ -54,7 +54,7 @@ double score(const Position& pos, Color side,
 
 double score(const Position& pos, const std::optional<PieceValueTable>& values)
 {
-   return score(pos, Color::White, values) - score(pos, Color::Black, values);
+   return score(pos, White, values) - score(pos, Black, values);
 }
 
 } // namespace pvs

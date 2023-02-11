@@ -153,7 +153,7 @@ class DailyChessScore
 
  private:
    const Position& m_pos;
-   Color m_side = Color::White;
+   Color m_side = White;
    Rules m_rules = Rules::All;
    double m_score = 0.;
 };
@@ -256,7 +256,7 @@ static bool hasOpponentPawnInFront(Color side, Rank sideRank,
                                    const Ranks_t& opponentRanks)
 {
    auto isInFront = [](Color side, Rank a, Rank b)
-   { return side == Color::White ? a > b : a < b; };
+   { return side == White ? a > b : a < b; };
 
    for (Rank opponentRank : opponentRanks)
       if (isInFront(side, opponentRank, sideRank))
@@ -279,7 +279,7 @@ static double calcPassedPawnBonus(Color side, File f, Rank r,
 
    constexpr double PassedPawnRankFactor = 1.;
    const size_t rankNumber =
-      side == Color::White ? static_cast<size_t>(r) : 9 - static_cast<size_t>(r);
+      side == White ? static_cast<size_t>(r) : 9 - static_cast<size_t>(r);
    return rankNumber * PassedPawnRankFactor;
 }
 
@@ -322,7 +322,7 @@ static double calcPawnPositionBonus(Color side, const FileStats_t& pawnStats)
    };
    // clang-format on
 
-   const auto& posScore = side == Color::White ? WhitePosScore : BlackPosScore;
+   const auto& posScore = side == White ? WhitePosScore : BlackPosScore;
    return std::accumulate(std::begin(pawnStats), std::end(pawnStats), 0.,
                           [side, &posScore](double val, const auto& fileElem)
                           {
@@ -414,7 +414,7 @@ double DailyChessScore::calcKnightScore()
    double score = 0.;
 
    if (useRule(Rules::KnightPieceValue))
-      score += pvs::score(m_pos, m_side == Color::White ? Nw : Nb, PieceValues);
+      score += pvs::score(m_pos, m_side == White ? Nw : Nb, PieceValues);
    if (useRule(Rules::KnightCenterBonus))
       score += calcKnightCenterBonus(m_side, m_pos);
    if (useRule(Rules::KnightKingClosenessBonus))
@@ -509,7 +509,7 @@ static double calcRookKingClosenessBonus(Color side, const Position& pos)
 static double calcRookSeventhRankBonus(Color side, const Position& pos)
 {
    const Piece r = rook(side);
-   const Rank seventhRank = side == Color::White ? r7 : r2;
+   const Rank seventhRank = side == White ? r7 : r2;
    const bool on7th =
       std::any_of(pos.begin(r), pos.end(r),
                   [seventhRank](Square sq) { return rank(sq) == seventhRank; });
@@ -745,7 +745,7 @@ double score(const Position& pos, Color side, Rules rules)
 
 double score(const Position& pos, Rules rules)
 {
-   return score(pos, Color::White, rules) - score(pos, Color::Black, rules);
+   return score(pos, White, rules) - score(pos, Black, rules);
 }
 
 } // namespace dcs

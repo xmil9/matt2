@@ -369,8 +369,8 @@ inline bool inQuadrant(Square sq, Quadrant q)
 
 inline bool isFriendlyQuadrant(Quadrant q, Color side)
 {
-   return (side == Color::White && (q == Quadrant::a1 || q == Quadrant::h1)) ||
-          (side == Color::Black && (q == Quadrant::a8 || q == Quadrant::h8));
+   return (side == White && (q == Quadrant::a1 || q == Quadrant::h1)) ||
+          (side == Black && (q == Quadrant::a8 || q == Quadrant::h8));
 }
 
 } // namespace matt2

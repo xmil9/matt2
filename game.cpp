@@ -21,7 +21,7 @@ namespace
 
 std::string toString(Color c)
 {
-   return c == Color::White ? "white" : "black";
+   return c == White ? "white" : "black";
 }
 
 std::string toString(const Move& m)
@@ -177,7 +177,7 @@ MoveCalculator::MoveCalculator(Position& pos) : m_pos{pos}
 
 std::optional<Move> MoveCalculator::next(Color side, std::size_t turns)
 {
-   return next(side, 2 * turns, side == Color::White).move;
+   return next(side, 2 * turns, side == White).move;
 }
 
 

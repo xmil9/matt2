@@ -16,10 +16,14 @@ enum class Color
    Black
 };
 
+// Aliases for convenience.
+constexpr Color White = Color::White;
+constexpr Color Black = Color::Black;
+
 
 inline Color operator!(Color c)
 {
-   return c == Color::White ? Color::Black : Color::White;
+   return c == White ? Black : White;
 }
 
 
@@ -63,17 +67,17 @@ inline bool isBishop(Piece p) { return p == Bw || p == Bb; }
 inline bool isKnight(Piece p) { return p == Nw || p == Nb; }
 inline bool isPawn(Piece p) { return p == Pw || p == Pb; }
 
-inline Color color(Piece p) { return p < Kb ? Color::White : Color::Black; }
-inline bool isWhite(Piece p) { return color(p) == Color::White; }
-inline bool isBlack(Piece p) { return color(p) == Color::Black; }
+inline Color color(Piece p) { return p < Kb ? White : Black; }
+inline bool isWhite(Piece p) { return color(p) == White; }
+inline bool isBlack(Piece p) { return color(p) == Black; }
 inline bool haveSameColor(Piece a, Piece b) { return color(a) == color(b); }
 
-inline Piece king(Color side) { return side == Color::White ? Kw : Kb; }
-inline Piece queen(Color side) { return side == Color::White ? Qw : Qb; }
-inline Piece rook(Color side) { return side == Color::White ? Rw : Rb; }
-inline Piece bishop(Color side) { return side == Color::White ? Bw : Bb; }
-inline Piece knight(Color side) { return side == Color::White ? Nw : Nb; }
-inline Piece pawn(Color side) { return side == Color::White ? Pw : Pb; }
+inline Piece king(Color side) { return side == White ? Kw : Kb; }
+inline Piece queen(Color side) { return side == White ? Qw : Qb; }
+inline Piece rook(Color side) { return side == White ? Rw : Rb; }
+inline Piece bishop(Color side) { return side == White ? Bw : Bb; }
+inline Piece knight(Color side) { return side == White ? Nw : Nb; }
+inline Piece pawn(Color side) { return side == White ? Pw : Pb; }
 // clang-format on
 
 } // namespace matt2

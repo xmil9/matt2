@@ -24,7 +24,7 @@ inline bool bt(double a, double b, bool calcMax)
 
 inline bool bt(double a, double b, Color side)
 {
-   return bt(a, b, side == Color::White);
+   return bt(a, b, side == White);
 }
 
 // Compare scores: 1, 0, -1
@@ -37,7 +37,7 @@ inline int cmp(double a, double b, bool calcMax)
 
 inline int cmp(double a, double b, Color side)
 {
-   return cmp(a, b, side == Color::White);
+   return cmp(a, b, side == White);
 }
 
 // Get worst score value.
@@ -49,7 +49,7 @@ inline double getWorstScoreValue(bool calcMax)
 
 inline double getWorstScoreValue(Color side)
 {
-   return getWorstScoreValue(side == Color::White);
+   return getWorstScoreValue(side == White);
 }
 
 // Calculate the score of a given position.

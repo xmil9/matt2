@@ -34,9 +34,9 @@ void testLanNotateColor()
       Lan lan;
 
       out.clear();
-      VERIFY(lan.notate(out, Color::White) == "w", caseLabel);
+      VERIFY(lan.notate(out, White) == "w", caseLabel);
       out.clear();
-      VERIFY(lan.notate(out, Color::Black) == "b", caseLabel);
+      VERIFY(lan.notate(out, Black) == "b", caseLabel);
    }
 }
 
@@ -211,7 +211,7 @@ void testLanNotateCastling()
 
       std::string out;
       Lan lan;
-      Castling move{Kingside, Color::White};
+      Castling move{Kingside, White};
 
       VERIFY((lan.notate(out, move) == "0-0"), caseLabel);
    }
@@ -220,7 +220,7 @@ void testLanNotateCastling()
 
       std::string out;
       Lan lan;
-      Castling move{Queenside, Color::Black};
+      Castling move{Queenside, Black};
 
       VERIFY((lan.notate(out, move) == "0-0-0"), caseLabel);
    }
@@ -336,9 +336,9 @@ void testDnNotateColor()
       DetailedNotation dn;
 
       out.clear();
-      VERIFY(dn.notate(out, Color::White) == "w", caseLabel);
+      VERIFY(dn.notate(out, White) == "w", caseLabel);
       out.clear();
-      VERIFY(dn.notate(out, Color::Black) == "b", caseLabel);
+      VERIFY(dn.notate(out, Black) == "b", caseLabel);
    }
 }
 
@@ -514,7 +514,7 @@ void testDnNotateCastling()
 
       std::string out;
       DetailedNotation dn;
-      Castling move{Kingside, Color::White};
+      Castling move{Kingside, White};
 
       VERIFY((dn.notate(out, move) == "w0-0"), caseLabel);
    }
@@ -524,7 +524,7 @@ void testDnNotateCastling()
 
       std::string out;
       DetailedNotation dn;
-      Castling move{Queenside, Color::Black};
+      Castling move{Queenside, Black};
 
       VERIFY((dn.notate(out, move) == "b0-0-0"), caseLabel);
    }

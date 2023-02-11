@@ -45,7 +45,7 @@ void testCalcNextMove()
          "Game::calcNextMove in 1 turn for black when taking the highest piece is best";
 
       Game g{Position{"Kwb1 Rwe4 Bwg4 Kbd8 Bbf5"}};
-      const auto& nextPos = g.calcNextMove(Color::Black, 1);
+      const auto& nextPos = g.calcNextMove(Black, 1);
 
       VERIFY(nextPos == Position{"Kwb1 Bwg4 Kbd8 Bbe4"}, caseLabel);
       VERIFY(g.countMoves() == 1, caseLabel);
@@ -56,7 +56,7 @@ void testCalcNextMove()
          "Game::calcNextMove in 1 turn for white with checkmate";
 
       Game g{Position{"Kwa1 Kbd4 wc3"}};
-      const auto& nextPos = g.calcNextMove(Color::White, 1);
+      const auto& nextPos = g.calcNextMove(White, 1);
 
       VERIFY(nextPos == Position{"Kwa1 wd4"}, caseLabel);
       VERIFY(g.countMoves() == 1, caseLabel);
@@ -69,7 +69,7 @@ void testCalcNextMove()
 
       // If black took the knight the black queen would be taken by the opponent.
       Game g{Position{"Kwb2 Bwg3 Nwf4 wb6 Kbe8 Qbd6"}};
-      const auto& nextPos = g.calcNextMove(Color::Black, 1);
+      const auto& nextPos = g.calcNextMove(Black, 1);
 
       VERIFY(nextPos == Position{"Kwb2 Bwg3 Nwf4 Kbe8 Qbb6"}, caseLabel);
       VERIFY(g.countMoves() == 1, caseLabel);
@@ -81,7 +81,7 @@ void testCalcNextMove()
          "the algorithm needs to look ahead two turns to score the position correctly)";
 
       Game g{Position{"Kwc1 Rwf7 Rwg1 Kbc8"}};
-      const auto& nextPos = g.calcNextMove(Color::White, 2);
+      const auto& nextPos = g.calcNextMove(White, 2);
 
       VERIFY(nextPos == Position{"Kwc1 Rwf7 Rwg8 Kbc8"}, caseLabel);
    }
@@ -89,7 +89,7 @@ void testCalcNextMove()
       const std::string caseLabel = "Game::calcNextMove for Polgar Chess book problem 1.";
 
       Game g{Position{"Kwg1 Qwf6 Bwc3 wh2 wg2 wf2 Kbg8 Qbd8 Rbf8 Bbg7 bh7 bg6 bf7"}};
-      const auto& nextPos = g.calcNextMove(Color::White, 2);
+      const auto& nextPos = g.calcNextMove(White, 2);
 
       VERIFY(nextPos == Position{"Kwg1 Qwg7 Bwc3 wh2 wg2 wf2 Kbg8 Qbd8 Rbf8 bh7 bg6 bf7"},
              caseLabel);
@@ -98,7 +98,7 @@ void testCalcNextMove()
       const std::string caseLabel = "Game::calcNextMove for Polgar Chess book problem 2.";
 
       Game g{Position{"Kwc1 Qwh6 Rwd1 Nwg5 wb2 wc2 we5 Kbg8 Qbc7 Rbc8 Rbf8 bh7 bg6 bf7"}};
-      const auto& nextPos = g.calcNextMove(Color::White, 2);
+      const auto& nextPos = g.calcNextMove(White, 2);
 
       VERIFY(nextPos ==
                 Position{"Kwc1 Qwh7 Rwd1 Nwg5 wb2 wc2 we5 Kbg8 Qbc7 Rbc8 Rbf8 bg6 bf7"},

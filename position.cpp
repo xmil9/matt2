@@ -378,8 +378,8 @@ Square Position::ColorPlacements::placement(std::size_t idx) const
 
 void Position::ColorPlacements::initRookMovedFlag(Color side)
 {
-   const Square kingsideLoc = side == Color::White ? h1 : h8;
-   const Square queensideLoc = side == Color::White ? a1 : a8;
+   const Square kingsideLoc = side == White ? h1 : h8;
+   const Square queensideLoc = side == White ? a1 : a8;
 
    // Init flags for both rooks based on the current state of the position.
    m_castlingState.hasKingsideRookMoved = true;

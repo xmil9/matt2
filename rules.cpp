@@ -239,8 +239,8 @@ bool areCastlingSquaresOccupied(Color side, bool onKingside, const Position& pos
    static const std::vector<Square> BlackQueenside = {b8, c8, d8};
 
    const std::vector<Square>& squares =
-      side == Color::White ? (onKingside ? WhiteKingside : WhiteQueenside)
-                           : (onKingside ? BlackKingside : BlackQueenside);
+      side == White ? (onKingside ? WhiteKingside : WhiteQueenside)
+                    : (onKingside ? BlackKingside : BlackQueenside);
 
    for (Square sq : squares)
       if (pos[sq].has_value())
@@ -263,8 +263,8 @@ bool areCastlingSquaresAttacked(Color side, bool onKingside, const Position& pos
    static const std::vector<Square> BlackQueenside = {c8, d8, e8};
 
    const std::vector<Square>& squares =
-      side == Color::White ? (onKingside ? WhiteKingside : WhiteQueenside)
-                           : (onKingside ? BlackKingside : BlackQueenside);
+      side == White ? (onKingside ? WhiteKingside : WhiteQueenside)
+                    : (onKingside ? BlackKingside : BlackQueenside);
    const Color opponent = !side;
 
    for (auto sq : squares)
@@ -276,7 +276,7 @@ bool areCastlingSquaresAttacked(Color side, bool onKingside, const Position& pos
 
 bool haveCastlingRook(Color side, bool onKingside, const Position& pos)
 {
-   const Square rookSq = makeSquare(onKingside ? fh : fa, side == Color::White ? r1 : r8);
+   const Square rookSq = makeSquare(onKingside ? fh : fa, side == White ? r1 : r8);
    const auto piece = pos[rookSq];
    return piece.has_value() && isRook(*piece) && color(*piece) == side;
 }
@@ -409,8 +409,8 @@ void collectEnPassantMoves(Color side, const Position& pos, std::vector<Move>& m
    if (!epPiece.has_value() || color(*epPiece) == side)
       return;
 
-   const auto fromRank = side == Color::White ? r5 : r4;
-   const auto toRank = side == Color::White ? r6 : r3;
+   const auto fromRank = side == White ? r5 : r4;
+   const auto toRank = side == White ? r6 : r3;
    Square to = makeSquare(epFile, toRank);
 
    // Try both neighboring files.

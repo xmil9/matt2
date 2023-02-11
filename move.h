@@ -34,8 +34,8 @@ class ReversibleState
 
  private:
    // Array indices for castling state of each color.
-   static constexpr std::size_t White = 0;
-   static constexpr std::size_t Black = 1;
+   static constexpr std::size_t WhiteIdx = 0;
+   static constexpr std::size_t BlackIdx = 1;
 
  private:
    // State of position before move is made. Needed to reverse moves.
@@ -56,15 +56,15 @@ inline void ReversibleState::setEnPassantState(std::optional<Square> enPassantSq
 
 inline void ReversibleState::collectCastlingState(const Position& pos)
 {
-   m_prevCastlingState[White] = pos.castlingState(Color::White);
-   m_prevCastlingState[Black] = pos.castlingState(Color::Black);
+   m_prevCastlingState[WhiteIdx] = pos.castlingState(White);
+   m_prevCastlingState[BlackIdx] = pos.castlingState(Black);
 }
 
 inline void ReversibleState::resetState(Position& pos)
 {
    pos.setEnPassantSquare(m_prevEnPassantSquare);
-   pos.setCastlingState(Color::White, m_prevCastlingState[White]);
-   pos.setCastlingState(Color::Black, m_prevCastlingState[Black]);
+   pos.setCastlingState(White, m_prevCastlingState[WhiteIdx]);
+   pos.setCastlingState(Black, m_prevCastlingState[BlackIdx]);
 }
 
 inline bool operator!=(const ReversibleState& a, const ReversibleState& b)
@@ -207,14 +207,14 @@ class Castling : public ReversibleState
 
 
 inline Castling::Castling(Kingside_t, Color side)
-: m_king{side == Color::White ? Relocation{Kw, e1, g1} : Relocation{Kb, e8, g8}},
-  m_rook{side == Color::White ? Relocation{Rw, h1, f1} : Relocation{Rb, h8, f8}}
+: m_king{side == White ? Relocation{Kw, e1, g1} : Relocation{Kb, e8, g8}},
+  m_rook{side == White ? Relocation{Rw, h1, f1} : Relocation{Rb, h8, f8}}
 {
 }
 
 inline Castling::Castling(Queenside_t, Color side)
-: m_king{side == Color::White ? Relocation{Kw, e1, c1} : Relocation{Kb, e8, c8}},
-  m_rook{side == Color::White ? Relocation{Rw, a1, d1} : Relocation{Rb, a8, d8}}
+: m_king{side == White ? Relocation{Kw, e1, c1} : Relocation{Kb, e8, c8}},
+  m_rook{side == White ? Relocation{Rw, a1, d1} : Relocation{Rb, a8, d8}}
 {
 }
 
