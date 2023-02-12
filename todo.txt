@@ -3,4 +3,4 @@
 + Rewrite 'piece value' and 'dail chess' scoring tests.
 + Expose scoring policies to make them easier testable.
 + Collect scoring bonus and penality values into one place.
-- Analyse board once for scoring and pass results to each scoring rule.
++ Analyse board once for scoring and pass results to each scoring rule.
