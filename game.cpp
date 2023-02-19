@@ -204,18 +204,18 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
       makeMove(m_pos, m);
       printEvaluatingStatus(side, plies, moveIdx, moves.size(), m, m_pos);
 
-      // Calculate score without counter moves.
-      double moveScore = m_pos.updateScore();
-
       // Find best counter move for opponent if more plies should be explored.
       MoveScore bestCounterMove;
       if (plies > 1)
-      {
          bestCounterMove = next(!side, plies - 1, !calcMax);
-         // Score of move becomes the score of the best counter move if one was found.
-         if (bestCounterMove)
-            moveScore = bestCounterMove.score;
-      }
+
+      // Score of move becomes the score of the best counter move if one was found,
+      // otherwise use the score of the position.
+      double moveScore = 0.;
+      if (bestCounterMove)
+         moveScore = bestCounterMove.score;
+      else
+         moveScore = m_pos.updateScore();
 
       // Use move m if it leads to a better score for the player.
       const bool isBetterMove = bt(moveScore, bestMove.score, calcMax);
