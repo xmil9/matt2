@@ -247,31 +247,75 @@ double Score::calc()
 ///////////////////
 
 using Ranks_t = std::vector<Rank>;
-// Occupied ranks by file.
-using FileStats_t = std::unordered_map<File, Ranks_t>;
-// Collection of files.
 using Files_t = std::vector<File>;
 
-static FileStats_t makeFileStats()
+// Occupied ranks by file.
+class FileStats
 {
-   return {{fa, {}}, {fb, {}}, {fc, {}}, {fd, {}},
-           {fe, {}}, {ff, {}}, {fg, {}}, {fh, {}}};
+   using iterator = std::vector<Ranks_t>::iterator;
+   using const_iterator = std::vector<Ranks_t>::const_iterator;
+
+ public:
+   void add(File f, Rank r);
+   bool isOccupied(File f) const;
+   const Ranks_t& ranks(File f) const;
+   iterator begin();
+   iterator end();
+   const_iterator begin() const;
+   const_iterator end() const;
+
+ private:
+   static constexpr size_t NumFiles = 8;
+   std::vector<Ranks_t> m_stats{NumFiles};
+};
+
+void FileStats::add(File f, Rank r)
+{
+   m_stats[static_cast<size_t>(f)].push_back(r);
 }
 
-// Finds all ranks by file that pieces of a given type are on.
-static FileStats_t collectFileStats(Piece p, const Position& pos)
+bool FileStats::isOccupied(File f) const
 {
-   FileStats_t stats = makeFileStats();
+   return !m_stats[static_cast<size_t>(f)].empty();
+}
 
+const Ranks_t& FileStats::ranks(File f) const
+{
+   return m_stats[static_cast<size_t>(f)];
+}
+
+FileStats::iterator FileStats::begin()
+{
+   return m_stats.begin();
+}
+
+FileStats::iterator FileStats::end()
+{
+   return m_stats.end();
+}
+
+FileStats::const_iterator FileStats::begin() const
+{
+   return m_stats.begin();
+}
+
+FileStats::const_iterator FileStats::end() const
+{
+   return m_stats.end();
+}
+
+///////////////////
+
+// Finds all ranks by file that pieces of a given type are on.
+static void collectFileStats(Piece p, const Position& pos, FileStats& stats)
+{
    auto end = pos.end(p);
    for (auto it = pos.begin(p); it != end; ++it)
    {
       const Square sq = *it;
       const Rank r = rank(sq);
-      stats[file(sq)].push_back(r);
+      stats.add(file(sq), r);
    }
-
-   return stats;
 }
 
 // Returns all files that pieces of a given type are on.
@@ -293,22 +337,22 @@ class ColorStats
    ColorStats() = default;
    ColorStats(const Position& pos, Color side);
 
-   const FileStats_t& pawnStats() const { return m_pawnStats; }
+   const FileStats& pawnStats() const { return m_pawnStats; }
    const Files_t& pawnFiles() const { return m_sortedPawnFiles; }
    const Files_t& rookFiles() const { return m_sortedRookFiles; }
 
  private:
    Color m_side;
-   FileStats_t m_pawnStats;
+   FileStats m_pawnStats;
    Files_t m_sortedPawnFiles;
    Files_t m_sortedRookFiles;
 };
 
 ColorStats::ColorStats(const Position& pos, Color side)
-: m_side{side}, m_pawnStats{collectFileStats(pawn(side), pos)},
-  m_sortedPawnFiles{collectFilesSorted(pawn(side), pos)},
+: m_side{side}, m_sortedPawnFiles{collectFilesSorted(pawn(side), pos)},
   m_sortedRookFiles{collectFilesSorted(rook(side), pos)}
 {
+   collectFileStats(pawn(side), pos, m_pawnStats);
 }
 
 ///////////////////
@@ -319,7 +363,7 @@ class PositionStats
    PositionStats() = default;
    PositionStats(const Position& pos);
 
-   const FileStats_t& pawnStats(Color side) const;
+   const FileStats& pawnStats(Color side) const;
    const Files_t& pawnFiles(Color side) const;
    const Files_t& rookFiles(Color side) const;
 
@@ -333,7 +377,7 @@ PositionStats::PositionStats(const Position& pos)
 {
 }
 
-const FileStats_t& PositionStats::pawnStats(Color side) const
+const FileStats& PositionStats::pawnStats(Color side) const
 {
    return side == White ? m_whiteStats.pawnStats() : m_blackStats.pawnStats();
 }
@@ -355,46 +399,47 @@ static bool isDoublePawn(const Ranks_t& pawnRanksOfFile)
    return pawnRanksOfFile.size() > 1;
 }
 
-static size_t countDoublePawns(const FileStats_t& stats)
+static size_t countDoublePawns(const FileStats& stats)
 {
    return std::accumulate(std::begin(stats), std::end(stats), 0,
-                          [](size_t val, const auto& fileElem)
-                          { return val + isDoublePawn(fileElem.second) ? 1 : 0; });
+                          [](size_t val, const auto& ranks)
+                          { return val + isDoublePawn(ranks) ? 1 : 0; });
 }
 
 // A side is penalised for having two or more pawns on the same file (doubled
 // pawns).
-static double calcDoublePawnPenalty(const FileStats_t& pawnStats)
+static double calcDoublePawnPenalty(const FileStats& pawnStats)
 {
    return countDoublePawns(pawnStats) * DoublePawnPenality;
 }
 
-static bool isIsolatedPawn(File f, const FileStats_t& stats)
+static bool isIsolatedPawn(File f, const FileStats& stats)
 {
    // Is pawn on checked file?
-   if (stats.at(f).empty())
+   if (!stats.isOccupied(f))
       return false;
 
    // Count its neighbors.
    size_t numNeighbors = 0;
-   if (f != fa && !stats.at(f - 1).empty())
+   if (f != fa && stats.isOccupied(f - 1))
       ++numNeighbors;
-   if (f != fh && !stats.at(f + 1).empty())
+   if (f != fh && stats.isOccupied(f + 1))
       ++numNeighbors;
 
    return numNeighbors == 0;
 }
 
-static size_t countIsolatedPawns(const FileStats_t& stats)
+static size_t countIsolatedPawns(const FileStats& stats)
 {
-   return std::accumulate(std::begin(stats), std::end(stats), 0,
-                          [&stats](size_t val, const auto& fileElem) {
-                             return val + isIsolatedPawn(fileElem.first, stats) ? 1 : 0;
-                          });
+   size_t count = 0;
+   for (File f = fa; f <= fh; f = f + 1)
+      if (isIsolatedPawn(f, stats))
+         ++count;
+   return count;
 }
 
 // A penalty is inflicted for isolated pawns.
-static double calcIsolatedPawnPenalty(const FileStats_t& pawnStats)
+static double calcIsolatedPawnPenalty(const FileStats& pawnStats)
 {
    return countIsolatedPawns(pawnStats) * IsolatedPawnPenality;
 }
@@ -412,16 +457,16 @@ static bool hasOpponentPawnInFront(Color side, Rank sideRank,
 }
 
 static double calcPassedPawnBonus(Color side, File f, Rank r,
-                                  const FileStats_t& opponentsStats)
+                                  const FileStats& opponentsStats)
 {
    // Check for opponent pawns in front on file of pawn.
-   if (hasOpponentPawnInFront(side, r, opponentsStats.at(f)))
+   if (hasOpponentPawnInFront(side, r, opponentsStats.ranks(f)))
       return 0.;
 
    // Check for opponent pawns in front on adjacent files.
-   if (f != fa && hasOpponentPawnInFront(side, r, opponentsStats.at(f - 1)))
+   if (f != fa && hasOpponentPawnInFront(side, r, opponentsStats.ranks(f - 1)))
       return 0.;
-   if (f != fh && hasOpponentPawnInFront(side, r, opponentsStats.at(f + 1)))
+   if (f != fh && hasOpponentPawnInFront(side, r, opponentsStats.ranks(f + 1)))
       return 0.;
 
    const size_t rankNumber =
@@ -432,33 +477,26 @@ static double calcPassedPawnBonus(Color side, File f, Rank r,
 // Passed pawns are awarded a bonus that relates to the pawn's rank number. If there is a
 // hostile piece in front of a passed pawn, a value, also relating to the pawn's rank
 // number is deducted from the score.
-static double calcPassedPawnBonus(Color side, const FileStats_t& pawnStats,
-                                  const FileStats_t& opponentsStats)
+static double calcPassedPawnBonus(Color side, const FileStats& pawnStats,
+                                  const FileStats& opponentsStats)
 {
-   return std::accumulate(std::begin(pawnStats), std::end(pawnStats), 0.,
-                          [side, &opponentsStats](double val, const auto& fileElem)
-                          {
-                             double fileBonus = 0.;
-                             for (Rank r : fileElem.second)
-                                fileBonus += calcPassedPawnBonus(side, fileElem.first, r,
-                                                                 opponentsStats);
-                             return val + fileBonus;
-                          });
+   double bonus = 0.;
+   for (File f = fa; f <= fh; f = f + 1)
+      for (Rank r : pawnStats.ranks(f))
+         bonus += calcPassedPawnBonus(side, f, r, opponentsStats);
+   return bonus;
 }
 
 // Pawns other than those on files one and eight are awarded bonuses for advancement.
-static double calcPawnPositionBonus(Color side, const FileStats_t& pawnStats)
+static double calcPawnPositionBonus(Color side, const FileStats& pawnStats)
 {
    const auto& posScore = side == White ? PawnWhitePosScore : PawnBlackPosScore;
-   return std::accumulate(std::begin(pawnStats), std::end(pawnStats), 0.,
-                          [side, &posScore](double val, const auto& fileElem)
-                          {
-                             double fileBonus = 0.;
-                             const File& f = fileElem.first;
-                             for (Rank r : fileElem.second)
-                                fileBonus += posScore.at(makeSquare(f, r));
-                             return val + fileBonus;
-                          });
+
+   double bonus = 0.;
+   for (File f = fa; f <= fh; f = f + 1)
+      for (Rank r : pawnStats.ranks(f))
+         bonus += posScore.at(makeSquare(f, r));
+   return bonus;
 }
 
 double Score::calcPawnScore()
