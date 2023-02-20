@@ -12,7 +12,7 @@
 
 using namespace matt2;
 
-// #define ENABLE_PRINTING
+//#define ENABLE_PRINTING
 
 
 namespace
@@ -143,6 +143,36 @@ void printEvaluatedStatus(Color side, size_t plies, size_t moveIdx_0based,
 #endif
 }
 
+void printPruningStatus(Color side, size_t plies, size_t moveIdx_0based, size_t numMoves,
+                        const Move& move, double score, double bestOpposingScore)
+{
+#ifdef ENABLE_PRINTING
+   std::string s = "Pruning after move #";
+   s += std::to_string(moveIdx_0based + 1);
+   s += "/";
+   s += std::to_string(numMoves);
+   s += " for ";
+   s += ::toString(side);
+   s += " with depth ";
+   s += std::to_string(plies);
+   s += ": ";
+   s += ::toString(move);
+   s += " ==> score=";
+   s += std::to_string(score);
+   s += ", best known opponent score=";
+   s += std::to_string(bestOpposingScore);
+   consoleOut(s);
+#else
+   side;
+   plies;
+   moveIdx_0based;
+   numMoves;
+   move;
+   score;
+   bestOpposingScore;
+#endif
+}
+
 ///////////////////
 
 class MoveCalculator
@@ -161,7 +191,7 @@ class MoveCalculator
       explicit operator bool() const;
    };
 
-   MoveScore next(Color side, std::size_t plies, bool calcMax);
+   MoveScore next(Color side, std::size_t plies, bool calcMax, double bestOpposingScore);
    void collectMoves(Color side, std::vector<Move>& moves) const;
    void collectMoves(Piece piece, Square at, std::vector<Move>& moves) const;
 
@@ -177,12 +207,13 @@ MoveCalculator::MoveCalculator(Position& pos) : m_pos{pos}
 
 std::optional<Move> MoveCalculator::next(Color side, std::size_t turns)
 {
-   return next(side, 2 * turns, side == White).move;
+   const bool calcMax = side == White;
+   return next(side, 2 * turns, calcMax, getWorstScoreValue(!calcMax)).move;
 }
 
 
 MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
-                                               bool calcMax)
+                                               bool calcMax, double bestOpposingScore)
 {
    assert(plies > 0);
    if (plies == 0)
@@ -207,7 +238,7 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
       // Find best counter move for opponent if more plies should be explored.
       MoveScore bestCounterMove;
       if (plies > 1)
-         bestCounterMove = next(!side, plies - 1, !calcMax);
+         bestCounterMove = next(!side, plies - 1, !calcMax, bestMove.score);
 
       // Score of move becomes the score of the best counter move if one was found,
       // otherwise use the score of the position.
@@ -217,7 +248,7 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
       else
          moveScore = m_pos.updateScore();
 
-      // Use move m if it leads to a better score for the player.
+      // Use current move if it leads to a better score for the player.
       const bool isBetterMove = bt(moveScore, bestMove.score, calcMax);
       if (isBetterMove)
          bestMove = {m, moveScore};
@@ -226,6 +257,19 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
                            isBetterMove);
 
       reverseMove(m_pos, m);
+
+      // Alpha-beta pruning.
+      // If the passed best opposing score at this point is better-or-equal (for
+      // the opponent) than the best score here, then it will always get chosen over
+      // whatever score we can find here because any improvements here go in the opposite
+      // value direction. Therefore, we can abort checking any further moves here.
+      if (cmp(bestOpposingScore, bestMove.score, !calcMax) >= 0)
+      {
+         printPruningStatus(side, plies, moveIdx, moves.size(), m, moveScore,
+                            bestOpposingScore);
+         break;
+      }
+
       ++moveIdx;
    }
 
