@@ -4,7 +4,9 @@
 //
 #include "game_tests.h"
 #include "game.h"
+#include "micro_benchmark.h"
 #include "test_util.h"
+#include <iostream>
 #include <stdexcept>
 
 using namespace matt2;
@@ -40,6 +42,9 @@ void testPositionCtor()
 
 void testCalcNextMove()
 {
+   int64_t elapsedNsec = 0;
+   auto benchmark = new MicroBenchmark{elapsedNsec};
+
    {
       const std::string caseLabel =
          "Game::calcNextMove in 1 turn for black when taking the highest piece is best";
@@ -104,6 +109,10 @@ void testCalcNextMove()
                 Position{"Kwc1 Qwh7 Rwd1 Nwg5 wb2 wc2 we5 Kbg8 Qbc7 Rbc8 Rbf8 bg6 bf7"},
              caseLabel);
    }
+
+   delete benchmark;
+   const double elapsedMsec = double(elapsedNsec) / 1000000.;
+   std::cout << "Game performance: " << elapsedMsec << " ms.\n";
 }
 
 } // namespace
