@@ -30,5 +30,6 @@
     <ClInclude Include="..\..\scoring_tests.h" />
     <ClInclude Include="..\..\piece_value_scoring_tests.h" />
     <ClInclude Include="..\..\daily_chess_scoring_tests.h" />
+    <ClInclude Include="..\..\micro_benchmark.h" />
   </ItemGroup>
 </Project>

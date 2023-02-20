@@ -37,6 +37,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\daily_chess_scoring_tests.h" />
     <ClInclude Include="..\..\game_tests.h" />
+    <ClInclude Include="..\..\micro_benchmark.h" />
     <ClInclude Include="..\..\notation_tests.h" />
     <ClInclude Include="..\..\piece_tests.h" />
     <ClInclude Include="..\..\move_tests.h" />
