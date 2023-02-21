@@ -246,62 +246,56 @@ double Score::calc()
 
 ///////////////////
 
+static size_t index(File f)
+{
+   return static_cast<size_t>(f);
+}
+
 using Ranks_t = std::vector<Rank>;
 using Files_t = std::vector<File>;
+
+static constexpr size_t NumRanks = 8;
+using FileRanks_t = std::array<Rank, NumRanks>;
+
+struct PopulatedFileRanks
+{
+   const FileRanks_t& ranks;
+   // Number of rank elements that are populated.
+   size_t numRanks = 0;
+};
 
 // Occupied ranks by file.
 class FileStats
 {
-   using iterator = std::vector<Ranks_t>::iterator;
-   using const_iterator = std::vector<Ranks_t>::const_iterator;
 
  public:
    void add(File f, Rank r);
    bool isOccupied(File f) const;
-   const Ranks_t& ranks(File f) const;
-   iterator begin();
-   iterator end();
-   const_iterator begin() const;
-   const_iterator end() const;
+   PopulatedFileRanks ranks(File f) const;
 
  private:
    static constexpr size_t NumFiles = 8;
-   std::vector<Ranks_t> m_stats{NumFiles};
+   std::array<FileRanks_t, NumFiles> m_stats;
+   // Number of populated ranks in file-rank arrays.
+   std::array<size_t, NumFiles> m_rankCount{0, 0, 0, 0, 0, 0, 0, 0};
 };
 
 void FileStats::add(File f, Rank r)
 {
-   m_stats[static_cast<size_t>(f)].push_back(r);
+   const size_t fileIdx = index(f);
+   size_t& count = m_rankCount[fileIdx];
+   m_stats[fileIdx][count++] = r;
 }
 
 bool FileStats::isOccupied(File f) const
 {
-   return !m_stats[static_cast<size_t>(f)].empty();
+   return m_rankCount[index(f)] > 0;
 }
 
-const Ranks_t& FileStats::ranks(File f) const
+PopulatedFileRanks FileStats::ranks(File f) const
 {
-   return m_stats[static_cast<size_t>(f)];
-}
-
-FileStats::iterator FileStats::begin()
-{
-   return m_stats.begin();
-}
-
-FileStats::iterator FileStats::end()
-{
-   return m_stats.end();
-}
-
-FileStats::const_iterator FileStats::begin() const
-{
-   return m_stats.begin();
-}
-
-FileStats::const_iterator FileStats::end() const
-{
-   return m_stats.end();
+   const size_t fileIdx = index(f);
+   return {m_stats[fileIdx], m_rankCount[fileIdx]};
 }
 
 ///////////////////
@@ -322,6 +316,7 @@ static void collectFileStats(Piece p, const Position& pos, FileStats& stats)
 static Files_t collectFilesSorted(Piece p, const Position& pos)
 {
    Files_t files;
+   files.reserve(8);
    std::transform(pos.begin(p), pos.end(p), std::back_inserter(files),
                   [](Square sq) { return file(sq); });
    std::sort(std::begin(files), std::end(files));
@@ -394,16 +389,20 @@ const Files_t& PositionStats::rookFiles(Color side) const
 
 ///////////////////
 
-static bool isDoublePawn(const Ranks_t& pawnRanksOfFile)
+static bool isDoublePawn(const PopulatedFileRanks& pawnRanks)
 {
-   return pawnRanksOfFile.size() > 1;
+   return pawnRanks.numRanks > 1;
 }
 
 static size_t countDoublePawns(const FileStats& stats)
 {
-   return std::accumulate(std::begin(stats), std::end(stats), 0,
-                          [](size_t val, const auto& ranks)
-                          { return val + isDoublePawn(ranks) ? 1 : 0; });
+   size_t count = 0;
+
+   for (File f = fa; f <= fh; f = f + 1)
+      if (isDoublePawn(stats.ranks(f)))
+         ++count;
+
+   return count;
 }
 
 // A side is penalised for having two or more pawns on the same file (doubled
@@ -445,13 +444,13 @@ static double calcIsolatedPawnPenalty(const FileStats& pawnStats)
 }
 
 static bool hasOpponentPawnInFront(Color side, Rank sideRank,
-                                   const Ranks_t& opponentRanks)
+                                   const PopulatedFileRanks& opponentRanks)
 {
    auto isInFront = [](Color side, Rank a, Rank b)
    { return side == White ? a > b : a < b; };
 
-   for (Rank opponentRank : opponentRanks)
-      if (isInFront(side, opponentRank, sideRank))
+   for (size_t i = 0; i < opponentRanks.numRanks; ++i)
+      if (isInFront(side, opponentRanks.ranks[i], sideRank))
          return true;
    return false;
 }
@@ -481,9 +480,14 @@ static double calcPassedPawnBonus(Color side, const FileStats& pawnStats,
                                   const FileStats& opponentsStats)
 {
    double bonus = 0.;
+   
    for (File f = fa; f <= fh; f = f + 1)
-      for (Rank r : pawnStats.ranks(f))
-         bonus += calcPassedPawnBonus(side, f, r, opponentsStats);
+   {
+      const PopulatedFileRanks& pawnRanks = pawnStats.ranks(f);
+      for (size_t i = 0; i < pawnRanks.numRanks; ++i)
+         bonus += calcPassedPawnBonus(side, f, pawnRanks.ranks[i], opponentsStats);
+   }
+
    return bonus;
 }
 
@@ -493,9 +497,14 @@ static double calcPawnPositionBonus(Color side, const FileStats& pawnStats)
    const auto& posScore = side == White ? PawnWhitePosScore : PawnBlackPosScore;
 
    double bonus = 0.;
+   
    for (File f = fa; f <= fh; f = f + 1)
-      for (Rank r : pawnStats.ranks(f))
-         bonus += posScore.at(makeSquare(f, r));
+   {
+      const PopulatedFileRanks& pawnRanks = pawnStats.ranks(f);
+      for (size_t i = 0; i < pawnRanks.numRanks; ++i)
+         bonus += posScore.at(makeSquare(f, pawnRanks.ranks[i]));
+   }
+
    return bonus;
 }
 
