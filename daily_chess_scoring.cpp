@@ -251,8 +251,22 @@ static size_t index(File f)
    return static_cast<size_t>(f);
 }
 
-using Ranks_t = std::vector<Rank>;
-using Files_t = std::vector<File>;
+// Files occupied by a piece type.
+struct PieceFiles
+{
+   using iterator = std::array<File, 10>::iterator;
+   using const_iterator = std::array<File, 10>::const_iterator;
+
+   std::array<File, 10> files;
+   // Number of file elements that are populated.
+   size_t numFiles = 0;
+
+   void add(File f) { files[numFiles++] = f; }
+   iterator begin() { return files.begin(); }
+   iterator end() { return files.begin() + numFiles; }
+   const_iterator begin() const { return files.begin(); }
+   const_iterator end() const { return files.begin() + numFiles; }
+};
 
 static constexpr size_t NumRanks = 8;
 using FileRanks_t = std::array<Rank, NumRanks>;
@@ -313,14 +327,12 @@ static void collectFileStats(Piece p, const Position& pos, FileStats& stats)
 }
 
 // Returns all files that pieces of a given type are on.
-static Files_t collectFilesSorted(Piece p, const Position& pos)
+static PieceFiles collectFilesSorted(Piece p, const Position& pos)
 {
-   Files_t files;
-   files.reserve(8);
-   std::transform(pos.begin(p), pos.end(p), std::back_inserter(files),
-                  [](Square sq) { return file(sq); });
-   std::sort(std::begin(files), std::end(files));
-
+   PieceFiles files;
+   std::for_each(pos.begin(p), pos.end(p),
+                 [&files](Square sq) { return files.add(file(sq)); });
+   std::sort(files.begin(), files.end());
    return files;
 }
 
@@ -333,14 +345,14 @@ class ColorStats
    ColorStats(const Position& pos, Color side);
 
    const FileStats& pawnStats() const { return m_pawnStats; }
-   const Files_t& pawnFiles() const { return m_sortedPawnFiles; }
-   const Files_t& rookFiles() const { return m_sortedRookFiles; }
+   const PieceFiles& pawnFiles() const { return m_sortedPawnFiles; }
+   const PieceFiles& rookFiles() const { return m_sortedRookFiles; }
 
  private:
    Color m_side;
    FileStats m_pawnStats;
-   Files_t m_sortedPawnFiles;
-   Files_t m_sortedRookFiles;
+   PieceFiles m_sortedPawnFiles;
+   PieceFiles m_sortedRookFiles;
 };
 
 ColorStats::ColorStats(const Position& pos, Color side)
@@ -359,8 +371,8 @@ class PositionStats
    PositionStats(const Position& pos);
 
    const FileStats& pawnStats(Color side) const;
-   const Files_t& pawnFiles(Color side) const;
-   const Files_t& rookFiles(Color side) const;
+   const PieceFiles& pawnFiles(Color side) const;
+   const PieceFiles& rookFiles(Color side) const;
 
  private:
    ColorStats m_whiteStats;
@@ -377,12 +389,12 @@ const FileStats& PositionStats::pawnStats(Color side) const
    return side == White ? m_whiteStats.pawnStats() : m_blackStats.pawnStats();
 }
 
-const Files_t& PositionStats::pawnFiles(Color side) const
+const PieceFiles& PositionStats::pawnFiles(Color side) const
 {
    return side == White ? m_whiteStats.pawnFiles() : m_blackStats.pawnFiles();
 }
 
-const Files_t& PositionStats::rookFiles(Color side) const
+const PieceFiles& PositionStats::rookFiles(Color side) const
 {
    return side == White ? m_whiteStats.rookFiles() : m_blackStats.rookFiles();
 }
@@ -480,7 +492,7 @@ static double calcPassedPawnBonus(Color side, const FileStats& pawnStats,
                                   const FileStats& opponentsStats)
 {
    double bonus = 0.;
-   
+
    for (File f = fa; f <= fh; f = f + 1)
    {
       const PopulatedFileRanks& pawnRanks = pawnStats.ranks(f);
@@ -497,7 +509,7 @@ static double calcPawnPositionBonus(Color side, const FileStats& pawnStats)
    const auto& posScore = side == White ? PawnWhitePosScore : PawnBlackPosScore;
 
    double bonus = 0.;
-   
+
    for (File f = fa; f <= fh; f = f + 1)
    {
       const PopulatedFileRanks& pawnRanks = pawnStats.ranks(f);
@@ -593,6 +605,8 @@ static bool isPawnDiagonalNeighbor(Square sq, const Position& pos)
    const Rank r = rank(sq);
 
    std::vector<std::optional<Piece>> diagNeighbors;
+   diagNeighbors.reserve(4);
+
    if (isValid(f, 1) && isValid(r, 1))
       diagNeighbors.push_back(pos[makeSquare(f + 1, r + 1)]);
    if (isValid(f, 1) && isValid(r, -1))
@@ -659,7 +673,7 @@ static double calcRookSeventhRankBonus(Color side, const Position& pos)
 }
 
 // If two friendly rooks share the same file, the side receives a bonus.
-static double calcRookSharedFileBonus(const Files_t& sortedRookFiles)
+static double calcRookSharedFileBonus(const PieceFiles& sortedRookFiles)
 {
    // Check if any consecutive files are the same, i.e. shared between those pieces.
    const auto last = std::end(sortedRookFiles);
@@ -673,11 +687,11 @@ static double calcRookSharedFileBonus(const Files_t& sortedRookFiles)
 // given.
 static double calcRookPawnsOnFileBonus(Color side, const PositionStats& stats)
 {
-   const Files_t& ownPawnFilesSorted = stats.pawnFiles(side);
+   const PieceFiles& ownPawnFilesSorted = stats.pawnFiles(side);
    auto ownFirst = std::begin(ownPawnFilesSorted);
    auto ownLast = std::end(ownPawnFilesSorted);
 
-   const Files_t& enemyPawnFilesSorted = stats.pawnFiles(!side);
+   const PieceFiles& enemyPawnFilesSorted = stats.pawnFiles(!side);
    auto enemyFirst = std::begin(enemyPawnFilesSorted);
    auto enemyLast = std::end(enemyPawnFilesSorted);
 
