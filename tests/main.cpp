@@ -24,7 +24,7 @@ int main()
    testDailyChessScoring();
    testDiagonal();
    testFile();
-   //testGame();
+   testGame();
    testMoves();
    testNotations();
    testOffset();
