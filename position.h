@@ -478,7 +478,7 @@ class PlacementIterator
       std::swap(a.m_idx, b.m_idx);
    }
 
- public:
+ private:
    const Position* m_pos = nullptr;
    Color m_side = White;
    // Index of piece.
@@ -606,7 +606,7 @@ class PieceIterator
       std::swap(a.m_idx, b.m_idx);
    }
 
- public:
+ private:
    const Position* m_pos = nullptr;
    Piece m_piece = Pw;
    // Index of piece.
