@@ -381,15 +381,70 @@ static std::string& printPiece(std::string& out, Piece p)
    return out;
 }
 
+enum class RankLabel
+{
+   Left,
+   Right
+};
+
+static std::string& printRankLabel(std::string& out, Rank r, RankLabel location)
+{
+   if (location == RankLabel::Right)
+      out += '|';
+
+   out += toLowercaseChar(r);
+
+   if (location == RankLabel::Left)
+      out += '|';
+
+   return out;
+}
+
+enum class FileLabel
+{
+   Top,
+   Bottom
+};
+
+static std::string& printFileSeparators(std::string& out)
+{
+   out += "  ";
+   for (File f = fa; isValid(f); f = f + 1)
+      out += '-';
+   out += "\n";
+
+   return out;
+}
+
+static std::string& printFileLabels(std::string& out, FileLabel location)
+{
+   if (location == FileLabel::Bottom)
+      printFileSeparators(out);
+
+   // File letters.
+   out += "  ";
+   for (File f = fa; isValid(f); f = f + 1)
+      out += toLowercaseChar(f);
+   out += "\n";
+
+   if (location == FileLabel::Top)
+      printFileSeparators(out);
+
+   return out;
+}
+
 std::string& printPosition(std::string& out, const Position& pos)
 {
    if (out.length() > 0)
       out += "\n";
 
+   // File labeling above board.
+   printFileLabels(out, FileLabel::Top);
+
    for (Rank r = r8; isValid(r); r = r - 1)
    {
-      // Rank labeling.
-      out += toLowercaseChar(r);
+      // Rank labeling left of board.
+      printRankLabel(out, r, RankLabel::Left);
 
       for (File f = fa; isValid(f); f = f + 1)
       {
@@ -400,16 +455,69 @@ std::string& printPosition(std::string& out, const Position& pos)
             out += ".";
       }
 
+      // Rank labeling right of board.
+      printRankLabel(out, r, RankLabel::Right);
       out += "\n";
    }
 
-   // File labeling.
-   out += ' ';
-   for (File f = fa; isValid(f); f = f + 1)
-      out += toLowercaseChar(f);
-   out += "\n";
+   // File labeling below board.
+   printFileLabels(out, FileLabel::Bottom);
 
    return out;
+}
+
+///////////////////
+// Pure algebraic coordinate notation
+
+static bool isValidFilePacn(char c)
+{
+   return 'a' <= c && c <= 'h';
+}
+
+static bool isValidRankPacn(char c)
+{
+   return '1' <= c && c <= '8';
+}
+
+static bool isValidPromotionPacn(char c)
+{
+   return c == 'q' || c == 'r' || c == 'b' || c == 'n';
+}
+
+static std::optional<MoveDescription::Promotion> makePromotionPacn(char c)
+{
+   switch (c)
+   {
+   case 'q':
+      return MoveDescription::Promotion::Queen;
+   case 'r':
+      return MoveDescription::Promotion::Rook;
+   case 'b':
+      return MoveDescription::Promotion::Bishop;
+   case 'n':
+      return MoveDescription::Promotion::Knight;
+   default:
+      return {};
+   }
+}
+
+std::optional<MoveDescription> readMovePacn(std::string_view notation)
+{
+   if (notation.length() < 4)
+      return {};
+
+   if (!isValidFilePacn(notation[0]) || !isValidRankPacn(notation[1]) ||
+       !isValidFilePacn(notation[2]) || !isValidRankPacn(notation[3]))
+      return {};
+
+   const Square from = makeSquare(fileFromChar(notation[0]), rankFromChar(notation[1]));
+   const Square to = makeSquare(fileFromChar(notation[2]), rankFromChar(notation[3]));
+
+   std::optional<MoveDescription::Promotion> promoteTo;
+   if (notation.length() >= 5 && isValidPromotionPacn(notation[4]))
+      promoteTo = makePromotionPacn(notation[4]);
+
+   return MoveDescription{from, to, promoteTo};
 }
 
 } // namespace matt2

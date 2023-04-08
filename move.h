@@ -423,4 +423,32 @@ inline Position& reverseMove(Position& pos, Move& move)
    return pos;
 }
 
+///////////////////
+
+// Description of a move as entered by player.
+struct MoveDescription
+{
+   enum class Promotion
+   {
+      Queen,
+      Rook,
+      Bishop,
+      Knight
+   };
+
+   Square from;
+   Square to;
+   std::optional<Promotion> promoteTo;
+};
+
+inline bool operator==(const MoveDescription& a, const MoveDescription& b)
+{
+   return a.from == b.from && a.to == b.to && a.promoteTo == b.promoteTo;
+}
+
+inline bool operator!=(const MoveDescription& a, const MoveDescription& b)
+{
+   return !(a == b);
+}
+
 } // namespace matt2

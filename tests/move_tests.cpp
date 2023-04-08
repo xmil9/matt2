@@ -976,6 +976,68 @@ void testReverseMove()
    }
 }
 
+///////////////////
+
+void testMoveDescriptionEquality()
+{
+   {
+      const std::string caseLabel = "MoveDescription equality for equal objects";
+
+      VERIFY(MoveDescription(a1, c3, std::nullopt) ==
+                MoveDescription(a1, c3, std::nullopt),
+             caseLabel);
+      VERIFY(MoveDescription(f5, d2, MoveDescription::Promotion::Rook) ==
+                MoveDescription(f5, d2, MoveDescription::Promotion::Rook),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "MoveDescription equality for unequal objects";
+
+      VERIFY(!(MoveDescription(a2, c3, std::nullopt) ==
+               MoveDescription(a1, c3, std::nullopt)),
+             caseLabel);
+      VERIFY(!(MoveDescription(a1, c3, std::nullopt) ==
+               MoveDescription(a1, d6, std::nullopt)),
+             caseLabel);
+      VERIFY(!(MoveDescription(a1, c3, MoveDescription::Promotion::Bishop) ==
+               MoveDescription(a1, c3, std::nullopt)),
+             caseLabel);
+      VERIFY(!(MoveDescription(a1, c3, MoveDescription::Promotion::Bishop) ==
+               MoveDescription(a1, c3, MoveDescription::Promotion::Knight)),
+             caseLabel);
+   }
+}
+
+void testMoveDescriptionInequality()
+{
+   {
+      const std::string caseLabel = "MoveDescription inequality for equal objects";
+
+      VERIFY(!(MoveDescription(a1, c3, std::nullopt) !=
+               MoveDescription(a1, c3, std::nullopt)),
+             caseLabel);
+      VERIFY(!(MoveDescription(f5, d2, MoveDescription::Promotion::Rook) !=
+               MoveDescription(f5, d2, MoveDescription::Promotion::Rook)),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "MoveDescription inequality for unequal objects";
+
+      VERIFY(MoveDescription(a2, c3, std::nullopt) !=
+                MoveDescription(a1, c3, std::nullopt),
+             caseLabel);
+      VERIFY(MoveDescription(a1, c3, std::nullopt) !=
+                MoveDescription(a1, d6, std::nullopt),
+             caseLabel);
+      VERIFY(MoveDescription(a1, c3, MoveDescription::Promotion::Bishop) !=
+                MoveDescription(a1, c3, std::nullopt),
+             caseLabel);
+      VERIFY(MoveDescription(a1, c3, MoveDescription::Promotion::Bishop) !=
+                MoveDescription(a1, c3, MoveDescription::Promotion::Knight),
+             caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -1009,4 +1071,6 @@ void testMoves()
    testFrom();
    testMakeMove();
    testReverseMove();
+   testMoveDescriptionEquality();
+   testMoveDescriptionInequality();
 }

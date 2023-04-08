@@ -107,4 +107,9 @@ inline std::string& notate(std::string& out, const T& item, const Notation& n)
 
 std::string& printPosition(std::string& out, const Position& pos);
 
+///////////////////
+
+// Reads a move given in Pure Algebraic Coordinate Notation.
+std::optional<MoveDescription> readMovePacn(std::string_view notation);
+
 } // namespace matt2

@@ -594,15 +594,18 @@ void testPrintPosition()
       std::string out;
       Position pos;
 
-      const std::string expected{"8........\n"
-                                 "7........\n"
-                                 "6........\n"
-                                 "5........\n"
-                                 "4........\n"
-                                 "3........\n"
-                                 "2........\n"
-                                 "1........\n"
-                                 " abcdefgh\n"};
+      const std::string expected{"  abcdefgh\n"
+                                 "  --------\n"
+                                 "8|........|8\n"
+                                 "7|........|7\n"
+                                 "6|........|6\n"
+                                 "5|........|5\n"
+                                 "4|........|4\n"
+                                 "3|........|3\n"
+                                 "2|........|2\n"
+                                 "1|........|1\n"
+                                 "  --------\n"
+                                 "  abcdefgh\n"};
       VERIFY((printPosition(out, pos) == expected), caseLabel);
    }
    {
@@ -611,15 +614,18 @@ void testPrintPosition()
       std::string out;
       Position pos{"Kbf5"};
 
-      const std::string expected{"8........\n"
-                                 "7........\n"
-                                 "6........\n"
-                                 "5.....k..\n"
-                                 "4........\n"
-                                 "3........\n"
-                                 "2........\n"
-                                 "1........\n"
-                                 " abcdefgh\n"};
+      const std::string expected{"  abcdefgh\n"
+                                 "  --------\n"
+                                 "8|........|8\n"
+                                 "7|........|7\n"
+                                 "6|........|6\n"
+                                 "5|.....k..|5\n"
+                                 "4|........|4\n"
+                                 "3|........|3\n"
+                                 "2|........|2\n"
+                                 "1|........|1\n"
+                                 "  --------\n"
+                                 "  abcdefgh\n"};
       VERIFY((printPosition(out, pos) == expected), caseLabel);
    }
    {
@@ -628,16 +634,68 @@ void testPrintPosition()
       std::string out;
       Position pos = StartPos;
 
-      const std::string expected{"8rnbqkbnr\n"
-                                 "7pppppppp\n"
-                                 "6........\n"
-                                 "5........\n"
-                                 "4........\n"
-                                 "3........\n"
-                                 "2PPPPPPPP\n"
-                                 "1RNBQKBNR\n"
-                                 " abcdefgh\n"};
+      const std::string expected{"  abcdefgh\n"
+                                 "  --------\n"
+                                 "8|rnbqkbnr|8\n"
+                                 "7|pppppppp|7\n"
+                                 "6|........|6\n"
+                                 "5|........|5\n"
+                                 "4|........|4\n"
+                                 "3|........|3\n"
+                                 "2|PPPPPPPP|2\n"
+                                 "1|RNBQKBNR|1\n"
+                                 "  --------\n"
+                                 "  abcdefgh\n"};
       VERIFY((printPosition(out, pos) == expected), caseLabel);
+   }
+}
+
+void testReadMovePacn()
+{
+   {
+      const std::string caseLabel = "readMovePacn for valid descriptions";
+
+      VERIFY(readMovePacn("a1a3") == std::optional(MoveDescription(a1, a3, std::nullopt)),
+             caseLabel);
+      VERIFY(readMovePacn("b2c2") == std::optional(MoveDescription(b2, c2, std::nullopt)),
+             caseLabel);
+      VERIFY(readMovePacn("d3e4") == std::optional(MoveDescription(d3, e4, std::nullopt)),
+             caseLabel);
+      VERIFY(readMovePacn("f5g6") == std::optional(MoveDescription(f5, g6, std::nullopt)),
+             caseLabel);
+      VERIFY(readMovePacn("h7h8") == std::optional(MoveDescription(h7, h8, std::nullopt)),
+             caseLabel);
+      VERIFY(readMovePacn("g7g8q") ==
+                std::optional(MoveDescription(g7, g8, MoveDescription::Promotion::Queen)),
+             caseLabel);
+      VERIFY(readMovePacn("g7g8r") ==
+                std::optional(MoveDescription(g7, g8, MoveDescription::Promotion::Rook)),
+             caseLabel);
+      VERIFY(readMovePacn("g7g8b") == std::optional(MoveDescription(
+                                         g7, g8, MoveDescription::Promotion::Bishop)),
+             caseLabel);
+      VERIFY(readMovePacn("g7g8n") == std::optional(MoveDescription(
+                                         g7, g8, MoveDescription::Promotion::Knight)),
+             caseLabel);
+      VERIFY(readMovePacn("g7g8qignored") ==
+                std::optional(MoveDescription(g7, g8, MoveDescription::Promotion::Queen)),
+             caseLabel);
+      VERIFY(readMovePacn("g7g8ignored") ==
+                std::optional(MoveDescription(g7, g8, std::nullopt)),
+             caseLabel);
+   }
+   {
+      const std::string caseLabel = "readMovePacn for invalid descriptions";
+
+      VERIFY(readMovePacn("s1a3") == std::nullopt, caseLabel);
+      VERIFY(readMovePacn("b9c2") == std::nullopt, caseLabel);
+      VERIFY(readMovePacn("d3x4") == std::nullopt, caseLabel);
+      VERIFY(readMovePacn("f5g0") == std::nullopt, caseLabel);
+      VERIFY(readMovePacn("----") == std::nullopt, caseLabel);
+      VERIFY(readMovePacn("") == std::nullopt, caseLabel);
+      VERIFY(readMovePacn("g") == std::nullopt, caseLabel);
+      VERIFY(readMovePacn("g7") == std::nullopt, caseLabel);
+      VERIFY(readMovePacn("g7g") == std::nullopt, caseLabel);
    }
 }
 
@@ -675,4 +733,5 @@ void testNotations()
    testDnNotatePosition();
 
    testPrintPosition();
+   testReadMovePacn();
 }
