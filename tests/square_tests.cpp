@@ -122,6 +122,22 @@ void testFileToLowercaseChar()
    }
 }
 
+void testFileFromChar()
+{
+   {
+      const std::string caseLabel = "fileFromChar(char)";
+
+      VERIFY(fileFromChar('a') == fa, caseLabel);
+      VERIFY(fileFromChar('b') == fb, caseLabel);
+      VERIFY(fileFromChar('c') == fc, caseLabel);
+      VERIFY(fileFromChar('d') == fd, caseLabel);
+      VERIFY(fileFromChar('e') == fe, caseLabel);
+      VERIFY(fileFromChar('f') == ff, caseLabel);
+      VERIFY(fileFromChar('g') == fg, caseLabel);
+      VERIFY(fileFromChar('h') == fh, caseLabel);
+   }
+}
+
 void testFileIsLowerAdjacent()
 {
    {
@@ -467,6 +483,22 @@ void testRankToLowercaseChar()
       VERIFY(toLowercaseChar(r6) == '6', caseLabel);
       VERIFY(toLowercaseChar(r7) == '7', caseLabel);
       VERIFY(toLowercaseChar(r8) == '8', caseLabel);
+   }
+}
+
+void testRankFromChar()
+{
+   {
+      const std::string caseLabel = "rankFromChar(char)";
+
+      VERIFY(rankFromChar('1') == r1, caseLabel);
+      VERIFY(rankFromChar('2') == r2, caseLabel);
+      VERIFY(rankFromChar('3') == r3, caseLabel);
+      VERIFY(rankFromChar('4') == r4, caseLabel);
+      VERIFY(rankFromChar('5') == r5, caseLabel);
+      VERIFY(rankFromChar('6') == r6, caseLabel);
+      VERIFY(rankFromChar('7') == r7, caseLabel);
+      VERIFY(rankFromChar('8') == r8, caseLabel);
    }
 }
 
@@ -1517,6 +1549,7 @@ void testFile()
    testFileIncrementOperator();
    testFileDecrementOperator();
    testFileToLowercaseChar();
+   testFileFromChar();
    testFileIsLowerAdjacent();
    testFileIsHigherAdjacent();
    testFileIsAdjacent();
@@ -1529,6 +1562,7 @@ void testRank()
    testRankIncrementOperator();
    testRankDecrementOperator();
    testRankToLowercaseChar();
+   testRankFromChar();
    testRankIsLowerAdjacent();
    testRankIsHigherAdjacent();
    testRankIsAdjacent();

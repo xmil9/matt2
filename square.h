@@ -60,6 +60,11 @@ inline char toLowercaseChar(File f)
    return 'a' + static_cast<char>(f);
 }
 
+inline File fileFromChar(char c)
+{
+   return static_cast<File>(c - 'a');
+}
+
 // Is file a lower than file b and adjacent to it?
 inline bool isLowerAdjacent(File a, File b)
 {
@@ -128,6 +133,11 @@ inline Rank operator-(Rank r, int dec)
 inline char toLowercaseChar(Rank r)
 {
    return '1' + static_cast<char>(r);
+}
+
+inline Rank rankFromChar(char c)
+{
+   return static_cast<Rank>(c - '1');
 }
 
 // Is rank a lower than rank b and adjacent to it?
