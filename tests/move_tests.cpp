@@ -983,27 +983,30 @@ void testMoveDescriptionEquality()
    {
       const std::string caseLabel = "MoveDescription equality for equal objects";
 
-      VERIFY(MoveDescription(a1, c3, std::nullopt) ==
-                MoveDescription(a1, c3, std::nullopt),
-             caseLabel);
+      VERIFY(MoveDescription(a1, c3) == MoveDescription(a1, c3), caseLabel);
       VERIFY(MoveDescription(f5, d2, MoveDescription::Promotion::Rook) ==
                 MoveDescription(f5, d2, MoveDescription::Promotion::Rook),
+             caseLabel);
+      VERIFY(MoveDescription(MoveDescription::Castling::Queenside) ==
+                MoveDescription(MoveDescription::Castling::Queenside),
              caseLabel);
    }
    {
       const std::string caseLabel = "MoveDescription equality for unequal objects";
 
-      VERIFY(!(MoveDescription(a2, c3, std::nullopt) ==
-               MoveDescription(a1, c3, std::nullopt)),
-             caseLabel);
-      VERIFY(!(MoveDescription(a1, c3, std::nullopt) ==
-               MoveDescription(a1, d6, std::nullopt)),
-             caseLabel);
+      VERIFY(!(MoveDescription(a2, c3) == MoveDescription(a1, c3)), caseLabel);
+      VERIFY(!(MoveDescription(a1, c3) == MoveDescription(a1, d6)), caseLabel);
       VERIFY(!(MoveDescription(a1, c3, MoveDescription::Promotion::Bishop) ==
-               MoveDescription(a1, c3, std::nullopt)),
+               MoveDescription(a1, c3)),
              caseLabel);
       VERIFY(!(MoveDescription(a1, c3, MoveDescription::Promotion::Bishop) ==
                MoveDescription(a1, c3, MoveDescription::Promotion::Knight)),
+             caseLabel);
+      VERIFY(!(MoveDescription(a1, c3) ==
+               MoveDescription(MoveDescription::Castling::Queenside)),
+             caseLabel);
+      VERIFY(!(MoveDescription(MoveDescription::Castling::Kingside) ==
+               MoveDescription(MoveDescription::Castling::Queenside)),
              caseLabel);
    }
 }
@@ -1013,27 +1016,30 @@ void testMoveDescriptionInequality()
    {
       const std::string caseLabel = "MoveDescription inequality for equal objects";
 
-      VERIFY(!(MoveDescription(a1, c3, std::nullopt) !=
-               MoveDescription(a1, c3, std::nullopt)),
-             caseLabel);
+      VERIFY(!(MoveDescription(a1, c3) != MoveDescription(a1, c3)), caseLabel);
       VERIFY(!(MoveDescription(f5, d2, MoveDescription::Promotion::Rook) !=
                MoveDescription(f5, d2, MoveDescription::Promotion::Rook)),
+             caseLabel);
+      VERIFY(!(MoveDescription(MoveDescription::Castling::Queenside) !=
+               MoveDescription(MoveDescription::Castling::Queenside)),
              caseLabel);
    }
    {
       const std::string caseLabel = "MoveDescription inequality for unequal objects";
 
-      VERIFY(MoveDescription(a2, c3, std::nullopt) !=
-                MoveDescription(a1, c3, std::nullopt),
-             caseLabel);
-      VERIFY(MoveDescription(a1, c3, std::nullopt) !=
-                MoveDescription(a1, d6, std::nullopt),
-             caseLabel);
+      VERIFY(MoveDescription(a2, c3) != MoveDescription(a1, c3), caseLabel);
+      VERIFY(MoveDescription(a1, c3) != MoveDescription(a1, d6), caseLabel);
       VERIFY(MoveDescription(a1, c3, MoveDescription::Promotion::Bishop) !=
-                MoveDescription(a1, c3, std::nullopt),
+                MoveDescription(a1, c3),
              caseLabel);
       VERIFY(MoveDescription(a1, c3, MoveDescription::Promotion::Bishop) !=
                 MoveDescription(a1, c3, MoveDescription::Promotion::Knight),
+             caseLabel);
+      VERIFY(MoveDescription(a1, c3) !=
+                MoveDescription(MoveDescription::Castling::Queenside),
+             caseLabel);
+      VERIFY(MoveDescription(MoveDescription::Castling::Kingside) !=
+                MoveDescription(MoveDescription::Castling::Queenside),
              caseLabel);
    }
 }

@@ -501,8 +501,32 @@ static std::optional<MoveDescription::Promotion> makePromotionPacn(char c)
    }
 }
 
+static std::optional<MoveDescription> readCastlingMovePacn(std::string_view notation)
+{
+   if (notation.length() >= 5 &&
+       (notation.starts_with("o-o-o") || notation.starts_with("O-O-O")))
+      return MoveDescription{MoveDescription::Castling::Queenside};
+
+   if (notation.length() >= 3 &&
+       (notation.starts_with("o-o") || notation.starts_with("O-O")))
+      return MoveDescription{MoveDescription::Castling::Kingside};
+
+   return {};
+}
+
 std::optional<MoveDescription> readMovePacn(std::string_view notation)
 {
+   // Handle special castling notiation:
+   // Kingside: o-o
+   // Queenside: o-o-o
+   // Note that castling can also be notated using coordinates (this will be
+   // handled by the general code below):
+   // Kingside: e1g1 or e8g8
+   // Queenside: e1c1 or e8c8
+   if (auto castlingDescr = readCastlingMovePacn(notation); castlingDescr.has_value())
+      return castlingDescr;
+
+   // Read coordinate info.
    if (notation.length() < 4)
       return {};
 
@@ -513,6 +537,7 @@ std::optional<MoveDescription> readMovePacn(std::string_view notation)
    const Square from = makeSquare(fileFromChar(notation[0]), rankFromChar(notation[1]));
    const Square to = makeSquare(fileFromChar(notation[2]), rankFromChar(notation[3]));
 
+   // Read promotion info.
    std::optional<MoveDescription::Promotion> promoteTo;
    if (notation.length() >= 5 && isValidPromotionPacn(notation[4]))
       promoteTo = makePromotionPacn(notation[4]);

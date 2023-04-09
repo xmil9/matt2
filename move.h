@@ -436,14 +436,47 @@ struct MoveDescription
       Knight
    };
 
-   Square from;
-   Square to;
+   enum class Castling
+   {
+      Kingside,
+      Queenside
+   };
+
+   MoveDescription() = default;
+   MoveDescription(Square f, Square t);
+   MoveDescription(Square f, Square t, Promotion promote);
+   MoveDescription(Square f, Square t, std::optional<Promotion> promote);
+   MoveDescription(Castling castle);
+
+   std::optional<Square> from;
+   std::optional<Square> to;
    std::optional<Promotion> promoteTo;
+   std::optional<Castling> castling;
 };
+
+inline MoveDescription::MoveDescription(Square f, Square t) : from{f}, to{t}
+{
+}
+
+inline MoveDescription::MoveDescription(Square f, Square t, Promotion promote)
+: from{f}, to{t}, promoteTo{promote}
+{
+}
+
+inline MoveDescription::MoveDescription(Square f, Square t,
+                                        std::optional<Promotion> promote)
+: from{f}, to{t}, promoteTo{promote}
+{
+}
+
+inline MoveDescription::MoveDescription(Castling castle) : castling{castle}
+{
+}
 
 inline bool operator==(const MoveDescription& a, const MoveDescription& b)
 {
-   return a.from == b.from && a.to == b.to && a.promoteTo == b.promoteTo;
+   return a.from == b.from && a.to == b.to && a.promoteTo == b.promoteTo &&
+          a.castling == b.castling;
 }
 
 inline bool operator!=(const MoveDescription& a, const MoveDescription& b)

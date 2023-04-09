@@ -655,16 +655,11 @@ void testReadMovePacn()
    {
       const std::string caseLabel = "readMovePacn for valid descriptions";
 
-      VERIFY(readMovePacn("a1a3") == std::optional(MoveDescription(a1, a3, std::nullopt)),
-             caseLabel);
-      VERIFY(readMovePacn("b2c2") == std::optional(MoveDescription(b2, c2, std::nullopt)),
-             caseLabel);
-      VERIFY(readMovePacn("d3e4") == std::optional(MoveDescription(d3, e4, std::nullopt)),
-             caseLabel);
-      VERIFY(readMovePacn("f5g6") == std::optional(MoveDescription(f5, g6, std::nullopt)),
-             caseLabel);
-      VERIFY(readMovePacn("h7h8") == std::optional(MoveDescription(h7, h8, std::nullopt)),
-             caseLabel);
+      VERIFY(readMovePacn("a1a3") == std::optional(MoveDescription(a1, a3)), caseLabel);
+      VERIFY(readMovePacn("b2c2") == std::optional(MoveDescription(b2, c2)), caseLabel);
+      VERIFY(readMovePacn("d3e4") == std::optional(MoveDescription(d3, e4)), caseLabel);
+      VERIFY(readMovePacn("f5g6") == std::optional(MoveDescription(f5, g6)), caseLabel);
+      VERIFY(readMovePacn("h7h8") == std::optional(MoveDescription(h7, h8)), caseLabel);
       VERIFY(readMovePacn("g7g8q") ==
                 std::optional(MoveDescription(g7, g8, MoveDescription::Promotion::Queen)),
              caseLabel);
@@ -680,8 +675,25 @@ void testReadMovePacn()
       VERIFY(readMovePacn("g7g8qignored") ==
                 std::optional(MoveDescription(g7, g8, MoveDescription::Promotion::Queen)),
              caseLabel);
-      VERIFY(readMovePacn("g7g8ignored") ==
-                std::optional(MoveDescription(g7, g8, std::nullopt)),
+      VERIFY(readMovePacn("g7g8ignored") == std::optional(MoveDescription(g7, g8)),
+             caseLabel);
+      VERIFY(readMovePacn("o-o") ==
+                std::optional(MoveDescription(MoveDescription::Castling::Kingside)),
+             caseLabel);
+      VERIFY(readMovePacn("O-O") ==
+                std::optional(MoveDescription(MoveDescription::Castling::Kingside)),
+             caseLabel);
+      VERIFY(readMovePacn("o-oignored") ==
+                std::optional(MoveDescription(MoveDescription::Castling::Kingside)),
+             caseLabel);
+      VERIFY(readMovePacn("o-o-o") ==
+                std::optional(MoveDescription(MoveDescription::Castling::Queenside)),
+             caseLabel);
+      VERIFY(readMovePacn("O-O-O") ==
+                std::optional(MoveDescription(MoveDescription::Castling::Queenside)),
+             caseLabel);
+      VERIFY(readMovePacn("o-o-oignored") ==
+                std::optional(MoveDescription(MoveDescription::Castling::Queenside)),
              caseLabel);
    }
    {
@@ -696,6 +708,9 @@ void testReadMovePacn()
       VERIFY(readMovePacn("g") == std::nullopt, caseLabel);
       VERIFY(readMovePacn("g7") == std::nullopt, caseLabel);
       VERIFY(readMovePacn("g7g") == std::nullopt, caseLabel);
+      VERIFY(readMovePacn("o-") == std::nullopt, caseLabel);
+      VERIFY(readMovePacn("o") == std::nullopt, caseLabel);
+      VERIFY(readMovePacn("o--o") == std::nullopt, caseLabel);
    }
 }
 
