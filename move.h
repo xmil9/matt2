@@ -85,8 +85,10 @@ constexpr EnablesEnPassant_t EnablesEnPassant;
 class BasicMove : public ReversibleState
 {
  public:
+   BasicMove(Piece p, Square from, Square to, std::optional<Piece> taken = std::nullopt);
    explicit BasicMove(const Relocation& moved, std::optional<Piece> taken = std::nullopt);
    // Ctor for moves that allow opponent to use en-passant rule as next move.
+   BasicMove(Piece p, Square from, Square to, EnablesEnPassant_t);
    BasicMove(const Relocation& moved, EnablesEnPassant_t);
 
    void move(Position& pos);
@@ -112,8 +114,18 @@ class BasicMove : public ReversibleState
 };
 
 
+inline BasicMove::BasicMove(Piece p, Square from, Square to, std::optional<Piece> taken)
+: BasicMove{Relocation{p, from, to}, taken}
+{
+}
+
 inline BasicMove::BasicMove(const Relocation& moved, std::optional<Piece> taken)
 : m_moved{moved}, m_taken{taken}
+{
+}
+
+inline BasicMove::BasicMove(Piece p, Square from, Square to, EnablesEnPassant_t ep)
+: BasicMove{Relocation{p, from, to}, ep}
 {
 }
 
@@ -257,6 +269,7 @@ inline bool operator!=(const Castling& a, const Castling& b)
 class EnPassant : public ReversibleState
 {
  public:
+   EnPassant(Piece pawn, Square from, Square to);
    EnPassant(const Relocation& pawn);
 
    void move(Position& pos);
@@ -279,6 +292,11 @@ class EnPassant : public ReversibleState
    Placement m_takenPawn;
 };
 
+
+inline EnPassant::EnPassant(Piece pawn, Square from, Square to)
+: EnPassant{Relocation{pawn, from, to}}
+{
+}
 
 inline EnPassant::EnPassant(const Relocation& pawn)
 : m_movedPawn{pawn}, m_takenPawn{isWhite(pawn.piece()) ? Pb : Pw,
@@ -324,6 +342,8 @@ inline bool operator!=(const EnPassant& a, const EnPassant& b)
 class Promotion : public ReversibleState
 {
  public:
+   Promotion(Piece pawn, Square from, Square to, Piece promotedTo,
+             std::optional<Piece> taken = std::nullopt);
    Promotion(const Relocation& pawn, Piece promotedTo,
              std::optional<Piece> taken = std::nullopt);
 
@@ -348,6 +368,12 @@ class Promotion : public ReversibleState
    std::optional<Piece> m_taken;
 };
 
+
+inline Promotion::Promotion(Piece pawn, Square from, Square to, Piece promotedTo,
+                            std::optional<Piece> taken)
+: Promotion{Relocation{pawn, from, to}, promotedTo, taken}
+{
+}
 
 inline Promotion::Promotion(const Relocation& pawn, Piece promotedTo,
                             std::optional<Piece> taken)
@@ -426,6 +452,7 @@ inline Position& reverseMove(Position& pos, Move& move)
 ///////////////////
 
 // Description of a move as entered by player.
+// Is indepentent of the position on the board because it does not store the moved piece.
 struct MoveDescription
 {
    enum class Promotion
