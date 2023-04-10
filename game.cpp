@@ -12,7 +12,7 @@
 
 using namespace matt2;
 
-//#define ENABLE_PRINTING
+// #define ENABLE_PRINTING
 
 
 namespace
@@ -48,43 +48,43 @@ std::string toString(const std::optional<Move>& move, double score)
    return s;
 }
 
-void printCalculatingStatus(Color side, size_t plies, const Position& pos)
+void printCalculatingStatus(Color side, size_t plyDepth, const Position& pos)
 {
 #ifdef ENABLE_PRINTING
    std::string s = "Calculating move for ";
    s += ::toString(side);
    s += " with depth ";
-   s += std::to_string(plies);
+   s += std::to_string(plyDepth);
    s += " at position ";
    printPosition(s, pos);
    consoleOut(s);
 #else
    side;
-   plies;
+   plyDepth;
    pos;
 #endif
 }
 
-void printCalculatedStatus(Color side, size_t plies, const std::optional<Move>& move,
+void printCalculatedStatus(Color side, size_t plyDepth, const std::optional<Move>& move,
                            double score)
 {
 #ifdef ENABLE_PRINTING
    std::string s = "Calculated move for ";
    s += ::toString(side);
    s += " with depth ";
-   s += std::to_string(plies);
+   s += std::to_string(plyDepth);
    s += " ==> ";
    s += toString(move, score);
    consoleOut(s);
 #else
    side;
-   plies;
+   plyDepth;
    move;
    score;
 #endif
 }
 
-void printEvaluatingStatus(Color side, size_t plies, size_t moveIdx_0based,
+void printEvaluatingStatus(Color side, size_t plyDepth, size_t moveIdx_0based,
                            size_t numMoves, const Move& move, const Position& pos)
 {
 #ifdef ENABLE_PRINTING
@@ -95,14 +95,14 @@ void printEvaluatingStatus(Color side, size_t plies, size_t moveIdx_0based,
    s += " for ";
    s += ::toString(side);
    s += " with depth ";
-   s += std::to_string(plies);
+   s += std::to_string(plyDepth);
    s += ": ";
    s += ::toString(move);
    printPosition(s, pos);
    consoleOut(s);
 #else
    side;
-   plies;
+   plyDepth;
    moveIdx_0based;
    numMoves;
    move;
@@ -110,7 +110,7 @@ void printEvaluatingStatus(Color side, size_t plies, size_t moveIdx_0based,
 #endif
 }
 
-void printEvaluatedStatus(Color side, size_t plies, size_t moveIdx_0based,
+void printEvaluatedStatus(Color side, size_t plyDepth, size_t moveIdx_0based,
                           size_t numMoves, const Move& move, double score,
                           bool isBetterMove)
 {
@@ -122,7 +122,7 @@ void printEvaluatedStatus(Color side, size_t plies, size_t moveIdx_0based,
    s += " for ";
    s += ::toString(side);
    s += " with depth ";
-   s += std::to_string(plies);
+   s += std::to_string(plyDepth);
    s += ": ";
    s += ::toString(move);
    s += " ==> score=";
@@ -134,7 +134,7 @@ void printEvaluatedStatus(Color side, size_t plies, size_t moveIdx_0based,
    consoleOut(s);
 #else
    side;
-   plies;
+   plyDepth;
    moveIdx_0based;
    numMoves;
    move;
@@ -143,8 +143,9 @@ void printEvaluatedStatus(Color side, size_t plies, size_t moveIdx_0based,
 #endif
 }
 
-void printPruningStatus(Color side, size_t plies, size_t moveIdx_0based, size_t numMoves,
-                        const Move& move, double score, double bestOpposingScore)
+void printPruningStatus(Color side, size_t plyDepth, size_t moveIdx_0based,
+                        size_t numMoves, const Move& move, double score,
+                        double bestOpposingScore)
 {
 #ifdef ENABLE_PRINTING
    std::string s = "Pruning after move #";
@@ -154,7 +155,7 @@ void printPruningStatus(Color side, size_t plies, size_t moveIdx_0based, size_t 
    s += " for ";
    s += ::toString(side);
    s += " with depth ";
-   s += std::to_string(plies);
+   s += std::to_string(plyDepth);
    s += ": ";
    s += ::toString(move);
    s += " ==> score=";
@@ -164,7 +165,7 @@ void printPruningStatus(Color side, size_t plies, size_t moveIdx_0based, size_t 
    consoleOut(s);
 #else
    side;
-   plies;
+   plyDepth;
    moveIdx_0based;
    numMoves;
    move;
@@ -175,12 +176,13 @@ void printPruningStatus(Color side, size_t plies, size_t moveIdx_0based, size_t 
 
 ///////////////////
 
+// Calculates the next move for a given position.
 class MoveCalculator
 {
  public:
    MoveCalculator(Position& pos);
 
-   std::optional<Move> next(Color side, std::size_t turns);
+   std::optional<Move> next(Color side, size_t turns);
 
  private:
    struct MoveScore
@@ -191,7 +193,7 @@ class MoveCalculator
       explicit operator bool() const;
    };
 
-   MoveScore next(Color side, std::size_t plies, bool calcMax, double bestOpposingScore);
+   MoveScore next(Color side, size_t plyDepth, bool calcMax, double bestOpposingScore);
    void collectMoves(Color side, std::vector<Move>& moves) const;
    void collectMoves(Piece piece, Square at, std::vector<Move>& moves) const;
 
@@ -205,21 +207,21 @@ MoveCalculator::MoveCalculator(Position& pos) : m_pos{pos}
 }
 
 
-std::optional<Move> MoveCalculator::next(Color side, std::size_t turns)
+std::optional<Move> MoveCalculator::next(Color side, size_t turnDepth)
 {
    const bool calcMax = side == White;
-   return next(side, 2 * turns, calcMax, getWorstScoreValue(!calcMax)).move;
+   return next(side, 2 * turnDepth, calcMax, getWorstScoreValue(!calcMax)).move;
 }
 
 
-MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
-                                               bool calcMax, double bestOpposingScore)
+MoveCalculator::MoveScore MoveCalculator::next(Color side, size_t plyDepth, bool calcMax,
+                                               double bestOpposingScore)
 {
-   assert(plies > 0);
-   if (plies == 0)
+   assert(plyDepth > 0);
+   if (plyDepth == 0)
       return {};
 
-   printCalculatingStatus(side, plies, m_pos);
+   printCalculatingStatus(side, plyDepth, m_pos);
 
    std::vector<Move> moves;
    // Reserve some space to avoid too many allocations.
@@ -229,16 +231,16 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
    MoveScore bestMove{std::nullopt, getWorstScoreValue(calcMax)};
 
    // Track move index for debugging.
-   std::size_t moveIdx = 0;
+   size_t moveIdx = 0;
    for (auto& m : moves)
    {
       makeMove(m_pos, m);
-      printEvaluatingStatus(side, plies, moveIdx, moves.size(), m, m_pos);
+      printEvaluatingStatus(side, plyDepth, moveIdx, moves.size(), m, m_pos);
 
       // Find best counter move for opponent if more plies should be explored.
       MoveScore bestCounterMove;
-      if (plies > 1)
-         bestCounterMove = next(!side, plies - 1, !calcMax, bestMove.score);
+      if (plyDepth > 1)
+         bestCounterMove = next(!side, plyDepth - 1, !calcMax, bestMove.score);
 
       // Score of move becomes the score of the best counter move if one was found,
       // otherwise use the score of the position.
@@ -253,7 +255,7 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
       if (isBetterMove)
          bestMove = {m, moveScore};
 
-      printEvaluatedStatus(side, plies, moveIdx, moves.size(), m, moveScore,
+      printEvaluatedStatus(side, plyDepth, moveIdx, moves.size(), m, moveScore,
                            isBetterMove);
 
       reverseMove(m_pos, m);
@@ -265,7 +267,7 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
       // value direction. Therefore, we can abort checking any further moves here.
       if (cmp(bestOpposingScore, bestMove.score, !calcMax) >= 0)
       {
-         printPruningStatus(side, plies, moveIdx, moves.size(), m, moveScore,
+         printPruningStatus(side, plyDepth, moveIdx, moves.size(), m, moveScore,
                             bestOpposingScore);
          break;
       }
@@ -273,7 +275,7 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, std::size_t plies,
       ++moveIdx;
    }
 
-   printCalculatedStatus(side, plies, bestMove.move, bestMove.score);
+   printCalculatedStatus(side, plyDepth, bestMove.move, bestMove.score);
    return bestMove;
 }
 
@@ -320,20 +322,193 @@ namespace matt2
 {
 ///////////////////
 
-const Position& Game::calcNextMove(Color side, std::size_t turns)
+const Position& Game::calcNextMove(size_t turnDepth)
 {
    MoveCalculator calc{m_currPos};
-   auto move = calc.next(side, turns);
+   auto move = calc.next(m_nextTurn, turnDepth);
    if (move.has_value())
       apply(*move);
    return m_currPos;
 }
 
+const Position& Game::enterNextMove(std::string_view movePacnNotation)
+{
+   auto moveDescr = readMovePacn(movePacnNotation);
+   if (!moveDescr)
+      return m_currPos;
+
+   auto move = buildMove(*moveDescr);
+   if (move.has_value() && isValidMove(*move).first)
+      apply(*move);
+
+   return m_currPos;
+}
+
+
+std::optional<Position> Game::forward()
+{
+   if (atEnd())
+      return {};
+
+   makeMove(m_currPos, m_moves[++m_currMove]);
+   switchTurn();
+   return m_currPos;
+}
+
+std::optional<Position> Game::backward()
+{
+   if (atStart())
+      return {};
+
+   reverseMove(m_currPos, m_moves[m_currMove--]);
+   switchTurn();
+   return m_currPos;
+}
+
+void Game::trimMoves()
+{
+   if (!atEnd())
+      m_moves.erase(m_moves.begin() + m_currMove + 1, m_moves.end());
+}
+
+static std::optional<Move> buildCastlingMove(const MoveDescription& descr, Color side)
+{
+   if (!descr.castling)
+      return {};
+
+   if (*descr.castling == MoveDescription::Castling::Kingside)
+      return Castling{Kingside, side};
+   return Castling{Queenside, side};
+}
+
+static Piece buildPromotedToPiece(MoveDescription::Promotion promoteTo, Color side)
+{
+   switch (promoteTo)
+   {
+   case MoveDescription::Promotion::Queen:
+      return side == Color::White ? Qw : Qb;
+   case MoveDescription::Promotion::Rook:
+      return side == Color::White ? Rw : Rb;
+   case MoveDescription::Promotion::Bishop:
+      return side == Color::White ? Bw : Bb;
+   case MoveDescription::Promotion::Knight:
+      return side == Color::White ? Nw : Nb;
+   default:
+      assert(false && "Unexpected promotion value.");
+      return side == Color::White ? Qw : Qb;
+   }
+}
+
+static std::optional<Move> buildPromotionMove(const MoveDescription& descr,
+                                              const Position& pos, Color side)
+{
+   if (!descr.from || !descr.to || !descr.promoteTo)
+      return {};
+
+   const Square from = *descr.from;
+   const Square to = *descr.to;
+
+   const auto piece = pos[from];
+   if (!piece)
+      return {};
+
+   const Piece promoteTo = buildPromotedToPiece(*descr.promoteTo, side);
+   const auto taken = pos[to];
+
+   // Validation of fields happens later.
+   return Promotion{*piece, from, to, promoteTo, taken};
+}
+
+static std::optional<Move> buildEnPassantMove(const MoveDescription& descr,
+                                              const Position& pos, Color side)
+{
+   if (!descr.from || !descr.to)
+      return {};
+
+   const Square from = *descr.from;
+   const Square to = *descr.to;
+
+   const auto piece = pos[*descr.from];
+   if (!piece || !isPawn(*piece) || color(*piece) != side)
+      return {};
+
+   // Checks to make sure it's an en-passant move. We don't want to misidentify a move.
+   auto enPassantSq = pos.enPassantSquare();
+   if (!enPassantSq)
+      return {};
+
+   if (!isAdjacent(file(from), file(*enPassantSq)) && file(to) == file(*enPassantSq))
+      return {};
+
+   if (rank(from) != rank(*enPassantSq) && rank(to) != nthRank(side, 6))
+      return {};
+
+   // Validation of fields happens later.
+   return EnPassant{*piece, from, to};
+}
+
+static std::optional<Move> buildBasicMove(const MoveDescription& descr,
+                                          const Position& pos)
+{
+   if (!descr.from || !descr.to)
+      return {};
+
+   const Square from = *descr.from;
+   const Square to = *descr.to;
+
+   const auto piece = pos[*descr.from];
+   if (!piece)
+      return {};
+
+   const auto taken = pos[to];
+
+   // Validation of fields happens later.
+   return BasicMove{*piece, from, to, taken};
+}
+
+std::optional<Move> Game::buildMove(const MoveDescription& descr) const
+{
+   std::optional<Move> move;
+
+   // Castling
+   if (move = buildCastlingMove(descr, m_nextTurn); move.has_value())
+      return move;
+
+   // Promotion
+   if (move = buildPromotionMove(descr, m_currPos, m_nextTurn); move.has_value())
+      return move;
+
+   // En-passant
+   if (move = buildEnPassantMove(descr, m_currPos, m_nextTurn); move.has_value())
+      return move;
+
+   // Basic move
+   if (move = buildBasicMove(descr, m_currPos); move.has_value())
+      return move;
+
+   return {};
+}
+
+std::pair<bool, std::string> Game::isValidMove(const Move& m) const
+{
+   m;
+   return {true, ""};
+}
+
 void Game::apply(Move& m)
 {
+   // Update position.
    makeMove(m_currPos, m);
+
+   // Update move history.
+   // Discard moves after the current one.
+   trimMoves();
    m_moves.push_back(m);
+   // Set current move to last one.
    m_currMove = m_moves.size() - 1;
+
+   // Update turn.
+   switchTurn();
 }
 
 } // namespace matt2
