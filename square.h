@@ -163,6 +163,14 @@ inline int distance(Rank a, Rank b)
    return static_cast<char>(a) - static_cast<char>(b);
 }
 
+inline Rank nthRank(Color side, size_t n)
+{
+   assert(1 <= n && n <= 8);
+   if (side == Color::White)
+      return r1 + static_cast<int>(n - 1);
+   return r8 - static_cast<int>(n - 1);
+}
+
 ///////////////////
 
 // Identifier for each square on the board.

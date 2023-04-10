@@ -741,6 +741,29 @@ void testRankDistance()
    }
 }
 
+void testRankNthRank()
+{
+   {
+      const std::string caseLabel = "nthRank(size_t)";
+
+      VERIFY(nthRank(Color::White, 1) == r1, caseLabel);
+      VERIFY(nthRank(Color::White, 2) == r2, caseLabel);
+      VERIFY(nthRank(Color::White, 3) == r3, caseLabel);
+      VERIFY(nthRank(Color::White, 4) == r4, caseLabel);
+      VERIFY(nthRank(Color::White, 5) == r5, caseLabel);
+      VERIFY(nthRank(Color::White, 6) == r6, caseLabel);
+      VERIFY(nthRank(Color::White, 7) == r7, caseLabel);
+      VERIFY(nthRank(Color::White, 8) == r8, caseLabel);
+      VERIFY(nthRank(Color::Black, 1) == r8, caseLabel);
+      VERIFY(nthRank(Color::Black, 2) == r7, caseLabel);
+      VERIFY(nthRank(Color::Black, 3) == r6, caseLabel);
+      VERIFY(nthRank(Color::Black, 4) == r5, caseLabel);
+      VERIFY(nthRank(Color::Black, 5) == r4, caseLabel);
+      VERIFY(nthRank(Color::Black, 6) == r3, caseLabel);
+      VERIFY(nthRank(Color::Black, 7) == r2, caseLabel);
+      VERIFY(nthRank(Color::Black, 8) == r1, caseLabel);
+   }
+}
 
 ///////////////////
 
@@ -1567,6 +1590,7 @@ void testRank()
    testRankIsHigherAdjacent();
    testRankIsAdjacent();
    testRankDistance();
+   testRankNthRank();
 }
 
 void testSquare()
