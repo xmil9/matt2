@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31105.61
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33403.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "matt2", "matt2.vcxproj", "{25B780D2-8227-42DC-A092-F42201DED6E1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "matt2_tests", "..\..\tests\project\vs\matt2_tests.vcxproj", "{6552F89A-B86E-42FD-B401-4ECB0FCE53CF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cli_chess", "..\..\cli\project\vs\cli_chess.vcxproj", "{F0E14DC4-916D-4C20-9D94-38285F59F363}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,14 @@ Global
 		{6552F89A-B86E-42FD-B401-4ECB0FCE53CF}.Release|x64.Build.0 = Release|x64
 		{6552F89A-B86E-42FD-B401-4ECB0FCE53CF}.Release|x86.ActiveCfg = Release|Win32
 		{6552F89A-B86E-42FD-B401-4ECB0FCE53CF}.Release|x86.Build.0 = Release|Win32
+		{F0E14DC4-916D-4C20-9D94-38285F59F363}.Debug|x64.ActiveCfg = Debug|x64
+		{F0E14DC4-916D-4C20-9D94-38285F59F363}.Debug|x64.Build.0 = Debug|x64
+		{F0E14DC4-916D-4C20-9D94-38285F59F363}.Debug|x86.ActiveCfg = Debug|Win32
+		{F0E14DC4-916D-4C20-9D94-38285F59F363}.Debug|x86.Build.0 = Debug|Win32
+		{F0E14DC4-916D-4C20-9D94-38285F59F363}.Release|x64.ActiveCfg = Release|x64
+		{F0E14DC4-916D-4C20-9D94-38285F59F363}.Release|x64.Build.0 = Release|x64
+		{F0E14DC4-916D-4C20-9D94-38285F59F363}.Release|x86.ActiveCfg = Release|Win32
+		{F0E14DC4-916D-4C20-9D94-38285F59F363}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
