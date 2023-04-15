@@ -13,5 +13,5 @@
 	- piece()
 	- optional additionalPiece()
 	- optional taken()
-- more Game::enterNextMove tests
++ more Game::enterNextMove tests
 - support castling input using coordinates

@@ -148,6 +148,40 @@ void testEnterNextMove()
       VERIFY(g.nextTurn() == Color::White, caseLabel);
    }
    {
+      const std::string caseLabel =
+         "Game::enterNextMove for valid basic move with taking";
+
+      Game g{Position{"Kwb1 Rwe4 Bwg4 Kbd8 Bbf5 wg6"}, Color::Black};
+      const auto& nextPos = g.enterNextMove("f5g6");
+
+      VERIFY(nextPos == Position{"Kwb1 Rwe4 Bwg4 Kbd8 Bbg6"}, caseLabel);
+      VERIFY(g.nextTurn() == Color::White, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Game::enterNextMove for invalid basic move description";
+
+      const Position initialPos{"Kwb1 Rwe4 Bwg4 Kbd8 Bbf5"};
+      Game g{initialPos, Color::Black};
+      const auto& nextPos = g.enterNextMove("f56");
+
+      // Nothing changed.
+      VERIFY(nextPos == initialPos, caseLabel);
+      VERIFY(g.nextTurn() == Color::Black, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Game::enterNextMove for invalid basic move with no piece is on 'from' square";
+
+      const Position initialPos{"Kwb1 Rwe4 Bwg4 Kbd8 Bbf5"};
+      Game g{initialPos, Color::Black};
+      const auto& nextPos = g.enterNextMove("f4g6");
+
+      // Nothing changed.
+      VERIFY(nextPos == initialPos, caseLabel);
+      VERIFY(g.nextTurn() == Color::Black, caseLabel);
+   }
+   {
       const std::string caseLabel = "Game::enterNextMove for valid o-o-o castling move";
 
       Game g{Position{"Kwb1 Kbe8 Rba8"}, Color::Black};
@@ -164,6 +198,49 @@ void testEnterNextMove()
 
       VERIFY(nextPos == Position{"Kwg1 Kbe8 Rwf1"}, caseLabel);
       VERIFY(g.nextTurn() == Color::Black, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Game::enterNextMove for valid promotion move";
+
+      Game g{Position{"Kwe1 Kbe8 wh7"}, Color::White};
+      const auto& nextPos = g.enterNextMove("h7h8q");
+
+      VERIFY(nextPos == Position{"Kwe1 Kbe8 Qwh8"}, caseLabel);
+      VERIFY(g.nextTurn() == Color::Black, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Game::enterNextMove for invalid promotion move description";
+
+      const Position initialPos{"Kwe1 Kbe8 wh7"};
+      Game g{initialPos, Color::White};
+      const auto& nextPos = g.enterNextMove("g7x8q");
+
+      VERIFY(nextPos == initialPos, caseLabel);
+      VERIFY(g.nextTurn() == Color::White, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Game::enterNextMove for invalid promotion move with no piece on 'from' square";
+
+      const Position initialPos{"Kwe1 Kbe8 wh7"};
+      Game g{initialPos, Color::White};
+      const auto& nextPos = g.enterNextMove("g7g8q");
+
+      VERIFY(nextPos == initialPos, caseLabel);
+      VERIFY(g.nextTurn() == Color::White, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Game::enterNextMove for valid en-passant move";
+
+      Position initialPos{"Kwe1 Kbe8 wb4 bc4"};
+      initialPos.setEnPassantSquare(b4);
+
+      Game g{initialPos, Color::Black};
+      const auto& nextPos = g.enterNextMove("c4b3");
+
+      VERIFY(nextPos == Position{"Kwe1 Kbe8 bb3"}, caseLabel);
+      VERIFY(g.nextTurn() == Color::White, caseLabel);
    }
 }
 
