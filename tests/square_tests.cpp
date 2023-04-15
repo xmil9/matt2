@@ -109,16 +109,16 @@ void testFileDecrementOperator()
 void testFileToLowercaseChar()
 {
    {
-      const std::string caseLabel = "toLowercaseChar(File)";
+      const std::string caseLabel = "toChar(File)";
 
-      VERIFY(toLowercaseChar(fa) == 'a', caseLabel);
-      VERIFY(toLowercaseChar(fb) == 'b', caseLabel);
-      VERIFY(toLowercaseChar(fc) == 'c', caseLabel);
-      VERIFY(toLowercaseChar(fd) == 'd', caseLabel);
-      VERIFY(toLowercaseChar(fe) == 'e', caseLabel);
-      VERIFY(toLowercaseChar(ff) == 'f', caseLabel);
-      VERIFY(toLowercaseChar(fg) == 'g', caseLabel);
-      VERIFY(toLowercaseChar(fh) == 'h', caseLabel);
+      VERIFY(toChar(fa) == 'a', caseLabel);
+      VERIFY(toChar(fb) == 'b', caseLabel);
+      VERIFY(toChar(fc) == 'c', caseLabel);
+      VERIFY(toChar(fd) == 'd', caseLabel);
+      VERIFY(toChar(fe) == 'e', caseLabel);
+      VERIFY(toChar(ff) == 'f', caseLabel);
+      VERIFY(toChar(fg) == 'g', caseLabel);
+      VERIFY(toChar(fh) == 'h', caseLabel);
    }
 }
 
@@ -473,16 +473,16 @@ void testRankDecrementOperator()
 void testRankToLowercaseChar()
 {
    {
-      const std::string caseLabel = "toLowercaseChar(rank)";
+      const std::string caseLabel = "toChar(rank)";
 
-      VERIFY(toLowercaseChar(r1) == '1', caseLabel);
-      VERIFY(toLowercaseChar(r2) == '2', caseLabel);
-      VERIFY(toLowercaseChar(r3) == '3', caseLabel);
-      VERIFY(toLowercaseChar(r4) == '4', caseLabel);
-      VERIFY(toLowercaseChar(r5) == '5', caseLabel);
-      VERIFY(toLowercaseChar(r6) == '6', caseLabel);
-      VERIFY(toLowercaseChar(r7) == '7', caseLabel);
-      VERIFY(toLowercaseChar(r8) == '8', caseLabel);
+      VERIFY(toChar(r1) == '1', caseLabel);
+      VERIFY(toChar(r2) == '2', caseLabel);
+      VERIFY(toChar(r3) == '3', caseLabel);
+      VERIFY(toChar(r4) == '4', caseLabel);
+      VERIFY(toChar(r5) == '5', caseLabel);
+      VERIFY(toChar(r6) == '6', caseLabel);
+      VERIFY(toChar(r7) == '7', caseLabel);
+      VERIFY(toChar(r8) == '8', caseLabel);
    }
 }
 

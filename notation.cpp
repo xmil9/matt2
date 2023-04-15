@@ -58,12 +58,12 @@ std::string& notatePiece(std::string& out, Piece p, bool withColor = false)
 
 std::string& notateFile(std::string& out, File f)
 {
-   return out += toLowercaseChar(f);
+   return out += toChar(f);
 }
 
 std::string& notateRank(std::string& out, Rank r)
 {
-   return out += toLowercaseChar(r);
+   return out += toChar(r);
 }
 
 std::string& notateSquare(std::string& out, Square sq)
@@ -392,7 +392,7 @@ static std::string& printRankLabel(std::string& out, Rank r, RankLabel location)
    if (location == RankLabel::Right)
       out += '|';
 
-   out += toLowercaseChar(r);
+   out += toChar(r);
 
    if (location == RankLabel::Left)
       out += '|';
@@ -424,7 +424,7 @@ static std::string& printFileLabels(std::string& out, FileLabel location)
    // File letters.
    out += "  ";
    for (File f = fa; isValid(f); f = f + 1)
-      out += toLowercaseChar(f);
+      out += toChar(f);
    out += "\n";
 
    if (location == FileLabel::Top)

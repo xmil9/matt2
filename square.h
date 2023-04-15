@@ -55,14 +55,14 @@ inline File operator-(File f, int dec)
    return static_cast<File>(static_cast<unsigned char>(f) - dec);
 }
 
-inline char toLowercaseChar(File f)
+inline char toChar(File f)
 {
    return 'a' + static_cast<char>(f);
 }
 
-inline File fileFromChar(char c)
+inline File fileFromChar(char lowercaseChar)
 {
-   return static_cast<File>(c - 'a');
+   return static_cast<File>(lowercaseChar - 'a');
 }
 
 // Is file a lower than file b and adjacent to it?
@@ -130,14 +130,14 @@ inline Rank operator-(Rank r, int dec)
    return static_cast<Rank>(static_cast<unsigned char>(r) - dec);
 }
 
-inline char toLowercaseChar(Rank r)
+inline char toChar(Rank r)
 {
    return '1' + static_cast<char>(r);
 }
 
-inline Rank rankFromChar(char c)
+inline Rank rankFromChar(char lowercaseChar)
 {
-   return static_cast<Rank>(c - '1');
+   return static_cast<Rank>(lowercaseChar - '1');
 }
 
 // Is rank a lower than rank b and adjacent to it?
