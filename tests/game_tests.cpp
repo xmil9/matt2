@@ -200,6 +200,25 @@ void testEnterNextMove()
       VERIFY(g.nextTurn() == Color::Black, caseLabel);
    }
    {
+      const std::string caseLabel =
+         "Game::enterNextMove for king-side castling move by coordinates";
+
+      Game g{Position{"Kwb1 Kbe8 Rba8"}, Color::Black};
+      const auto& nextPos = g.enterNextMove("e8c8");
+
+      VERIFY(nextPos == Position{"Kwb1 Kbc8 Rbd8"}, caseLabel);
+      VERIFY(g.nextTurn() == Color::White, caseLabel);
+   }
+   {
+      const std::string caseLabel = "Game::enterNextMove for queen-side castling move by coordinates";
+
+      Game g{Position{"Kwe1 Kbe8 Rwh1"}, Color::White};
+      const auto& nextPos = g.enterNextMove("e1g1");
+
+      VERIFY(nextPos == Position{"Kwg1 Kbe8 Rwf1"}, caseLabel);
+      VERIFY(g.nextTurn() == Color::Black, caseLabel);
+   }
+   {
       const std::string caseLabel = "Game::enterNextMove for valid promotion move";
 
       Game g{Position{"Kwe1 Kbe8 wh7"}, Color::White};

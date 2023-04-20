@@ -205,6 +205,10 @@ class Castling : public ReversibleState
    Square from() const { return kingFrom(); }
    Square to() const { return kingTo(); }
 
+   // King squares involved in castling.
+   static Square from(Color side) { return side == White ? e1 : e8; }
+   static Square to(Kingside_t, Color side) { return side == White ? g1 : g8; }
+   static Square to(Queenside_t, Color side) { return side == White ? c1 : c8; }
 
    bool isEqual(const Castling& other, bool withGameState) const;
    friend bool operator==(const Castling& a, const Castling& b)

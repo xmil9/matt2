@@ -371,10 +371,25 @@ void Game::trimMoves()
       m_moves.erase(m_moves.begin() + m_currMove + 1, m_moves.end());
 }
 
+static std::optional<Move> buildCastlingMoveFromCoords(const MoveDescription& descr,
+                                                       Color side)
+{
+   if (descr.from == Castling::from(side))
+   {
+      if (descr.to == Castling::to(Kingside, side))
+         return Castling{Kingside, side};
+      if (descr.to == Castling::to(Queenside, side))
+         return Castling{Queenside, side};
+   }
+
+   return {};
+}
+
 static std::optional<Move> buildCastlingMove(const MoveDescription& descr, Color side)
 {
+   // If not special castling notation, check for castling coordinates.
    if (!descr.castling)
-      return {};
+      return buildCastlingMoveFromCoords(descr, side);
 
    if (*descr.castling == MoveDescription::Castling::Kingside)
       return Castling{Kingside, side};

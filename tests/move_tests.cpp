@@ -420,6 +420,36 @@ void testCastlingInequality()
    }
 }
 
+void testCastlingFromForColor()
+{
+   {
+      const std::string caseLabel = "Castling::from(Color)";
+
+      VERIFY(Castling::from(Black) == e8, caseLabel);
+      VERIFY(Castling::from(White) == e1, caseLabel);
+   }
+}
+
+void testCastlingToKingsideForColor()
+{
+   {
+      const std::string caseLabel = "Castling::to(Kingside_t, Color)";
+
+      VERIFY(Castling::to(Kingside, Black) == g8, caseLabel);
+      VERIFY(Castling::to(Kingside, White) == g1, caseLabel);
+   }
+}
+
+void testCastlingToQueensideForColor()
+{
+   {
+      const std::string caseLabel = "Castling::to(Queenside_t, Color)";
+
+      VERIFY(Castling::to(Queenside, Black) == c8, caseLabel);
+      VERIFY(Castling::to(Queenside, White) == c1, caseLabel);
+   }
+}
+
 
 ///////////////////
 
@@ -1063,6 +1093,9 @@ void testMoves()
    testCastlingIsEqual();
    testCastlingEquality();
    testCastlingInequality();
+   testCastlingFromForColor();
+   testCastlingToKingsideForColor();
+   testCastlingToQueensideForColor();
    testEnPassantMove();
    testEnPassantReverse();
    testEnPassantIsEqual();
