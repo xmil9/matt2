@@ -303,7 +303,7 @@ std::string& DetailedNotation::notate(std::string& out, const EnPassant& move) c
    an::notateEnPassant(out, move, WithPieceColor);
 
    // Append info about taken piece.
-   dn::notateTakenPiece(out, move.taken(), WithPieceColor);
+   dn::notateTakenPiece(out, *move.taken(), WithPieceColor);
 
    return out;
 }

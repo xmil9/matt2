@@ -9,9 +9,9 @@
 + implement buildMove in Game class
 - verify entered moves and report problems
 + rename console to cli
-- extend Move api:
-	- piece()
-	- optional additionalPiece()
-	- optional taken()
++ extend Move api:
+	+ piece()
+	+ optional additionalPiece()
+	+ optional taken()
 + more Game::enterNextMove tests
 + support castling input using coordinates

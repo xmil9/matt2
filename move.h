@@ -98,7 +98,11 @@ class BasicMove : public ReversibleState
    Square from() const { return m_moved.from(); }
    Square to() const { return m_moved.to(); }
    std::optional<Piece> taken() const { return m_taken; }
+   std::optional<Square> takenAt() const;
    std::optional<Square> enPassantSquare() const { return m_enPassantSquare; }
+
+   // Generic move api.
+   std::optional<Piece> additionalPiece() const { return {}; }
 
    bool isEqual(const BasicMove& other, bool withGameState) const;
    friend bool operator==(const BasicMove& a, const BasicMove& b)
@@ -153,6 +157,13 @@ inline void BasicMove::reverse(Position& pos)
    resetState(pos);
 }
 
+inline std::optional<Square> BasicMove::takenAt() const
+{
+   if (m_taken)
+      return to();
+   return {};
+}
+
 inline bool BasicMove::isEqual(const BasicMove& other, bool withGameState) const
 {
    // Ignore reversible state because it is the more intuitive way from a chess
@@ -200,10 +211,13 @@ class Castling : public ReversibleState
    Square rookFrom() const { return m_rook.from(); }
    Square rookTo() const { return m_rook.to(); }
 
-   // Generic functions for all Move types.
-   // For castling they refer to the king.
+   // Generic move api.
    Square from() const { return kingFrom(); }
    Square to() const { return kingTo(); }
+   Piece piece() const { return king(); }
+   std::optional<Piece> taken() const { return {}; }
+   std::optional<Square> takenAt() const { return {}; }
+   std::optional<Piece> additionalPiece() const { return rook(); }
 
    // King squares involved in castling.
    static Square from(Color side) { return side == White ? e1 : e8; }
@@ -282,8 +296,13 @@ class EnPassant : public ReversibleState
    Piece pawn() const { return m_movedPawn.piece(); }
    Square from() const { return m_movedPawn.from(); }
    Square to() const { return m_movedPawn.to(); }
-   Piece taken() const { return m_takenPawn.piece(); }
-   Square takenAt() const { return m_takenPawn.at(); }
+   // Returns optional to conform to generic move api.
+   std::optional<Piece> taken() const { return m_takenPawn.piece(); }
+   std::optional<Square> takenAt() const { return m_takenPawn.at(); }
+
+   // Generic move api.
+   Piece piece() const { return pawn(); }
+   std::optional<Piece> additionalPiece() const { return {}; }
 
    bool isEqual(const EnPassant& other, bool withGameState) const;
    friend bool operator==(const EnPassant& a, const EnPassant& b)
@@ -359,6 +378,11 @@ class Promotion : public ReversibleState
    Square to() const { return m_promoted.at(); }
    Piece promotedTo() const { return m_promoted.piece(); }
    std::optional<Piece> taken() const { return m_taken; }
+   std::optional<Square> takenAt() const;
+
+   // Generic move api.
+   Piece piece() const { return pawn(); }
+   std::optional<Piece> additionalPiece() const { return promotedTo(); }
 
    bool isEqual(const Promotion& other, bool withGameState) const;
    friend bool operator==(const Promotion& a, const Promotion& b)
@@ -406,6 +430,13 @@ inline void Promotion::reverse(Position& pos)
    resetState(pos);
 }
 
+inline std::optional<Square> Promotion::takenAt() const
+{
+   if (m_taken)
+      return to();
+   return {};
+}
+
 inline bool Promotion::isEqual(const Promotion& other, bool /*withGameState*/) const
 {
    // Ignore reversible state because it is the more intuitive way from a chess
@@ -427,6 +458,21 @@ inline bool operator!=(const Promotion& a, const Promotion& b)
 using Move = std::variant<BasicMove, Castling, EnPassant, Promotion>;
 
 
+inline Position& makeMove(Position& pos, Move& move)
+{
+   auto dispatch = [&pos](auto& specificMove) { specificMove.move(pos); };
+   std::visit(dispatch, move);
+   return pos;
+}
+
+// Generic move api that works for all move types.
+inline Position& reverseMove(Position& pos, Move& move)
+{
+   auto dispatch = [&pos](auto& specificMove) { specificMove.reverse(pos); };
+   std::visit(dispatch, move);
+   return pos;
+}
+
 inline Square to(const Move& move)
 {
    auto dispatch = [](const auto& specificMove) { return specificMove.to(); };
@@ -439,18 +485,30 @@ inline Square from(const Move& move)
    return std::visit(dispatch, move);
 }
 
-inline Position& makeMove(Position& pos, Move& move)
+inline Piece piece(const Move& move)
 {
-   auto dispatch = [&pos](auto& specificMove) { specificMove.move(pos); };
-   std::visit(dispatch, move);
-   return pos;
+   auto dispatch = [](const auto& specificMove) { return specificMove.piece(); };
+   return std::visit(dispatch, move);
 }
 
-inline Position& reverseMove(Position& pos, Move& move)
+inline std::optional<Piece> taken(const Move& move)
 {
-   auto dispatch = [&pos](auto& specificMove) { specificMove.reverse(pos); };
-   std::visit(dispatch, move);
-   return pos;
+   auto dispatch = [](const auto& specificMove) { return specificMove.taken(); };
+   return std::visit(dispatch, move);
+}
+
+inline std::optional<Square> takenAt(const Move& move)
+{
+   auto dispatch = [](const auto& specificMove) { return specificMove.takenAt(); };
+   return std::visit(dispatch, move);
+}
+
+// Some move types involve an additional piece.
+inline std::optional<Piece> additionalPiece(const Move& move)
+{
+   auto dispatch = [](const auto& specificMove)
+   { return specificMove.additionalPiece(); };
+   return std::visit(dispatch, move);
 }
 
 ///////////////////

@@ -913,6 +913,142 @@ void testFrom()
    }
 }
 
+void testPiece()
+{
+   {
+      const std::string caseLabel = "piece() for basic move";
+
+      Move m = BasicMove{{Bb, e6, c4}, Pw};
+      VERIFY(piece(m) == Bb, caseLabel);
+   }
+   {
+      const std::string caseLabel = "piece() for castling move on king's side";
+
+      Move m = Castling{Kingside, White};
+      VERIFY(piece(m) == Kw, caseLabel);
+   }
+   {
+      const std::string caseLabel = "piece() for en passant move";
+
+      Move m = EnPassant{{Pb, f4, g3}};
+      VERIFY(piece(m) == Pb, caseLabel);
+   }
+   {
+      const std::string caseLabel = "piece() for promotion move";
+
+      Move m = Promotion{{Pw, a7, a8}, Nw};
+      VERIFY(piece(m) == Pw, caseLabel);
+   }
+}
+
+void testTaken()
+{
+   {
+      const std::string caseLabel = "taken() for basic move with taking";
+
+      Move m = BasicMove{{Bb, e6, c4}, Pw};
+      VERIFY(taken(m) == Pw, caseLabel);
+   }
+   {
+      const std::string caseLabel = "taken() for basic move without taking";
+
+      Move m = BasicMove{{Bb, e6, c4}};
+      VERIFY(taken(m) == std::nullopt, caseLabel);
+   }
+   {
+      const std::string caseLabel = "taken() for castling move on king's side";
+
+      Move m = Castling{Kingside, White};
+      VERIFY(taken(m) == std::nullopt, caseLabel);
+   }
+   {
+      const std::string caseLabel = "taken() for en passant move";
+
+      Move m = EnPassant{{Pb, f4, g3}};
+      VERIFY(taken(m) == Pw, caseLabel);
+   }
+   {
+      const std::string caseLabel = "taken() for promotion move with taking";
+
+      Move m = Promotion{{Pw, a7, b8}, Nw, Rb};
+      VERIFY(taken(m) == Rb, caseLabel);
+   }
+   {
+      const std::string caseLabel = "taken() for promotion move without taking";
+
+      Move m = Promotion{{Pw, a7, a8}, Nw};
+      VERIFY(taken(m) == std::nullopt, caseLabel);
+   }
+}
+
+void testTakenAt()
+{
+   {
+      const std::string caseLabel = "takenAt() for basic move with taking";
+
+      Move m = BasicMove{{Bb, e6, c4}, Pw};
+      VERIFY(takenAt(m) == c4, caseLabel);
+   }
+   {
+      const std::string caseLabel = "takenAt() for basic move without taking";
+
+      Move m = BasicMove{{Bb, e6, c4}};
+      VERIFY(takenAt(m) == std::nullopt, caseLabel);
+   }
+   {
+      const std::string caseLabel = "takenAt() for castling move on king's side";
+
+      Move m = Castling{Kingside, White};
+      VERIFY(takenAt(m) == std::nullopt, caseLabel);
+   }
+   {
+      const std::string caseLabel = "takenAt() for en passant move";
+
+      Move m = EnPassant{{Pb, f4, g3}};
+      VERIFY(takenAt(m) == g4, caseLabel);
+   }
+   {
+      const std::string caseLabel = "takenAt() for promotion move with taking";
+
+      Move m = Promotion{{Pw, a7, b8}, Nw, Rb};
+      VERIFY(takenAt(m) == b8, caseLabel);
+   }
+   {
+      const std::string caseLabel = "takenAt() for promotion move without taking";
+
+      Move m = Promotion{{Pw, a7, a8}, Nw};
+      VERIFY(takenAt(m) == std::nullopt, caseLabel);
+   }
+}
+
+void testAdditionalPiece()
+{
+   {
+      const std::string caseLabel = "additionalPiece() for basic move";
+
+      Move m = BasicMove{{Bb, e6, c4}, Pw};
+      VERIFY(additionalPiece(m) == std::nullopt, caseLabel);
+   }
+   {
+      const std::string caseLabel = "additionalPiece() for castling move on king's side";
+
+      Move m = Castling{Kingside, White};
+      VERIFY(additionalPiece(m) == Rw, caseLabel);
+   }
+   {
+      const std::string caseLabel = "additionalPiece() for en passant move";
+
+      Move m = EnPassant{{Pb, f4, g3}};
+      VERIFY(additionalPiece(m) == std::nullopt, caseLabel);
+   }
+   {
+      const std::string caseLabel = "additionalPiece() for promotion move";
+
+      Move m = Promotion{{Pw, a7, a8}, Nw};
+      VERIFY(additionalPiece(m) == Nw, caseLabel);
+   }
+}
+
 void testMakeMove()
 {
    {
@@ -1108,6 +1244,10 @@ void testMoves()
    testPromotionInequality();
    testTo();
    testFrom();
+   testPiece();
+   testTaken();
+   testTakenAt();
+   testAdditionalPiece();
    testMakeMove();
    testReverseMove();
    testMoveDescriptionEquality();
