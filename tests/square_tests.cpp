@@ -1086,6 +1086,78 @@ void testSquareIncrementOperator()
    }
 }
 
+void testSquareToString()
+{
+   {
+      const std::string caseLabel = "toString(Square";
+
+      VERIFY(toString(a1) == "a1", caseLabel);
+      VERIFY(toString(a2) == "a2", caseLabel);
+      VERIFY(toString(a3) == "a3", caseLabel);
+      VERIFY(toString(a4) == "a4", caseLabel);
+      VERIFY(toString(a5) == "a5", caseLabel);
+      VERIFY(toString(a6) == "a6", caseLabel);
+      VERIFY(toString(a7) == "a7", caseLabel);
+      VERIFY(toString(a8) == "a8", caseLabel);
+      VERIFY(toString(b1) == "b1", caseLabel);
+      VERIFY(toString(b2) == "b2", caseLabel);
+      VERIFY(toString(b3) == "b3", caseLabel);
+      VERIFY(toString(b4) == "b4", caseLabel);
+      VERIFY(toString(b5) == "b5", caseLabel);
+      VERIFY(toString(b6) == "b6", caseLabel);
+      VERIFY(toString(b7) == "b7", caseLabel);
+      VERIFY(toString(b8) == "b8", caseLabel);
+      VERIFY(toString(c1) == "c1", caseLabel);
+      VERIFY(toString(c2) == "c2", caseLabel);
+      VERIFY(toString(c3) == "c3", caseLabel);
+      VERIFY(toString(c4) == "c4", caseLabel);
+      VERIFY(toString(c5) == "c5", caseLabel);
+      VERIFY(toString(c6) == "c6", caseLabel);
+      VERIFY(toString(c7) == "c7", caseLabel);
+      VERIFY(toString(c8) == "c8", caseLabel);
+      VERIFY(toString(d1) == "d1", caseLabel);
+      VERIFY(toString(d2) == "d2", caseLabel);
+      VERIFY(toString(d3) == "d3", caseLabel);
+      VERIFY(toString(d4) == "d4", caseLabel);
+      VERIFY(toString(d5) == "d5", caseLabel);
+      VERIFY(toString(d6) == "d6", caseLabel);
+      VERIFY(toString(d7) == "d7", caseLabel);
+      VERIFY(toString(d8) == "d8", caseLabel);
+      VERIFY(toString(e1) == "e1", caseLabel);
+      VERIFY(toString(e2) == "e2", caseLabel);
+      VERIFY(toString(e3) == "e3", caseLabel);
+      VERIFY(toString(e4) == "e4", caseLabel);
+      VERIFY(toString(e5) == "e5", caseLabel);
+      VERIFY(toString(e6) == "e6", caseLabel);
+      VERIFY(toString(e7) == "e7", caseLabel);
+      VERIFY(toString(e8) == "e8", caseLabel);
+      VERIFY(toString(f1) == "f1", caseLabel);
+      VERIFY(toString(f2) == "f2", caseLabel);
+      VERIFY(toString(f3) == "f3", caseLabel);
+      VERIFY(toString(f4) == "f4", caseLabel);
+      VERIFY(toString(f5) == "f5", caseLabel);
+      VERIFY(toString(f6) == "f6", caseLabel);
+      VERIFY(toString(f7) == "f7", caseLabel);
+      VERIFY(toString(f8) == "f8", caseLabel);
+      VERIFY(toString(g1) == "g1", caseLabel);
+      VERIFY(toString(g2) == "g2", caseLabel);
+      VERIFY(toString(g3) == "g3", caseLabel);
+      VERIFY(toString(g4) == "g4", caseLabel);
+      VERIFY(toString(g5) == "g5", caseLabel);
+      VERIFY(toString(g6) == "g6", caseLabel);
+      VERIFY(toString(g7) == "g7", caseLabel);
+      VERIFY(toString(g8) == "g8", caseLabel);
+      VERIFY(toString(h1) == "h1", caseLabel);
+      VERIFY(toString(h2) == "h2", caseLabel);
+      VERIFY(toString(h3) == "h3", caseLabel);
+      VERIFY(toString(h4) == "h4", caseLabel);
+      VERIFY(toString(h5) == "h5", caseLabel);
+      VERIFY(toString(h6) == "h6", caseLabel);
+      VERIFY(toString(h7) == "h7", caseLabel);
+      VERIFY(toString(h8) == "h8", caseLabel);
+   }
+}
+
 ///////////////////
 
 void testUpDiagonal()
@@ -1601,6 +1673,7 @@ void testSquare()
    testGettingRankOfSquare();
    testSquareIsValid();
    testSquareIncrementOperator();
+   testSquareToString();
 }
 
 void testDiagonal()

@@ -26,6 +26,10 @@ inline Color operator!(Color c)
    return c == White ? Black : White;
 }
 
+inline std::string toString(Color c)
+{
+   return c == Color::White ? "white" : "black";
+}
 
 ///////////////////
 
@@ -79,5 +83,7 @@ inline Piece bishop(Color side) { return side == White ? Bw : Bb; }
 inline Piece knight(Color side) { return side == White ? Nw : Nb; }
 inline Piece pawn(Color side) { return side == White ? Pw : Pb; }
 // clang-format on
+
+std::string toString(Piece piece);
 
 } // namespace matt2

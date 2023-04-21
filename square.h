@@ -290,6 +290,14 @@ inline Square operator++(Square& sq)
    return sq;
 }
 
+inline std::string toString(Square sq)
+{
+   std::string s;
+   s += toChar(file(sq));
+   s += toChar(rank(sq));
+   return s;
+}
+
 ///////////////////
 
 using Diagonal = char;

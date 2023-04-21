@@ -24,6 +24,15 @@ void testColorNegation()
    }
 }
 
+void testColorToString()
+{
+   {
+      const std::string caseLabel = "toString(Color)";
+
+      VERIFY(toString(White) == "white", caseLabel);
+      VERIFY(toString(Black) == "black", caseLabel);
+   }
+}
 
 ///////////////////
 
@@ -432,6 +441,7 @@ void testPawnPiece()
 void testColor()
 {
    testColorNegation();
+   testColorToString();
 }
 
 

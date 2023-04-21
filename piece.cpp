@@ -83,4 +83,22 @@ Piece makePiece(std::string_view notation)
    return pos->second;
 }
 
+std::string toString(Piece piece)
+{
+   if (isKing(piece))
+      return "king";
+   else if (isQueen(piece))
+      return "queen";
+   else if (isRook(piece))
+      return "rook";
+   else if (isBishop(piece))
+      return "bishop";
+   else if (isKnight(piece))
+      return "knight";
+   else if (isPawn(piece))
+      return "pawn";
+   else
+      throw std::runtime_error("Unknown piece.");
+}
+
 } // namespace matt2
