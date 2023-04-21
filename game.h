@@ -48,10 +48,6 @@ class Game
    // current position.
    std::optional<Move> buildMove(const MoveDescription& moveDescr) const;
    
-   // Check if a given move is valid for the current position.
-   // Returns error text, if not valid.
-   std::pair<bool, std::string> isValidMove(const Move& m) const;
-   
    // Applies a given move.
    void apply(Move& m);
 

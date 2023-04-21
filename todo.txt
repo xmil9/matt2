@@ -7,7 +7,8 @@
 + change toLowercaseChar to toChar
 - use unicode to print board in console
 + implement buildMove in Game class
-- verify entered moves and report problems
++ verify entered moves and report problems
+- report problems when building entered moves 
 + rename console to cli
 + extend Move api:
 	+ piece()

@@ -616,6 +616,75 @@ void testCollectPawnMoves()
    }
 }
 
+void testCollectMoves()
+{
+   {
+      const std::string caseLabel = "collectMoves for a king";
+
+      std::vector<Move> moves;
+      collectMoves(Kb, a4, Position{"Kba4"}, moves);
+
+      std::vector<Move> expected;
+      collectKingMoves(Kb, a4, Position{"Kba4"}, expected);
+
+      VERIFY(moves == expected, caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectMoves for a queen";
+
+      std::vector<Move> moves;
+      collectMoves(Qw, d4, Position{"Qwd4"}, moves);
+
+      std::vector<Move> expected;
+      collectQueenMoves(Qw, d4, Position{"Qwd4"}, expected);
+
+      VERIFY(moves == expected, caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectMoves for a rook";
+
+      std::vector<Move> moves;
+      collectMoves(Rb, g6, Position{"Rbg6"}, moves);
+
+      std::vector<Move> expected;
+      collectRookMoves(Rb, g6, Position{"Rbg6"}, expected);
+
+      VERIFY(moves == expected, caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectMoves for a bishop";
+
+      std::vector<Move> moves;
+      collectMoves(Bb, g6, Position{"Bbg6"}, moves);
+
+      std::vector<Move> expected;
+      collectBishopMoves(Bb, g6, Position{"Bbg6"}, expected);
+
+      VERIFY(moves == expected, caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectMoves for a knight";
+
+      std::vector<Move> moves;
+      collectMoves(Nw, d4, Position{"Nwd4"}, moves);
+
+      std::vector<Move> expected;
+      collectKnightMoves(Nw, d4, Position{"Nwd4"}, expected);
+
+      VERIFY(moves == expected, caseLabel);
+   }
+   {
+      const std::string caseLabel = "collectMoves for a pawn";
+
+      std::vector<Move> moves;
+      collectMoves(Pw, d4, Position{"wd4"}, moves);
+
+      std::vector<Move> expected;
+      collectPawnMoves(Pw, d4, Position{"wd4"}, expected);
+
+      VERIFY(moves == expected, caseLabel);
+   }
+}
 
 void testCollectCastlingMoves()
 {
@@ -1596,6 +1665,7 @@ void testRules()
    testCollectBishopMoves();
    testCollectKnightMoves();
    testCollectPawnMoves();
+   testCollectMoves();
    testCollectCastlingMoves();
    testCollectEnPassantMoves();
    testCollectAttackedByKing();

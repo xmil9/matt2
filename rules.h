@@ -27,6 +27,8 @@ void collectKnightMoves(Piece knight, Square at, const Position& pos,
                         std::vector<Move>& moves);
 void collectPawnMoves(Piece pawn, Square at, const Position& pos,
                       std::vector<Move>& moves);
+// Collect moves for a general piece.
+void collectMoves(Piece piece, Square at, const Position& pos, std::vector<Move>& moves);
 
 // Collect moves for special situations.
 void collectCastlingMoves(Color side, const Position& pos, std::vector<Move>& moves);

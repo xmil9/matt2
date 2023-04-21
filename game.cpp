@@ -195,7 +195,6 @@ class MoveCalculator
 
    MoveScore next(Color side, size_t plyDepth, bool calcMax, double bestOpposingScore);
    void collectMoves(Color side, std::vector<Move>& moves) const;
-   void collectMoves(Piece piece, Square at, std::vector<Move>& moves) const;
 
  private:
    Position& m_pos;
@@ -284,29 +283,10 @@ void MoveCalculator::collectMoves(Color side, std::vector<Move>& moves) const
 {
    auto endIter = m_pos.end(side);
    for (auto iter = m_pos.begin(side); iter < endIter; ++iter)
-      collectMoves(iter.piece(), iter.at(), moves);
+      matt2::collectMoves(iter.piece(), iter.at(), m_pos, moves);
 
    collectCastlingMoves(side, m_pos, moves);
    collectEnPassantMoves(side, m_pos, moves);
-}
-
-
-void MoveCalculator::collectMoves(Piece piece, Square at, std::vector<Move>& moves) const
-{
-   if (isKing(piece))
-      collectKingMoves(piece, at, m_pos, moves);
-   else if (isQueen(piece))
-      collectQueenMoves(piece, at, m_pos, moves);
-   else if (isRook(piece))
-      collectRookMoves(piece, at, m_pos, moves);
-   else if (isBishop(piece))
-      collectBishopMoves(piece, at, m_pos, moves);
-   else if (isKnight(piece))
-      collectKnightMoves(piece, at, m_pos, moves);
-   else if (isPawn(piece))
-      collectPawnMoves(piece, at, m_pos, moves);
-   else
-      throw std::runtime_error("Unknown piece.");
 }
 
 
@@ -338,7 +318,7 @@ const Position& Game::enterNextMove(std::string_view movePacnNotation)
       return m_currPos;
 
    auto move = buildMove(*moveDescr);
-   if (move.has_value() && isValidMove(*move).first)
+   if (move.has_value() && isValidMove(*move, m_currPos, m_nextTurn).first)
       apply(*move);
 
    return m_currPos;
@@ -502,12 +482,6 @@ std::optional<Move> Game::buildMove(const MoveDescription& descr) const
       return move;
 
    return {};
-}
-
-std::pair<bool, std::string> Game::isValidMove(const Move& m) const
-{
-   m;
-   return {true, ""};
 }
 
 void Game::apply(Move& m)

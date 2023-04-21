@@ -8,6 +8,7 @@
 #include "relocation.h"
 #include <optional>
 #include <string>
+#include <utility>
 #include <variant>
 
 
@@ -91,6 +92,7 @@ class BasicMove : public ReversibleState
    BasicMove(Piece p, Square from, Square to, EnablesEnPassant_t);
    BasicMove(const Relocation& moved, EnablesEnPassant_t);
 
+   std::pair<bool, std::string> isValid(const Position& pos, Color turn) const;
    void move(Position& pos);
    void reverse(Position& pos);
 
@@ -200,6 +202,7 @@ class Castling : public ReversibleState
    Castling(Kingside_t, Color side);
    Castling(Queenside_t, Color side);
 
+   std::pair<bool, std::string> isValid(const Position& pos, Color turn) const;
    void move(Position& pos);
    void reverse(Position& pos);
 
@@ -290,6 +293,7 @@ class EnPassant : public ReversibleState
    EnPassant(Piece pawn, Square from, Square to);
    EnPassant(const Relocation& pawn);
 
+   std::pair<bool, std::string> isValid(const Position& pos, Color turn) const;
    void move(Position& pos);
    void reverse(Position& pos);
 
@@ -370,6 +374,7 @@ class Promotion : public ReversibleState
    Promotion(const Relocation& pawn, Piece promotedTo,
              std::optional<Piece> taken = std::nullopt);
 
+   std::pair<bool, std::string> isValid(const Position& pos, Color turn) const;
    void move(Position& pos);
    void reverse(Position& pos);
 
@@ -453,10 +458,17 @@ inline bool operator!=(const Promotion& a, const Promotion& b)
 
 
 ///////////////////
+// Generic move api
 
 // Any of the possible move types.
 using Move = std::variant<BasicMove, Castling, EnPassant, Promotion>;
 
+
+inline std::pair<bool, std::string> isValidMove(const Move& move, const Position& pos, Color turn)
+{
+   auto dispatch = [&pos, turn](auto& specificMove) { return specificMove.isValid(pos, turn); };
+   return std::visit(dispatch, move);
+}
 
 inline Position& makeMove(Position& pos, Move& move)
 {
@@ -465,7 +477,6 @@ inline Position& makeMove(Position& pos, Move& move)
    return pos;
 }
 
-// Generic move api that works for all move types.
 inline Position& reverseMove(Position& pos, Move& move)
 {
    auto dispatch = [&pos](auto& specificMove) { specificMove.reverse(pos); };

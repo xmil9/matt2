@@ -40,6 +40,49 @@ void testBasicMoveEnPassantCtor()
    }
 }
 
+void testBasicMoveIsValid()
+{
+   {
+      const std::string caseLabel = "BasicMove::isValid for valid move";
+
+      Position pos{"Kba1 Rba3 Kwh8 wh3"};
+      BasicMove m{Relocation{"Rba3c3"}};
+      const auto res = m.isValid(pos, Black);
+
+      VERIFY(res.first, caseLabel);
+      VERIFY(res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "BasicMove::isValid for piece that is not at the given position";
+
+      Position pos{"Kba1 Rba3 Kwh8 wh3"};
+      BasicMove m{Relocation{"Rba2c2"}};
+      const auto res = m.isValid(pos, Black);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "BasicMove::isValid for valid move but by wrong side";
+
+      Position pos{"Kba1 Rba3 Kwh8 wh3"};
+      BasicMove m{Relocation{"Rba3c3"}};
+      const auto res = m.isValid(pos, White);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "BasicMove::isValid for illegal move";
+
+      Position pos{"Kba1 Rba3 Kwh8 wh3"};
+      BasicMove m{Relocation{"Rba3c2"}};
+      const auto res = m.isValid(pos, Black);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+}
 
 void testBasicMoveMove()
 {
@@ -247,6 +290,50 @@ void testBasicMoveInequality()
 
 ///////////////////
 
+void testCastlingMoveIsValid()
+{
+   {
+      const std::string caseLabel = "Castling::isValid for valid move";
+
+      Position pos{"Kbe8 Rbh8"};
+      Castling m{Kingside, Black};
+      auto res = m.isValid(pos, Black);
+
+      VERIFY(res.first, caseLabel);
+      VERIFY(res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Castling::isValid when king is not at starting position";
+
+      Position pos{"Kbe7 Rbh8"};
+      Castling m{Kingside, Black};
+      auto res = m.isValid(pos, Black);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Castling::isValid for valid move but by wrong side";
+
+      Position pos{"Kbe8 Rbh8"};
+      Castling m{Kingside, Black};
+      auto res = m.isValid(pos, White);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Castling::isValid for illegal move";
+
+      Position pos{"Kbe8 Rbh8 Nwf8"};
+      Castling m{Kingside, Black};
+      auto res = m.isValid(pos, Black);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+}
+
 void testCastlingMove()
 {
    {
@@ -453,6 +540,64 @@ void testCastlingToQueensideForColor()
 
 ///////////////////
 
+void testEnPassantMoveIsValid()
+{
+   {
+      const std::string caseLabel = "EnPassant::isValid for valid move";
+
+      Position pos{"wd5 be5"};
+      pos.setEnPassantSquare(e5);
+      EnPassant m{Relocation{Pw, d5, e6}};
+      auto res = m.isValid(pos, White);
+
+      VERIFY(res.first, caseLabel);
+      VERIFY(res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "EnPassant::isValid when piece is not on given square";
+
+      Position pos{"wf5 be5"};
+      pos.setEnPassantSquare(e5);
+      EnPassant m{Relocation{Pw, d5, e6}};
+      auto res = m.isValid(pos, White);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "EnPassant::isValid for valid move but by wrong side";
+
+      Position pos{"wd5 be5"};
+      pos.setEnPassantSquare(e5);
+      EnPassant m{Relocation{Pw, d5, e6}};
+      auto res = m.isValid(pos, Black);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "EnPassant::isValid for illegal move";
+
+      Position pos{"wd5 be5"};
+      pos.setEnPassantSquare(e5);
+      EnPassant m{Relocation{Pw, d5, e7}};
+      auto res = m.isValid(pos, White);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "EnPassant::isValid when position does not allow en-passant";
+
+      Position pos{"wd5 be5"};
+      EnPassant m{Relocation{Pw, d5, e6}};
+      auto res = m.isValid(pos, White);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+}
+
 void testEnPassantMove()
 {
    {
@@ -635,6 +780,60 @@ void testEnPassantInequality()
 
 
 ///////////////////
+
+void testPromotionMoveIsValid()
+{
+   {
+      const std::string caseLabel = "Promotion::isValid for valid move";
+
+      Position pos{"wc7"};
+      Promotion m{Relocation{"wc7c8"}, Qw};
+      auto res = m.isValid(pos, White);
+
+      VERIFY(res.first, caseLabel);
+      VERIFY(res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Promotion::isValid when piece is not on given square";
+
+      Position pos{"wd7"};
+      Promotion m{Relocation{"wc7c8"}, Qw};
+      auto res = m.isValid(pos, White);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Promotion::isValid when piece is not a pawn";
+
+      Position pos{"Nwd7"};
+      Promotion m{Relocation{"Nwc7c8"}, Qw};
+      auto res = m.isValid(pos, White);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Promotion::isValid for valid move but by wrong side";
+
+      Position pos{"wc7"};
+      Promotion m{Relocation{"wc7c8"}, Qw};
+      auto res = m.isValid(pos, Black);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+   {
+      const std::string caseLabel = "Promotion::isValid for illegal move";
+
+      Position pos{"wc7 bc8"};
+      Promotion m{Relocation{"wc7c8"}, Qw};
+      auto res = m.isValid(pos, White);
+
+      VERIFY(!res.first, caseLabel);
+      VERIFY(!res.second.empty(), caseLabel);
+   }
+}
 
 void testPromotionMove()
 {
@@ -1219,11 +1418,13 @@ void testMoves()
 {
    testBasicMoveMainCtor();
    testBasicMoveEnPassantCtor();
+   testBasicMoveIsValid();
    testBasicMoveMove();
    testBasicMoveReverse();
    testBasicMoveIsEqual();
    testBasicMoveEquality();
    testBasicMoveInequality();
+   testCastlingMoveIsValid();
    testCastlingMove();
    testCastlingReverse();
    testCastlingIsEqual();
@@ -1232,11 +1433,13 @@ void testMoves()
    testCastlingFromForColor();
    testCastlingToKingsideForColor();
    testCastlingToQueensideForColor();
+   testEnPassantMoveIsValid();
    testEnPassantMove();
    testEnPassantReverse();
    testEnPassantIsEqual();
    testEnPassantEquality();
    testEnPassantInequality();
+   testPromotionMoveIsValid();
    testPromotionMove();
    testPromotionReverse();
    testPromotionIsEqual();

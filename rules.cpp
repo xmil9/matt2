@@ -386,6 +386,23 @@ void collectPawnMoves(Piece pawn, Square at, const Position& pos,
    collectDiagonalPawnMove(pawn, at, pos, diagonalLeft, moves);
 }
 
+void collectMoves(Piece piece, Square at, const Position& pos, std::vector<Move>& moves)
+{
+   if (isKing(piece))
+      collectKingMoves(piece, at, pos, moves);
+   else if (isQueen(piece))
+      collectQueenMoves(piece, at, pos, moves);
+   else if (isRook(piece))
+      collectRookMoves(piece, at, pos, moves);
+   else if (isBishop(piece))
+      collectBishopMoves(piece, at, pos, moves);
+   else if (isKnight(piece))
+      collectKnightMoves(piece, at, pos, moves);
+   else if (isPawn(piece))
+      collectPawnMoves(piece, at, pos, moves);
+   else
+      throw std::runtime_error("Unknown piece.");
+}
 
 void collectCastlingMoves(Color side, const Position& pos, std::vector<Move>& moves)
 {
