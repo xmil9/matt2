@@ -683,6 +683,9 @@ void testReadMovePacn()
       VERIFY(readMovePacn("O-O") ==
                 std::optional(MoveDescription(MoveDescription::Castling::Kingside)),
              caseLabel);
+      VERIFY(readMovePacn("0-0") ==
+                std::optional(MoveDescription(MoveDescription::Castling::Kingside)),
+             caseLabel);
       VERIFY(readMovePacn("o-oignored") ==
                 std::optional(MoveDescription(MoveDescription::Castling::Kingside)),
              caseLabel);
@@ -690,6 +693,9 @@ void testReadMovePacn()
                 std::optional(MoveDescription(MoveDescription::Castling::Queenside)),
              caseLabel);
       VERIFY(readMovePacn("O-O-O") ==
+                std::optional(MoveDescription(MoveDescription::Castling::Queenside)),
+             caseLabel);
+      VERIFY(readMovePacn("0-0-0") ==
                 std::optional(MoveDescription(MoveDescription::Castling::Queenside)),
              caseLabel);
       VERIFY(readMovePacn("o-o-oignored") ==

@@ -504,11 +504,13 @@ static std::optional<MoveDescription::Promotion> makePromotionPacn(char c)
 static std::optional<MoveDescription> readCastlingMovePacn(std::string_view notation)
 {
    if (notation.length() >= 5 &&
-       (notation.starts_with("o-o-o") || notation.starts_with("O-O-O")))
+       (notation.starts_with("o-o-o") || notation.starts_with("O-O-O") ||
+        notation.starts_with("0-0-0")))
       return MoveDescription{MoveDescription::Castling::Queenside};
 
    if (notation.length() >= 3 &&
-       (notation.starts_with("o-o") || notation.starts_with("O-O")))
+       (notation.starts_with("o-o") || notation.starts_with("O-O") ||
+        notation.starts_with("0-0")))
       return MoveDescription{MoveDescription::Castling::Kingside};
 
    return {};
