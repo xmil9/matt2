@@ -16,4 +16,4 @@
 	+ optional taken()
 + more Game::enterNextMove tests
 + support castling input using coordinates
-- accept castling input using zeros
++ accept castling input using zeros
