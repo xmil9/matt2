@@ -63,9 +63,11 @@ void testCalcNextMove()
          "Game::calcNextMove in 1 turn for black when taking the highest piece is best";
 
       Game g{Position{"Kwb1 Rwe4 Bwg4 Kbd8 Bbf5"}, Black};
-      const auto& nextPos = g.calcNextMove(1);
+      const MoveResult result = g.calcNextMove(1);
 
-      VERIFY(nextPos == Position{"Kwb1 Bwg4 Kbd8 Bbe4"}, caseLabel);
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos == Position{"Kwb1 Bwg4 Kbd8 Bbe4"}, caseLabel);
+      VERIFY(result.descr == "Bf5xe4", caseLabel);
       VERIFY(g.countMoves() == 1, caseLabel);
       VERIFY(g.getMove(0) == Move(BasicMove{Relocation{Bb, f5, e4}, Rw}), caseLabel);
       VERIFY(g.nextTurn() == White, caseLabel);
@@ -75,9 +77,11 @@ void testCalcNextMove()
          "Game::calcNextMove in 1 turn for white with checkmate";
 
       Game g{Position{"Kwa1 Kbd4 wc3"}, White};
-      const auto& nextPos = g.calcNextMove(1);
+      const MoveResult result = g.calcNextMove(1);
 
-      VERIFY(nextPos == Position{"Kwa1 wd4"}, caseLabel);
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos == Position{"Kwa1 wd4"}, caseLabel);
+      VERIFY(result.descr == "c3xd4", caseLabel);
       VERIFY(g.countMoves() == 1, caseLabel);
       VERIFY(g.getMove(0) == Move(BasicMove{Relocation{Pw, c3, d4}, Kb}), caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
@@ -89,9 +93,11 @@ void testCalcNextMove()
 
       // If black took the knight the black queen would be taken by the opponent.
       Game g{Position{"Kwb2 Bwg3 Nwf4 wb6 Kbe8 Qbd6"}, Black};
-      const auto& nextPos = g.calcNextMove(1);
+      const MoveResult result = g.calcNextMove(1);
 
-      VERIFY(nextPos == Position{"Kwb2 Bwg3 Nwf4 Kbe8 Qbb6"}, caseLabel);
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos == Position{"Kwb2 Bwg3 Nwf4 Kbe8 Qbb6"}, caseLabel);
+      VERIFY(result.descr == "Qd6xb6", caseLabel);
       VERIFY(g.countMoves() == 1, caseLabel);
       VERIFY(g.getMove(0) == Move(BasicMove{Relocation{Qb, d6, b6}, Pw}), caseLabel);
       VERIFY(g.nextTurn() == White, caseLabel);
@@ -102,9 +108,11 @@ void testCalcNextMove()
          "the algorithm needs to look ahead two turns to score the position correctly)";
 
       Game g{Position{"Kwc1 Rwf7 Rwg1 Kbc8"}, White};
-      const auto& nextPos = g.calcNextMove(2);
+      const MoveResult result = g.calcNextMove(2);
 
-      VERIFY(nextPos == Position{"Kwc1 Rwf7 Rwg8 Kbc8"}, caseLabel);
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos == Position{"Kwc1 Rwf7 Rwg8 Kbc8"}, caseLabel);
+      VERIFY(!result.descr.empty(), caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
    }
    {
@@ -112,10 +120,13 @@ void testCalcNextMove()
 
       Game g{Position{"Kwg1 Qwf6 Bwc3 wh2 wg2 wf2 Kbg8 Qbd8 Rbf8 Bbg7 bh7 bg6 bf7"},
              White};
-      const auto& nextPos = g.calcNextMove(2);
+      const MoveResult result = g.calcNextMove(2);
 
-      VERIFY(nextPos == Position{"Kwg1 Qwg7 Bwc3 wh2 wg2 wf2 Kbg8 Qbd8 Rbf8 bh7 bg6 bf7"},
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos ==
+                Position{"Kwg1 Qwg7 Bwc3 wh2 wg2 wf2 Kbg8 Qbd8 Rbf8 bh7 bg6 bf7"},
              caseLabel);
+      VERIFY(!result.descr.empty(), caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
    }
    {
@@ -123,11 +134,13 @@ void testCalcNextMove()
 
       Game g{Position{"Kwc1 Qwh6 Rwd1 Nwg5 wb2 wc2 we5 Kbg8 Qbc7 Rbc8 Rbf8 bh7 bg6 bf7"},
              White};
-      const auto& nextPos = g.calcNextMove(2);
+      const MoveResult result = g.calcNextMove(2);
 
-      VERIFY(nextPos ==
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos ==
                 Position{"Kwc1 Qwh7 Rwd1 Nwg5 wb2 wc2 we5 Kbg8 Qbc7 Rbc8 Rbf8 bg6 bf7"},
              caseLabel);
+      VERIFY(!result.descr.empty(), caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
    }
 
@@ -142,9 +155,11 @@ void testEnterNextMove()
       const std::string caseLabel = "Game::enterNextMove for valid basic move";
 
       Game g{Position{"Kwb1 Rwe4 Bwg4 Kbd8 Bbf5"}, Black};
-      const auto& nextPos = g.enterNextMove("f5g6");
+      const MoveResult result = g.enterNextMove("f5g6");
 
-      VERIFY(nextPos == Position{"Kwb1 Rwe4 Bwg4 Kbd8 Bbg6"}, caseLabel);
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos == Position{"Kwb1 Rwe4 Bwg4 Kbd8 Bbg6"}, caseLabel);
+      VERIFY(result.descr == "Bf5g6", caseLabel);
       VERIFY(g.nextTurn() == White, caseLabel);
    }
    {
@@ -152,10 +167,12 @@ void testEnterNextMove()
 
       Position pos{"Kwb1 Rwe4 Bwg4 Kbd8 Bbf5"};
       Game g{pos, Black};
-      const auto& nextPos = g.enterNextMove("f4g6");
+      const MoveResult result = g.enterNextMove("f4g6");
 
       // Game state should be the same as before.
-      VERIFY(nextPos == pos, caseLabel);
+      VERIFY(!result.ok, caseLabel);
+      VERIFY(result.pos == pos, caseLabel);
+      VERIFY(!result.descr.empty(), caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
    }
    {
@@ -163,9 +180,11 @@ void testEnterNextMove()
          "Game::enterNextMove for valid basic move with taking";
 
       Game g{Position{"Kwb1 Rwe4 Bwg4 Kbd8 Bbf5 wg6"}, Black};
-      const auto& nextPos = g.enterNextMove("f5g6");
+      const MoveResult result = g.enterNextMove("f5g6");
 
-      VERIFY(nextPos == Position{"Kwb1 Rwe4 Bwg4 Kbd8 Bbg6"}, caseLabel);
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos == Position{"Kwb1 Rwe4 Bwg4 Kbd8 Bbg6"}, caseLabel);
+      VERIFY(result.descr == "Bf5xg6", caseLabel);
       VERIFY(g.nextTurn() == White, caseLabel);
    }
    {
@@ -174,10 +193,12 @@ void testEnterNextMove()
 
       const Position initialPos{"Kwb1 Rwe4 Bwg4 Kbd8 Bbf5"};
       Game g{initialPos, Black};
-      const auto& nextPos = g.enterNextMove("f56");
+      const MoveResult result = g.enterNextMove("f56");
 
       // Nothing changed.
-      VERIFY(nextPos == initialPos, caseLabel);
+      VERIFY(!result.ok, caseLabel);
+      VERIFY(result.pos == initialPos, caseLabel);
+      VERIFY(!result.descr.empty(), caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
    }
    {
@@ -186,28 +207,34 @@ void testEnterNextMove()
 
       const Position initialPos{"Kwb1 Rwe4 Bwg4 Kbd8 Bbf5"};
       Game g{initialPos, Black};
-      const auto& nextPos = g.enterNextMove("f4g6");
+      const MoveResult result = g.enterNextMove("f4g6");
 
       // Nothing changed.
-      VERIFY(nextPos == initialPos, caseLabel);
+      VERIFY(!result.ok, caseLabel);
+      VERIFY(result.pos == initialPos, caseLabel);
+      VERIFY(!result.descr.empty(), caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
    }
    {
       const std::string caseLabel = "Game::enterNextMove for valid o-o-o castling move";
 
       Game g{Position{"Kwb1 Kbe8 Rba8"}, Black};
-      const auto& nextPos = g.enterNextMove("o-o-o");
+      const MoveResult result = g.enterNextMove("o-o-o");
 
-      VERIFY(nextPos == Position{"Kwb1 Kbc8 Rbd8"}, caseLabel);
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos == Position{"Kwb1 Kbc8 Rbd8"}, caseLabel);
+      VERIFY(result.descr == "0-0-0", caseLabel);
       VERIFY(g.nextTurn() == White, caseLabel);
    }
    {
       const std::string caseLabel = "Game::enterNextMove for valid o-o castling move";
 
       Game g{Position{"Kwe1 Kbe8 Rwh1"}, White};
-      const auto& nextPos = g.enterNextMove("o-o");
+      const MoveResult result = g.enterNextMove("o-o");
 
-      VERIFY(nextPos == Position{"Kwg1 Kbe8 Rwf1"}, caseLabel);
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos == Position{"Kwg1 Kbe8 Rwf1"}, caseLabel);
+      VERIFY(result.descr == "0-0", caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
    }
    {
@@ -215,38 +242,47 @@ void testEnterNextMove()
 
       Position pos{"Kwe1 Kbe8 Rwh1"};
       Game g{pos, Black};
-      const auto& nextPos = g.enterNextMove("o-o");
+      const MoveResult result = g.enterNextMove("o-o");
 
       // Game state should be the same as before.
-      VERIFY(nextPos == pos, caseLabel);
+      VERIFY(!result.ok, caseLabel);
+      VERIFY(result.pos == pos, caseLabel);
+      VERIFY(!result.descr.empty(), caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "Game::enterNextMove for queen-side castling move by coordinates";
+
+      Game g{Position{"Kwb1 Kbe8 Rba8"}, Black};
+      const MoveResult result = g.enterNextMove("e8c8");
+
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos == Position{"Kwb1 Kbc8 Rbd8"}, caseLabel);
+      VERIFY(result.descr == "0-0-0", caseLabel);
+      VERIFY(g.nextTurn() == White, caseLabel);
    }
    {
       const std::string caseLabel =
          "Game::enterNextMove for king-side castling move by coordinates";
 
-      Game g{Position{"Kwb1 Kbe8 Rba8"}, Black};
-      const auto& nextPos = g.enterNextMove("e8c8");
-
-      VERIFY(nextPos == Position{"Kwb1 Kbc8 Rbd8"}, caseLabel);
-      VERIFY(g.nextTurn() == White, caseLabel);
-   }
-   {
-      const std::string caseLabel = "Game::enterNextMove for queen-side castling move by coordinates";
-
       Game g{Position{"Kwe1 Kbe8 Rwh1"}, White};
-      const auto& nextPos = g.enterNextMove("e1g1");
+      const MoveResult result = g.enterNextMove("e1g1");
 
-      VERIFY(nextPos == Position{"Kwg1 Kbe8 Rwf1"}, caseLabel);
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos == Position{"Kwg1 Kbe8 Rwf1"}, caseLabel);
+      VERIFY(result.descr == "0-0", caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
    }
    {
       const std::string caseLabel = "Game::enterNextMove for valid promotion move";
 
       Game g{Position{"Kwe1 Kbe8 wh7"}, White};
-      const auto& nextPos = g.enterNextMove("h7h8q");
+      const MoveResult result = g.enterNextMove("h7h8q");
 
-      VERIFY(nextPos == Position{"Kwe1 Kbe8 Qwh8"}, caseLabel);
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos == Position{"Kwe1 Kbe8 Qwh8"}, caseLabel);
+      VERIFY(result.descr == "h7h8=Q", caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
    }
    {
@@ -254,9 +290,11 @@ void testEnterNextMove()
 
       Position pos{"Kwe1 Kbe8 wh6"};
       Game g{pos, White};
-      const auto& nextPos = g.enterNextMove("h7h8q");
+      const MoveResult result = g.enterNextMove("h7h8q");
 
-      VERIFY(nextPos == pos, caseLabel);
+      VERIFY(!result.ok, caseLabel);
+      VERIFY(result.pos == pos, caseLabel);
+      VERIFY(!result.descr.empty(), caseLabel);
       VERIFY(g.nextTurn() == White, caseLabel);
    }
    {
@@ -265,9 +303,11 @@ void testEnterNextMove()
 
       const Position initialPos{"Kwe1 Kbe8 wh7"};
       Game g{initialPos, White};
-      const auto& nextPos = g.enterNextMove("g7x8q");
+      const MoveResult result = g.enterNextMove("g7x8q");
 
-      VERIFY(nextPos == initialPos, caseLabel);
+      VERIFY(!result.ok, caseLabel);
+      VERIFY(result.pos == initialPos, caseLabel);
+      VERIFY(!result.descr.empty(), caseLabel);
       VERIFY(g.nextTurn() == White, caseLabel);
    }
    {
@@ -276,9 +316,11 @@ void testEnterNextMove()
 
       const Position initialPos{"Kwe1 Kbe8 wh7"};
       Game g{initialPos, White};
-      const auto& nextPos = g.enterNextMove("g7g8q");
+      const MoveResult result = g.enterNextMove("g7g8q");
 
-      VERIFY(nextPos == initialPos, caseLabel);
+      VERIFY(!result.ok, caseLabel);
+      VERIFY(result.pos == initialPos, caseLabel);
+      VERIFY(!result.descr.empty(), caseLabel);
       VERIFY(g.nextTurn() == White, caseLabel);
    }
    {
@@ -288,9 +330,11 @@ void testEnterNextMove()
       initialPos.setEnPassantSquare(b4);
 
       Game g{initialPos, Black};
-      const auto& nextPos = g.enterNextMove("c4b3");
+      const MoveResult result = g.enterNextMove("c4b3");
 
-      VERIFY(nextPos == Position{"Kwe1 Kbe8 bb3"}, caseLabel);
+      VERIFY(result.ok, caseLabel);
+      VERIFY(result.pos == Position{"Kwe1 Kbe8 bb3"}, caseLabel);
+      VERIFY(result.descr == "cxb3", caseLabel);
       VERIFY(g.nextTurn() == White, caseLabel);
    }
    {
@@ -301,9 +345,11 @@ void testEnterNextMove()
       // initialPos.setEnPassantSquare(b4);
 
       Game g{initialPos, Black};
-      const auto& nextPos = g.enterNextMove("c4b3");
+      const MoveResult result = g.enterNextMove("c4b3");
 
-      VERIFY(nextPos == initialPos, caseLabel);
+      VERIFY(!result.ok, caseLabel);
+      VERIFY(result.pos == initialPos, caseLabel);
+      VERIFY(!result.descr.empty(), caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
    }
 }
@@ -327,13 +373,13 @@ void testForwardAndBackward()
 
       const Position initialPos{"Kwb1 Kbd8"};
       Game g{initialPos, White};
-      const Position pos1 = g.enterNextMove("b1b2");
-      const Position pos2 = g.enterNextMove("d8d7");
+      const MoveResult result1 = g.enterNextMove("b1b2");
+      const MoveResult result2 = g.enterNextMove("d8d7");
 
       auto outPos = g.backward();
       VERIFY(outPos.has_value(), caseLabel);
-      VERIFY(outPos == pos1, caseLabel);
-      VERIFY(g.current() == pos1, caseLabel);
+      VERIFY(outPos == result1.pos, caseLabel);
+      VERIFY(g.current() == result1.pos, caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
       VERIFY(g.currentMoveIdx() == 0, caseLabel);
 
@@ -353,22 +399,22 @@ void testForwardAndBackward()
 
       outPos = g.forward();
       VERIFY(outPos.has_value(), caseLabel);
-      VERIFY(outPos == pos1, caseLabel);
-      VERIFY(g.current() == pos1, caseLabel);
+      VERIFY(outPos == result1.pos, caseLabel);
+      VERIFY(g.current() == result1.pos, caseLabel);
       VERIFY(g.nextTurn() == Black, caseLabel);
       VERIFY(g.currentMoveIdx() == 0, caseLabel);
 
       outPos = g.forward();
       VERIFY(outPos.has_value(), caseLabel);
-      VERIFY(outPos == pos2, caseLabel);
-      VERIFY(g.current() == pos2, caseLabel);
+      VERIFY(outPos == result2.pos, caseLabel);
+      VERIFY(g.current() == result2.pos, caseLabel);
       VERIFY(g.nextTurn() == White, caseLabel);
       VERIFY(g.currentMoveIdx() == 1, caseLabel);
 
       // Try forward from last pos.
       outPos = g.forward();
       VERIFY(!outPos.has_value(), caseLabel);
-      VERIFY(g.current() == pos2, caseLabel);
+      VERIFY(g.current() == result2.pos, caseLabel);
       VERIFY(g.nextTurn() == White, caseLabel);
       VERIFY(g.currentMoveIdx() == 1, caseLabel);
    }

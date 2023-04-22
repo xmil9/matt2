@@ -295,6 +295,20 @@ MoveCalculator::MoveScore::operator bool() const
    return move.has_value();
 }
 
+///////////////////
+
+MoveResult makeMoveResult(const Move& move, const Position& pos)
+{
+   std::string notation;
+   return MoveResult::success(Lan{}.notate(notation, move), pos);
+}
+
+MoveResult makeMoveResult(const std::string& errText, const Position& pos)
+{
+   return MoveResult::failure(errText, pos);
+}
+
+
 } // namespace
 
 
@@ -302,26 +316,38 @@ namespace matt2
 {
 ///////////////////
 
-const Position& Game::calcNextMove(size_t turnDepth)
+MoveResult Game::calcNextMove(size_t turnDepth)
 {
    MoveCalculator calc{m_currPos};
    auto move = calc.next(m_nextTurn, turnDepth);
-   if (move.has_value())
-      apply(*move);
-   return m_currPos;
+   if (!move)
+      return makeMoveResult("No move found.", m_currPos);
+
+   apply(*move);
+   return makeMoveResult(*move, m_currPos);
 }
 
-const Position& Game::enterNextMove(std::string_view movePacnNotation)
+MoveResult Game::enterNextMove(std::string_view movePacnNotation)
 {
+   // Parse move notation to internal move description.
    auto moveDescr = readMovePacn(movePacnNotation);
    if (!moveDescr)
-      return m_currPos;
+      return makeMoveResult("Invalid move notation.", m_currPos);
 
-   auto move = buildMove(*moveDescr);
-   if (move.has_value() && isValidMove(*move, m_currPos, m_nextTurn).first)
-      apply(*move);
+   // Build a move from the description.
+   auto [move, errText] = buildMove(*moveDescr);
+   if (!move)
+      return makeMoveResult(errText, m_currPos);
 
-   return m_currPos;
+   // Check validity in context of game.
+   bool isValid = false;
+   std::tie(isValid, errText) = isValidMove(*move, m_currPos, m_nextTurn);
+   if (!isValid)
+      return makeMoveResult(errText, m_currPos);
+
+   // Apply move.
+   apply(*move);
+   return makeMoveResult(*move, m_currPos);
 }
 
 
@@ -351,32 +377,35 @@ void Game::trimMoves()
       m_moves.erase(m_moves.begin() + m_currMove + 1, m_moves.end());
 }
 
-static std::optional<Move> buildCastlingMoveFromCoords(const MoveDescription& descr,
-                                                       Color side)
+static std::pair<std::optional<Move>, std::string>
+buildCastlingMoveFromCoords(const MoveDescription& descr, Color side)
 {
    if (descr.from == Castling::from(side))
    {
       if (descr.to == Castling::to(Kingside, side))
-         return Castling{Kingside, side};
+         return {Castling{Kingside, side}, ""};
       if (descr.to == Castling::to(Queenside, side))
-         return Castling{Queenside, side};
+         return {Castling{Queenside, side}, ""};
    }
 
+   // Not an error, more like a not chosen possibility.
    return {};
 }
 
-static std::optional<Move> buildCastlingMove(const MoveDescription& descr, Color side)
+static std::pair<std::optional<Move>, std::string>
+buildCastlingMove(const MoveDescription& descr, Color side)
 {
    // If not special castling notation, check for castling coordinates.
    if (!descr.castling)
       return buildCastlingMoveFromCoords(descr, side);
 
    if (*descr.castling == MoveDescription::Castling::Kingside)
-      return Castling{Kingside, side};
-   return Castling{Queenside, side};
+      return {Castling{Kingside, side}, ""};
+   return {Castling{Queenside, side}, ""};
 }
 
-static Piece buildPromotedToPiece(MoveDescription::Promotion promoteTo, Color side)
+static std::optional<Piece> buildPromotedToPiece(MoveDescription::Promotion promoteTo,
+                                                 Color side)
 {
    switch (promoteTo)
    {
@@ -389,99 +418,103 @@ static Piece buildPromotedToPiece(MoveDescription::Promotion promoteTo, Color si
    case MoveDescription::Promotion::Knight:
       return side == Color::White ? Nw : Nb;
    default:
-      assert(false && "Unexpected promotion value.");
-      return side == Color::White ? Qw : Qb;
+      return std::nullopt;
    }
 }
 
-static std::optional<Move> buildPromotionMove(const MoveDescription& descr,
-                                              const Position& pos, Color side)
+static std::pair<std::optional<Move>, std::string>
+buildPromotionMove(const MoveDescription& descr, const Position& pos, Color side)
 {
    if (!descr.from || !descr.to || !descr.promoteTo)
-      return {};
+      return {std::nullopt, "Invalid move locations."};
 
    const Square from = *descr.from;
    const Square to = *descr.to;
 
    const auto piece = pos[from];
    if (!piece)
-      return {};
+      return {std::nullopt, "Invalid piece location."};
 
-   const Piece promoteTo = buildPromotedToPiece(*descr.promoteTo, side);
+   const auto promoteTo = buildPromotedToPiece(*descr.promoteTo, side);
+   if (!promoteTo)
+      return {std::nullopt, "Invalid piece for promotion."};
+
    const auto taken = pos[to];
 
    // Validation of fields happens later.
-   return Promotion{*piece, from, to, promoteTo, taken};
+   return {Promotion{*piece, from, to, *promoteTo, taken}, ""};
 }
 
-static std::optional<Move> buildEnPassantMove(const MoveDescription& descr,
-                                              const Position& pos, Color side)
+static std::pair<std::optional<Move>, std::string>
+buildEnPassantMove(const MoveDescription& descr, const Position& pos, Color side)
 {
    if (!descr.from || !descr.to)
-      return {};
-
-   const Square from = *descr.from;
-   const Square to = *descr.to;
-
-   const auto piece = pos[*descr.from];
-   if (!piece || !isPawn(*piece) || color(*piece) != side)
-      return {};
-
-   // Checks to make sure it's an en-passant move. We don't want to misidentify a move.
-   auto enPassantSq = pos.enPassantSquare();
-   if (!enPassantSq)
-      return {};
-
-   if (!isAdjacent(file(from), file(*enPassantSq)) && file(to) == file(*enPassantSq))
-      return {};
-
-   if (rank(from) != rank(*enPassantSq) && rank(to) != nthRank(side, 6))
-      return {};
-
-   // Validation of fields happens later.
-   return EnPassant{*piece, from, to};
-}
-
-static std::optional<Move> buildBasicMove(const MoveDescription& descr,
-                                          const Position& pos)
-{
-   if (!descr.from || !descr.to)
-      return {};
+      return {std::nullopt, "Invalid move locations."};
 
    const Square from = *descr.from;
    const Square to = *descr.to;
 
    const auto piece = pos[*descr.from];
    if (!piece)
-      return {};
+      return {std::nullopt, "Invalid piece location."};
+   else if (!isPawn(*piece))
+      return {std::nullopt, "Invalid piece for en-passant move."};
+   else if (color(*piece) != side)
+      return {std::nullopt, "Wrong piece color."};
+
+   // Checks to make sure it's an en-passant move. We don't want to misidentify a move.
+   auto enPassantSq = pos.enPassantSquare();
+   if (!enPassantSq)
+      return {std::nullopt, "En-passant is not allowed for current position."};
+
+   if (!isAdjacent(file(from), file(*enPassantSq)) && file(to) == file(*enPassantSq))
+      return {std::nullopt, "Move file location are invalid for en-passant move."};
+
+   if (rank(from) != rank(*enPassantSq) && rank(to) != nthRank(side, 6))
+      return {std::nullopt, "Move rank location are invalid for en-passant move."};
+
+   // Validation of fields happens later.
+   return {EnPassant{*piece, from, to}, ""};
+}
+
+static std::pair<std::optional<Move>, std::string>
+buildBasicMove(const MoveDescription& descr, const Position& pos)
+{
+   if (!descr.from || !descr.to)
+      return {std::nullopt, "Invalid move locations."};
+
+   const Square from = *descr.from;
+   const Square to = *descr.to;
+
+   const auto piece = pos[*descr.from];
+   if (!piece)
+      return {std::nullopt, "Invalid piece location."};
 
    const auto taken = pos[to];
 
    // Validation of fields happens later.
-   return BasicMove{*piece, from, to, taken};
+   return {BasicMove{*piece, from, to, taken}, ""};
 }
 
-std::optional<Move> Game::buildMove(const MoveDescription& descr) const
+std::pair<std::optional<Move>, std::string>
+Game::buildMove(const MoveDescription& descr) const
 {
-   std::optional<Move> move;
-
    // Castling
-   if (move = buildCastlingMove(descr, m_nextTurn); move.has_value())
-      return move;
+   if (auto result = buildCastlingMove(descr, m_nextTurn); result.first.has_value())
+      return result;
 
    // Promotion
-   if (move = buildPromotionMove(descr, m_currPos, m_nextTurn); move.has_value())
-      return move;
+   if (auto result = buildPromotionMove(descr, m_currPos, m_nextTurn);
+       result.first.has_value())
+      return result;
 
    // En-passant
-   if (move = buildEnPassantMove(descr, m_currPos, m_nextTurn); move.has_value())
-      return move;
+   if (auto result = buildEnPassantMove(descr, m_currPos, m_nextTurn);
+       result.first.has_value())
+      return result;
 
    // Basic move
-   if (move = buildBasicMove(descr, m_currPos); move.has_value())
-      return move;
-
-   return {};
+   return buildBasicMove(descr, m_currPos);
 }
 
 void Game::apply(Move& m)
