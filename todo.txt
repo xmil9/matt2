@@ -5,7 +5,7 @@
 + Collect scoring bonus and penality values into one place.
 + Analyse board once for scoring and pass results to each scoring rule.
 + change toLowercaseChar to toChar
-- use unicode to print board in console
++ use unicode to print board in console
 + implement buildMove in Game class
 + verify entered moves and report problems
 + report problems when building entered moves 
