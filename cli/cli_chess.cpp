@@ -32,6 +32,137 @@ static void setupUtf8()
 #endif // win
 }
 
+///////////////////
+
+static const std::string WhiteKing{"\u2654"};
+static const std::string WhiteQueen{"\u2655"};
+static const std::string WhiteRook{"\u2656"};
+static const std::string WhiteBishop{"\u2657"};
+static const std::string WhiteKnight{"\u2658"};
+static const std::string WhitePawn{"\u2659"};
+static const std::string BlackKing{"\u265a"};
+static const std::string BlackQueen{"\u265b"};
+static const std::string BlackRook{"\u265c"};
+static const std::string BlackBishop{"\u265d"};
+static const std::string BlackKnight{"\u265e"};
+static const std::string BlackPawn{"\u265f"};
+static const std::string WhiteSquare{"\u2591"};
+static const std::string BlackSquare{"\u2588"};
+static const std::string VertBorder{"\u2503"};
+static const std::string HorzBorder{"\u2501"};
+static const std::string TlCorner{"\u250f"};
+static const std::string TrCorner{"\u2513"};
+static const std::string BlCorner{"\u2517"};
+static const std::string BrCorner{"\u251b"};
+static const std::string BoardTop = TlCorner + HorzBorder + HorzBorder + HorzBorder +
+                                    HorzBorder + HorzBorder + HorzBorder + HorzBorder +
+                                    HorzBorder + TrCorner;
+static const std::string BoardBottom = BlCorner + HorzBorder + HorzBorder + HorzBorder +
+                                       HorzBorder + HorzBorder + HorzBorder + HorzBorder +
+                                       HorzBorder + BrCorner;
+
+static void printPiece(std::optional<Piece> piece)
+{
+   static const std::vector<std::string> rep = {
+      WhiteKing, WhiteQueen, WhiteRook, WhiteBishop, WhiteKnight, WhitePawn,
+      BlackKing, BlackQueen, BlackRook, BlackBishop, BlackKnight, BlackPawn};
+   if (piece)
+      std::cout << rep[static_cast<unsigned char>(*piece)];
+}
+
+static void printEmptySquare(Square sq)
+{
+   // Aliases
+   static const std::string w = WhiteSquare;
+   static const std::string b = BlackSquare;
+   // clang-format off
+   static const std::vector<std::string> rep = {
+      b, w, b, w, b, w, b, w,
+      w, b, w, b, w, b, w, b,
+      b, w, b, w, b, w, b, w,
+      w, b, w, b, w, b, w, b,
+      b, w, b, w, b, w, b, w,
+      w, b, w, b, w, b, w, b,
+      b, w, b, w, b, w, b, w,
+      w, b, w, b, w, b, w, b,
+   };
+   // clang-format on
+
+   std::cout << rep[static_cast<unsigned char>(sq)];
+}
+
+static void printSquare(const Position& pos, File f, Rank r)
+{
+   const Square sq = makeSquare(f, r);
+   const auto piece = pos[sq];
+   if (piece)
+      printPiece(*piece);
+   else
+      printEmptySquare(sq);
+}
+
+static void printRank(Rank r, const Game& g)
+{
+   const Position& pos = g.current();
+
+   std::cout << toChar(r) << VertBorder;
+   for (File f = fa; f <= fh; f = f + 1)
+      printSquare(pos, f, r);
+   std::cout << VertBorder << toChar(r) << "\n";
+}
+
+static void printBoard(const Game& game, Color perspective)
+{
+   const bool forWhite = perspective == White;
+   const Rank start = forWhite ? r8 : r1;
+   const Rank end = forWhite ? r1 : r8;
+   const int step = forWhite ? -1 : 1;
+
+   std::cout << "  abcdefgh\n";
+   std::cout << " " << BoardTop << "\n";
+   for (Rank r = start; r != end; r = r + step)
+      printRank(r, game);
+   printRank(end, game);
+   std::cout << " " << BoardBottom << "\n";
+   std::cout << "  abcdefgh\n";
+
+   std::cout << std::flush;
+}
+
+static void printWelcome()
+{
+   std::cout << "Matt2 Chess\n"
+             << "===========\n";
+}
+
+static void printHelp()
+{
+   std::cout << "\n";
+   std::cout << "[q] - quit\n";
+   std::cout << "[h] - help\n";
+   std::cout << "Enter moves in Pure Algebraic Coordinate Notation:\n";
+   std::cout << " General move:\n";
+   std::cout << "  <from square><to square>[<promoted to>]\n";
+   std::cout << "  with optional <promoted to> = q, r, b, n\n";
+   std::cout << " Castling:\n";
+   std::cout << "  <king-side> = O-O\n";
+   std::cout << "  <queen-side> = O-O-O\n";
+   std::cout << "Examples: d2d4, f7f8q, O-O-O\n";
+   std::cout << "\n";
+}
+
+///////////////////
+
+static const std::string Quit{"q"};
+static const std::string Help{"h"};
+
+static std::string capWord(std::string word)
+{
+   if (!word.empty())
+      word[0] = static_cast<char>(std::toupper(word[0]));
+   return word;
+}
+
 static bool isValidChoice(const std::string& choice,
                           const std::vector<std::string>& valid)
 {
@@ -64,81 +195,45 @@ static std::string readInput(std::string_view prompt)
    return choice;
 }
 
+static std::optional<Color> readPlayerColor()
+{
+   while (true)
+   {
+      const std::string input =
+         readInput("Play as [w]hite or [b]lack? ", {"w", "b", Quit, Help});
+
+      if (input == "w")
+         return White;
+      else if (input == "b")
+         return Black;
+      else if (input == Quit)
+         return std::nullopt;
+      else if (input == Help)
+         printHelp();
+   }
+
+   return std::nullopt;
+}
+
+static std::optional<size_t> readDifficulty()
+{
+   while (true)
+   {
+      const std::string input =
+         readInput("Difficulty 1-3? ", {"1", "2", "3", Quit, Help});
+
+      if (input == Quit)
+         return std::nullopt;
+      else if (input == Help)
+         printHelp();
+      else
+         return std::stoi(input);
+   }
+
+   return std::nullopt;
+}
+
 ///////////////////
-
-static void printPiece(std::optional<Piece> piece)
-{
-   static const std::vector<std::string> rep = {"\u2654", "\u2655", "\u2656", "\u2657",
-                                                "\u2658", "\u2659", "\u265a", "\u265b",
-                                                "\u265c", "\u265d", "\u265e", "\u265f"};
-   if (piece)
-      std::cout << rep[static_cast<unsigned char>(*piece)];
-}
-
-static void printEmptySquare(Square sq)
-{
-   static const std::string w{"_"};
-   static const std::string b{"."};
-   // clang-format off
-   static const std::vector<std::string> rep = {
-      b, w, b, w, b, w, b, w,
-      w, b, w, b, w, b, w, b,
-      b, w, b, w, b, w, b, w,
-      w, b, w, b, w, b, w, b,
-      b, w, b, w, b, w, b, w,
-      w, b, w, b, w, b, w, b,
-      b, w, b, w, b, w, b, w,
-      w, b, w, b, w, b, w, b,
-   };
-   // clang-format on
-
-   std::cout << rep[static_cast<unsigned char>(sq)];
-}
-
-static void printSquare(const Position& pos, File f, Rank r)
-{
-   const Square sq = makeSquare(f, r);
-   const auto piece = pos[sq];
-   if (piece)
-      printPiece(*piece);
-   else
-      printEmptySquare(sq);
-}
-
-static void printRank(Rank r, const Game& g)
-{
-   const Position& pos = g.current();
-
-   std::cout << toChar(r) << "|";
-   for (File f = fa; f <= fh; f = f + 1)
-      printSquare(pos, f, r);
-   std::cout << "|" << toChar(r) << "\n";
-}
-
-static void printBoard(const Game& game, Color perspective)
-{
-   const bool forWhite = perspective == White;
-   const Rank start = forWhite ? r8 : r1;
-   const Rank end = forWhite ? r1 : r8;
-   const int step = forWhite ? -1 : 1;
-
-   std::cout << "  abcdefgh\n";
-   std::cout << "  --------\n";
-   for (Rank r = start; r != end; r = r + step)
-      printRank(r, game);
-   printRank(end, game);
-   std::cout << "  --------\n";
-   std::cout << "  abcdefgh\n";
-
-   std::cout << std::flush;
-}
-
-static std::string capWord(std::string word)
-{
-   if (!word.empty())
-      word[0] = static_cast<char>(std::toupper(word[0]));
-   return word;
-}
 
 static bool playersTurn(Game& g)
 {
@@ -148,9 +243,9 @@ static bool playersTurn(Game& g)
 
    while (!quit && !validMove)
    {
-      const std::string input = readInput("Your move ([q] to quit)? ");
+      const std::string input = readInput("Your move? ");
 
-      if (esl::lowercase(input) == "q")
+      if (esl::lowercase(input) == Quit)
       {
          quit = true;
       }
@@ -185,31 +280,34 @@ int main()
 {
    setupUtf8();
 
-   std::cout << "CHESS\n"
-             << "=====\n";
+   printWelcome();
+   printHelp();
 
-   const Color playerColor = readInput("Play as [w]hite or [b]lack? ", {"w", "b"}) == "w"
-                                ? Color::White
-                                : Color::Black;
-   const size_t turnDepth = 1;
+   const auto playerColor = readPlayerColor();
+   if (!playerColor)
+      return EXIT_SUCCESS;
+
+   const auto difficulty = readDifficulty();
+   if (!difficulty)
+      return EXIT_SUCCESS;
 
    Game game;
-   Color nextTurn = Color::White;
+   Color nextTurn = White;
    bool gameOver = false;
 
-   printBoard(game, playerColor);
+   printBoard(game, *playerColor);
 
    while (!gameOver)
    {
       if (nextTurn == playerColor)
          gameOver = playersTurn(game);
       else
-         gameOver = enginesTurn(game, turnDepth, !playerColor);
+         gameOver = enginesTurn(game, *difficulty, !*playerColor);
 
       if (!gameOver)
       {
          nextTurn = !nextTurn;
-         printBoard(game, playerColor);
+         printBoard(game, *playerColor);
       }
    }
 
