@@ -23,7 +23,7 @@ static void setupUtf8()
 #ifdef _WIN32
    // In addition to the settings below, the VS project flag /utf-8 needs to be set
    // in the 'C/C++ > Command Line > Additional Options'.
-   
+
    // Set console code page to UTF-8 so console known how to interpret string data.
    SetConsoleOutputCP(CP_UTF8);
 
@@ -49,6 +49,17 @@ static std::string readInput(std::string_view prompt,
       std::cin >> choice;
       choice = esl::lowercase(choice);
    }
+
+   return choice;
+}
+
+static std::string readInput(std::string_view prompt)
+{
+   std::cout << prompt;
+
+   std::string choice;
+   std::cin >> choice;
+   choice = esl::lowercase(choice);
 
    return choice;
 }
@@ -122,6 +133,52 @@ static void printBoard(const Game& game, Color perspective)
    std::cout << std::flush;
 }
 
+static std::string capWord(std::string word)
+{
+   if (!word.empty())
+      word[0] = static_cast<char>(std::toupper(word[0]));
+   return word;
+}
+
+static bool playersTurn(Game& g)
+{
+   bool quit = false;
+   bool validMove = false;
+   std::string moveDescr;
+
+   while (!quit && !validMove)
+   {
+      const std::string input = readInput("Your move ([q] to quit)? ");
+
+      if (esl::lowercase(input) == "q")
+      {
+         quit = true;
+      }
+      else
+      {
+         std::tie(validMove, moveDescr) = g.enterNextMove(input);
+
+         if (!validMove)
+            std::cout << moveDescr << " Try again.\n";
+      }
+   }
+
+   return quit;
+}
+
+static bool enginesTurn(Game& g, size_t turnDepth, Color engineColor)
+{
+   const auto [validMove, moveDescr] = g.calcNextMove(turnDepth);
+   const bool gameOver = !validMove;
+
+   if (validMove)
+      std::cout << capWord(toString(engineColor)) << " move: " << moveDescr << "\n";
+   else
+      std::cout << moveDescr << "\n";
+
+   return gameOver;
+}
+
 ///////////////////
 
 int main()
@@ -134,15 +191,25 @@ int main()
    const Color playerColor = readInput("Play as [w]hite or [b]lack? ", {"w", "b"}) == "w"
                                 ? Color::White
                                 : Color::Black;
+   const size_t turnDepth = 1;
 
    Game game;
    Color nextTurn = Color::White;
+   bool gameOver = false;
 
    printBoard(game, playerColor);
-   while (true)
+
+   while (!gameOver)
    {
       if (nextTurn == playerColor)
+         gameOver = playersTurn(game);
+      else
+         gameOver = enginesTurn(game, turnDepth, !playerColor);
+
+      if (!gameOver)
       {
+         nextTurn = !nextTurn;
+         printBoard(game, playerColor);
       }
    }
 
