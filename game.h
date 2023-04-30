@@ -26,8 +26,8 @@ class Game
 
    // Taking turns.
    Color nextTurn() const { return m_nextTurn; }
-   MoveResult calcNextMove(size_t turnDepth);
-   MoveResult enterNextMove(std::string_view movePacnNotation);
+   std::pair<bool, std::string> calcNextMove(size_t turnDepth);
+   std::pair<bool, std::string> enterNextMove(std::string_view movePacnNotation);
 
    // Iterate over game positions.
    const Position& current() const { return m_currPos; }
@@ -75,28 +75,6 @@ inline Game::Game() : m_currPos{StartPos}
 inline Game::Game(Position pos, Color nextTurn)
 : m_nextTurn{nextTurn}, m_currPos{std::move(pos)}
 {
-}
-
-///////////////////
-
-struct MoveResult
-{
-   static MoveResult success(const std::string& notation, const Position& p);
-   static MoveResult failure(const std::string& error, const Position& p);
-
-   bool ok;
-   std::string descr;
-   const Position& pos;
-};
-
-inline MoveResult MoveResult::success(const std::string& notation, const Position& p)
-{
-   return {true, notation, p};
-}
-
-inline MoveResult MoveResult::failure(const std::string& error, const Position& p)
-{
-   return {false, error, p};
 }
 
 } // namespace matt2

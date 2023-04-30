@@ -297,17 +297,11 @@ MoveCalculator::MoveScore::operator bool() const
 
 ///////////////////
 
-MoveResult makeMoveResult(const Move& move, const Position& pos)
+std::string describeMove(const Move& move)
 {
    std::string notation;
-   return MoveResult::success(Lan{}.notate(notation, move), pos);
+   return Lan{}.notate(notation, move);
 }
-
-MoveResult makeMoveResult(const std::string& errText, const Position& pos)
-{
-   return MoveResult::failure(errText, pos);
-}
-
 
 } // namespace
 
@@ -316,38 +310,38 @@ namespace matt2
 {
 ///////////////////
 
-MoveResult Game::calcNextMove(size_t turnDepth)
+std::pair<bool, std::string> Game::calcNextMove(size_t turnDepth)
 {
    MoveCalculator calc{m_currPos};
    auto move = calc.next(m_nextTurn, turnDepth);
    if (!move)
-      return makeMoveResult("No move found.", m_currPos);
+      return {false, "No move found."};
 
    apply(*move);
-   return makeMoveResult(*move, m_currPos);
+   return {true, describeMove(*move)};
 }
 
-MoveResult Game::enterNextMove(std::string_view movePacnNotation)
+std::pair<bool, std::string> Game::enterNextMove(std::string_view movePacnNotation)
 {
    // Parse move notation to internal move description.
    auto moveDescr = readMovePacn(movePacnNotation);
    if (!moveDescr)
-      return makeMoveResult("Invalid move notation.", m_currPos);
+      return {false, "Invalid move notation."};
 
    // Build a move from the description.
    auto [move, errText] = buildMove(*moveDescr);
    if (!move)
-      return makeMoveResult(errText, m_currPos);
+      return {false, errText};
 
    // Check validity in context of game.
    bool isValid = false;
    std::tie(isValid, errText) = isValidMove(*move, m_currPos, m_nextTurn);
    if (!isValid)
-      return makeMoveResult(errText, m_currPos);
+      return {false, errText};
 
    // Apply move.
    apply(*move);
-   return makeMoveResult(*move, m_currPos);
+   return {true, describeMove(*move)};
 }
 
 
