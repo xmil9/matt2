@@ -1652,6 +1652,34 @@ void testCanCastle()
    }
 }
 
+void testIsCheck()
+{
+   {
+      const std::string caseLabel = "isCheck";
+
+      VERIFY(isCheck(White, Position("Kbf2 bb4 Bbf6 Kwd4")), caseLabel);
+      VERIFY(!isCheck(White, Position("Kbf2 bb4 Bbf6 Kwd3")), caseLabel);
+      VERIFY(isCheck(Black, Position("Kbf2 bb4 Bbf6 Kwd4 Rwa2")), caseLabel);
+      VERIFY(!isCheck(Black, Position("Kbf2 bb4 Bbf6 Kwd3 wa5 wb5 wc4 Rwh7")), caseLabel);
+      VERIFY(!isCheck(Black, StartPos), caseLabel);
+      VERIFY(isCheck(White, Position("")), caseLabel);
+   }
+}
+
+void testIsMate()
+{
+   {
+      const std::string caseLabel = "isMate";
+
+      VERIFY(isMate(White, Position("Kbf2 bb4 Bbf6")), caseLabel);
+      VERIFY(isMate(Black, Position("Kwe3 Qwh3")), caseLabel);
+      VERIFY(!isMate(White, Position("Kwe3 Kbf2 bb4 Bbf6")), caseLabel);
+      VERIFY(!isMate(Black, Position("Kbf2 Kwe3 Qwh3")), caseLabel);
+      VERIFY(!isMate(White, StartPos), caseLabel);
+      VERIFY(!isMate(Black, StartPos), caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -1676,4 +1704,6 @@ void testRules()
    testCollectAttackedByPawn();
    testcollectAttackedBySide();
    testCanCastle();
+   testIsCheck();
+   testIsMate();
 }

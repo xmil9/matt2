@@ -59,5 +59,7 @@ void collectAttackedBySide(Color side, const Position& pos,
 ///////////////////
 
 bool canCastle(Color side, bool onKingside, const Position& pos);
+bool isCheck(Color side, const Position& pos);
+bool isMate(Color side, const Position& pos);
 
 } // namespace matt2

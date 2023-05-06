@@ -573,4 +573,21 @@ bool canCastle(Color side, bool onKingside, const Position& pos)
           !areCastlingSquaresAttacked(side, onKingside, pos);
 }
 
+bool isCheck(Color side, const Position& pos)
+{
+   const auto kingSq = pos.kingLocation(side);
+   if (!kingSq)
+      return true;
+
+   std::vector<Square> attacked;
+   collectAttackedBySide(!side, pos, attacked);
+
+   return std::find(attacked.begin(), attacked.end(), *kingSq) != attacked.end();
+}
+
+bool isMate(Color side, const Position& pos)
+{
+   return pos.count(king(side)) == 0;
+}
+
 } // namespace matt2
