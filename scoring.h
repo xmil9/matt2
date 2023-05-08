@@ -54,5 +54,7 @@ inline double getWorstScoreValue(Color side)
 
 // Calculate the score of a given position.
 double calcScore(const Position& pos);
+double calcMateScore(Color side, const Position& pos, size_t atDepth);
+double calcTieScore(Color side, const Position& pos);
 
 } // namespace matt2

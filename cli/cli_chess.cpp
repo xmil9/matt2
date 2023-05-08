@@ -235,43 +235,53 @@ static std::optional<size_t> readDifficulty()
 
 ///////////////////
 
-static bool playersTurn(Game& g)
+enum class GameStatus
 {
-   bool quit = false;
-   bool validMove = false;
-   std::string moveDescr;
+   Active,
+   Tie,
+   Mate,
+   Quit
+};
 
-   while (!quit && !validMove)
+static GameStatus playersTurn(Game& g, Color playerColor)
+{
+   if (g.isMate(playerColor))
+      return GameStatus::Mate;
+
+   if (!g.canMove(playerColor))
+      return GameStatus::Tie;
+
+   while (true)
    {
       const std::string input = readInput("Your move? ");
 
       if (esl::lowercase(input) == Quit)
-      {
-         quit = true;
-      }
-      else
-      {
-         std::tie(validMove, moveDescr) = g.enterNextMove(input);
+         return GameStatus::Quit;
 
-         if (!validMove)
-            std::cout << moveDescr << " Try again.\n";
-      }
+      const auto [isValidMove, moveDescr] = g.enterNextMove(input);
+      if (isValidMove)
+         return GameStatus::Active;
+
+      std::cout << moveDescr << " Try again.\n";
    }
 
-   return quit;
+   return GameStatus::Active;
 }
 
-static bool enginesTurn(Game& g, size_t turnDepth, Color engineColor)
+static GameStatus enginesTurn(Game& g, size_t turnDepth, Color engineColor)
 {
-   const auto [validMove, moveDescr] = g.calcNextMove(turnDepth);
-   const bool gameOver = !validMove;
+   if (g.isMate(engineColor))
+      return GameStatus::Mate;
 
-   if (validMove)
-      std::cout << capWord(toString(engineColor)) << " move: " << moveDescr << "\n";
-   else
+   const auto [isValidMove, moveDescr] = g.calcNextMove(turnDepth);
+   if (!isValidMove)
+   {
       std::cout << moveDescr << "\n";
+      return GameStatus::Tie;
+   }
 
-   return gameOver;
+   std::cout << capWord(toString(engineColor)) << " move: " << moveDescr << "\n";
+   return GameStatus::Active;
 }
 
 ///////////////////
@@ -293,21 +303,40 @@ int main()
 
    Game game;
    Color nextTurn = White;
-   bool gameOver = false;
+   GameStatus status = GameStatus::Active;
 
    printBoard(game, *playerColor);
 
-   while (!gameOver)
+   while (status == GameStatus::Active)
    {
-      if (nextTurn == playerColor)
-         gameOver = playersTurn(game);
+      if (nextTurn == *playerColor)
+         status = playersTurn(game, *playerColor);
       else
-         gameOver = enginesTurn(game, *difficulty, !*playerColor);
+         status = enginesTurn(game, *difficulty, !*playerColor);
 
-      if (!gameOver)
+      switch (status)
+      {
+      case GameStatus::Active:
       {
          nextTurn = !nextTurn;
          printBoard(game, *playerColor);
+         break;
+      }
+      case GameStatus::Tie:
+      {
+         std::cout << "Game tied!\n";
+         break;
+      }
+      case GameStatus::Mate:
+      {
+         if (nextTurn == *playerColor)
+            std::cout << "You lost!\n";
+         else
+            std::cout << "You won!\n";
+         break;
+      }
+      case GameStatus::Quit:
+         break;
       }
    }
 

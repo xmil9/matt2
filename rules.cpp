@@ -292,29 +292,10 @@ void collectKingMoves(Piece king, Square at, const Position& pos,
                       std::vector<Move>& moves)
 {
    assert(isKing(king));
-
-   std::vector<Move> possibleMoves;
    static constexpr std::array<Offset, 8> Offsets{
       Offset{1, 1}, {1, 0}, {1, -1}, {0, 1}, {0, -1}, {-1, 1}, {-1, 0}, {-1, -1}};
-   collectOffsetMoves(king, at, pos, Offsets, possibleMoves);
-
-   // Eliminate moves that would lead to check.
-   std::vector<Square> attackedSorted;
-   collectAttackedBySide(!color(king), pos, attackedSorted);
-
-   std::copy_if(
-      std::begin(possibleMoves), std::end(possibleMoves), std::back_inserter(moves),
-      [&attackedSorted](const Move& m)
-      {
-         Square toSq = to(m);
-         auto endIter = std::end(attackedSorted);
-         auto geIter = std::lower_bound(std::begin(attackedSorted), endIter, toSq);
-         // We still have to check for equality because the iterator returned by
-         // lower_bound points to the first element that is not less than the search for
-         // value.
-         const bool isSquareAttacked = geIter != endIter && *geIter == toSq;
-         return !isSquareAttacked;
-      });
+   collectOffsetMoves(king, at, pos, Offsets, moves);
+   // Note - Moves that lead to check are eliminated at a higher level.
 }
 
 
@@ -579,10 +560,15 @@ bool isCheck(Color side, const Position& pos)
    if (!kingSq)
       return true;
 
-   std::vector<Square> attacked;
-   collectAttackedBySide(!side, pos, attacked);
+   std::vector<Square> attackedSorted;
+   collectAttackedBySide(!side, pos, attackedSorted);
 
-   return std::find(attacked.begin(), attacked.end(), *kingSq) != attacked.end();
+   const auto endIter = std::end(attackedSorted);
+   const auto geIter = std::lower_bound(std::begin(attackedSorted), endIter, *kingSq);
+   // We still have to check for equality because the iterator returned by
+   // lower_bound points to the first element that is not less than the search for
+   // value.
+   return geIter != endIter && *geIter == *kingSq;
 }
 
 bool isMate(Color side, const Position& pos)

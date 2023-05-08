@@ -94,18 +94,6 @@ void testCollectKingMoves()
       VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, d4))), caseLabel);
       VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, d6))), caseLabel);
    }
-   {
-      const std::string caseLabel =
-         "collectKingMoves with some squares under attack by other side";
-
-      std::vector<Move> moves;
-      collectKingMoves(Kb, c5, Position{"Kbc5 Rwd4 Bwb5"}, moves);
-
-      VERIFY(moves.size() == 3, caseLabel);
-      VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, b6))), caseLabel);
-      VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, b5), Bw)), caseLabel);
-      VERIFY(contains(moves, BasicMove(Relocation(Kb, c5, d4), Rw)), caseLabel);
-   }
 }
 
 

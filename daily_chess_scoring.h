@@ -57,6 +57,8 @@ enum class Rules : uint64_t
 
 double score(const Position& pos, Color side, Rules rules = Rules::All);
 double score(const Position& pos, Rules rules = Rules::All);
+double scoreMate(const Position& pos, size_t atDepth, Color side);
+double scoreTie(const Position& pos, Color side);
 
 } // namespace dcs
 } // namespace matt2

@@ -57,5 +57,30 @@ double score(const Position& pos, const std::optional<PieceValueTable>& values)
    return score(pos, White, values) - score(pos, Black, values);
 }
 
+double scoreMate(const Position& /*pos*/, size_t atDepth, Color side,
+                 const std::optional<PieceValueTable>& values)
+{
+   const PieceValueTable& valueTable = values.has_value() ? *values : DefaultPieceValues;
+
+   // Use king value as base score and adjust for the depth at which the mate happens to
+   // encourage faster mates over later ones.
+   const double amount = lookupValue(king(side), valueTable) - atDepth;
+
+   // Needs to be a bad score for the side passed in.
+   const double sign = side == White ? -1. : 1.;
+
+   return sign * amount;
+}
+
+double scoreTie(const Position& pos, Color /*side*/,
+                const std::optional<PieceValueTable>& values)
+{
+   // Use regular position score.
+   const double amount = score(pos, values);
+
+   // A tie is bad for the side with a good score, so flip it.
+   return -1. * amount;
+}
+
 } // namespace pvs
 } // namespace matt2

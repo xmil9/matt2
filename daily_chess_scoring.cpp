@@ -886,5 +886,15 @@ double score(const Position& pos, Rules rules)
    return score(pos, posStats, White, rules) - score(pos, posStats, Black, rules);
 }
 
+double scoreMate(const Position& pos, size_t atDepth, Color side)
+{
+   return pvs::scoreMate(pos, atDepth, side, PieceValues);
+}
+
+double scoreTie(const Position& pos, Color side)
+{
+   return pvs::scoreTie(pos, side, PieceValues);
+}
+
 } // namespace dcs
 } // namespace matt2

@@ -459,6 +459,45 @@ void testKingScoring()
    }
 }
 
+void testMateScore()
+{
+   {
+      const std::string caseLabel = "dcs::scoreMate";
+
+      const Position& _ = StartPos;
+      VERIFY(cmp(scoreMate(_, 0, White), 0., White) == -1, caseLabel);
+      VERIFY(cmp(scoreMate(_, 5, Black), 0., Black) == -1, caseLabel);
+   }
+   {
+      const std::string caseLabel = "dcs::scoreMate is worse for quicker mates";
+
+      const Position& _ = StartPos;
+      VERIFY(cmp(scoreMate(_, 0, White), scoreMate(_, 1, White), White) == -1, caseLabel);
+      VERIFY(cmp(scoreMate(_, 5, Black), scoreMate(_, 10, Black), Black) == -1,
+             caseLabel);
+   }
+}
+
+void testTieScore()
+{
+   {
+      const std::string caseLabel =
+         "dcs::scoreTie with white in better position should be "
+         "bad for white and good for black";
+
+      VERIFY(cmp(scoreTie(Position("Kwe3 wf7 Kba1"), White), 0., White) == -1, caseLabel);
+      VERIFY(cmp(scoreTie(Position("Kwe3 wf7 Kba1"), Black), 0., Black) == 1, caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "dcs::scoreTie with white in worse position should be "
+         "good for white and bad for black";
+
+      VERIFY(cmp(scoreTie(Position("Kwe3 bf7 Kba1"), White), 0., White) == 1, caseLabel);
+      VERIFY(cmp(scoreTie(Position("Kwe3 bf7 Kba1"), Black), 0., Black) == -1, caseLabel);
+   }
+}
+
 } // namespace
 
 ///////////////////
@@ -471,4 +510,6 @@ void testDailyChessScoring()
    testKnightScoring();
    testQueenScoring();
    testKingScoring();
+   testMateScore();
+   testTieScore();
 }

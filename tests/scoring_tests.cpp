@@ -128,6 +128,24 @@ void testCalcScore()
    }
 }
 
+void testCalcMateScore()
+{
+   {
+      const std::string caseLabel = "calcMateScore should return a score";
+
+      VERIFY(calcMateScore(White, Position("wa2 wb2"), 0) != 0., caseLabel);
+   }
+}
+
+void testCalcTieScore()
+{
+   {
+      const std::string caseLabel = "calcTieScore should return a score";
+
+      VERIFY(calcTieScore(White, Position("Kwe1 wa2 wb2 Kbh6")) != 0., caseLabel);
+   }
+}
+
 } // namespace
 
 
@@ -142,4 +160,6 @@ void testScoring()
    testGetWorstScoreForMinMaxFlag();
    testGetWorstScoreForSide();
    testCalcScore();
+   testCalcMateScore();
+   testCalcTieScore();
 }

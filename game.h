@@ -28,6 +28,8 @@ class Game
    Color nextTurn() const { return m_nextTurn; }
    std::pair<bool, std::string> calcNextMove(size_t turnDepth);
    std::pair<bool, std::string> enterNextMove(std::string_view movePacnNotation);
+   bool canMove(Color side) const;
+   bool isMate(Color side) const;
 
    // Iterate over game positions.
    const Position& current() const { return m_currPos; }

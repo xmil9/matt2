@@ -9,6 +9,7 @@
 #include "scoring.h"
 #include <limits>
 #include <queue>
+#include <variant>
 
 using namespace matt2;
 
@@ -182,22 +183,28 @@ class MoveCalculator
  public:
    MoveCalculator(Position& pos);
 
-   std::optional<Move> next(Color side, size_t turns);
+   std::optional<Move> next(Color side, size_t plyDepth);
 
  private:
    struct MoveScore
    {
       std::optional<Move> move;
       double score = 0.;
-
-      explicit operator bool() const;
    };
+   struct MaxDepthReached
+   {
+   };
+   struct NoValidMoveFound
+   {
+   };
+   using MoveResult = std::variant<MoveScore, MaxDepthReached, NoValidMoveFound>;
 
-   MoveScore next(Color side, size_t plyDepth, bool calcMax, double bestOpposingScore);
+   MoveResult next(Color side, size_t plyDepth, bool calcMax, double bestOpposingScore);
    void collectMoves(Color side, std::vector<Move>& moves) const;
 
  private:
    Position& m_pos;
+   size_t m_totalPlies = 0;
 };
 
 
@@ -206,48 +213,75 @@ MoveCalculator::MoveCalculator(Position& pos) : m_pos{pos}
 }
 
 
-std::optional<Move> MoveCalculator::next(Color side, size_t turnDepth)
+std::optional<Move> MoveCalculator::next(Color side, size_t plyDepth)
 {
+   m_totalPlies = plyDepth;
    const bool calcMax = side == White;
-   return next(side, 2 * turnDepth, calcMax, getWorstScoreValue(!calcMax)).move;
+   const MoveResult result = next(side, plyDepth, calcMax, getWorstScoreValue(!calcMax));
+   if (std::holds_alternative<MoveScore>(result))
+      return std::get<MoveScore>(result).move;
+   return {};
 }
 
 
-MoveCalculator::MoveScore MoveCalculator::next(Color side, size_t plyDepth, bool calcMax,
-                                               double bestOpposingScore)
+MoveCalculator::MoveResult MoveCalculator::next(Color side, size_t plyDepth, bool calcMax,
+                                                double bestOpposingScore)
 {
    assert(plyDepth > 0);
    if (plyDepth == 0)
-      return {};
+      return MaxDepthReached{};
 
    printCalculatingStatus(side, plyDepth, m_pos);
 
+   // Collect all possible moves.
    std::vector<Move> moves;
    // Reserve some space to avoid too many allocations.
    moves.reserve(100);
    collectMoves(side, moves);
+   if (moves.empty())
+      return NoValidMoveFound{};
 
+   // Find best move.
    MoveScore bestMove{std::nullopt, getWorstScoreValue(calcMax)};
-
+   
    // Track move index for debugging.
    size_t moveIdx = 0;
+   
    for (auto& m : moves)
    {
       makeMove(m_pos, m);
       printEvaluatingStatus(side, plyDepth, moveIdx, moves.size(), m, m_pos);
 
-      // Find best counter move for opponent if more plies should be explored.
-      MoveScore bestCounterMove;
+      // Find best counter move for opponent, if more plies should be explored.
+      MoveResult bestCounterMove = MaxDepthReached{};
       if (plyDepth > 1)
          bestCounterMove = next(!side, plyDepth - 1, !calcMax, bestMove.score);
 
-      // Score of move becomes the score of the best counter move if one was found,
-      // otherwise use the score of the position.
+      // Score of move becomes the score of the best counter move if one was found.
       double moveScore = 0.;
-      if (bestCounterMove)
-         moveScore = bestCounterMove.score;
-      else
+      if (std::holds_alternative<MoveScore>(bestCounterMove))
+      {
+         moveScore = std::get<MoveScore>(bestCounterMove).score;
+      }
+      // If there is no counter move because the max depth has been reached,
+      // use the score of the position as score of the current move.
+      else if (std::holds_alternative<MaxDepthReached>(bestCounterMove))
+      {
          moveScore = m_pos.updateScore();
+      }
+      // If there is no counter move because no legal move is possible,
+      // it's either a mate or a tie.
+      else if (std::holds_alternative<NoValidMoveFound>(bestCounterMove))
+      {
+         if (isCheck(!side, m_pos))
+            moveScore = calcMateScore(!side, m_pos, m_totalPlies - plyDepth);
+         else
+            moveScore = calcTieScore(side, m_pos);
+      }
+      else
+      {
+         throw std::runtime_error("Unexpected move result.");
+      }
 
       // Use current move if it leads to a better score for the player.
       const bool isBetterMove = bt(moveScore, bestMove.score, calcMax);
@@ -278,21 +312,29 @@ MoveCalculator::MoveScore MoveCalculator::next(Color side, size_t plyDepth, bool
    return bestMove;
 }
 
+static void removeIfCheck(std::vector<Move>& moves, Position pos, Color side)
+{
+   std::erase_if(moves,
+                 [&pos, side](Move& m)
+                 {
+                    makeMove(pos, m);
+                    const bool leadsToCheck = isCheck(side, pos);
+                    reverseMove(pos, m);
+                    return leadsToCheck;
+                 });
+}
 
 void MoveCalculator::collectMoves(Color side, std::vector<Move>& moves) const
 {
-   auto endIter = m_pos.end(side);
+   const auto endIter = m_pos.end(side);
    for (auto iter = m_pos.begin(side); iter < endIter; ++iter)
       matt2::collectMoves(iter.piece(), iter.at(), m_pos, moves);
 
    collectCastlingMoves(side, m_pos, moves);
    collectEnPassantMoves(side, m_pos, moves);
-}
 
-
-MoveCalculator::MoveScore::operator bool() const
-{
-   return move.has_value();
+   // Eliminate moves that would lead to check.
+   removeIfCheck(moves, m_pos, side);
 }
 
 ///////////////////
@@ -312,8 +354,11 @@ namespace matt2
 
 std::pair<bool, std::string> Game::calcNextMove(size_t turnDepth)
 {
+   if (isMate(m_nextTurn))
+      return {false, "Cannot move when mate."};
+
    MoveCalculator calc{m_currPos};
-   auto move = calc.next(m_nextTurn, turnDepth);
+   auto move = calc.next(m_nextTurn, 2 * turnDepth);
    if (!move)
       return {false, "No move found."};
 
@@ -323,6 +368,9 @@ std::pair<bool, std::string> Game::calcNextMove(size_t turnDepth)
 
 std::pair<bool, std::string> Game::enterNextMove(std::string_view movePacnNotation)
 {
+   if (isMate(m_nextTurn))
+      return {false, "Cannot move when mate."};
+
    // Parse move notation to internal move description.
    auto moveDescr = readMovePacn(movePacnNotation);
    if (!moveDescr)
@@ -344,6 +392,21 @@ std::pair<bool, std::string> Game::enterNextMove(std::string_view movePacnNotati
    return {true, describeMove(*move)};
 }
 
+bool Game::canMove(Color side) const
+{
+   if (isMate(side))
+      return false;
+
+   Position copy = m_currPos;
+   MoveCalculator calc{copy};
+   const auto move = calc.next(side, 1);
+   return move.has_value();
+}
+
+bool Game::isMate(Color side) const
+{
+   return matt2::isMate(side, m_currPos);
+}
 
 std::optional<Position> Game::forward()
 {

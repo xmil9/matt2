@@ -103,9 +103,7 @@ void testCalcNextMove()
       VERIFY(g.nextTurn() == White, caseLabel);
    }
    {
-      const std::string caseLabel =
-         "Game::calcNextMove in 2 turns for mate (note that the mate is in one move but "
-         "the algorithm needs to look ahead two turns to score the position correctly)";
+      const std::string caseLabel = "Game::calcNextMove in 2 turns for mate";
 
       Game g{Position{"Kwc1 Rwf7 Rwg1 Kbc8"}, White};
       const auto [ok, descr] = g.calcNextMove(2);
@@ -354,6 +352,36 @@ void testEnterNextMove()
    }
 }
 
+void testCanMove()
+{
+   {
+      const std::string caseLabel = "Game::canMove";
+
+      VERIFY(!Game(Position("Kwa1 Kbe5 Nbc3 Nbc4"), White).canMove(White), caseLabel);
+      VERIFY(Game(Position("Kwa1 Kbe5 Nbc3"), White).canMove(White), caseLabel);
+      VERIFY(!Game(Position("Kbe4 be3 we2 Kwe6 Rwd1 Rwf8"), Black).canMove(Black),
+             caseLabel);
+      VERIFY(Game(Position("Kbe4 we2 Kwe6 Rwd1 Rwf8"), Black).canMove(Black), caseLabel);
+      VERIFY(!Game(Position(""), Black).canMove(Black), caseLabel);
+      VERIFY(Game(StartPos, Black).canMove(Black), caseLabel);
+   }
+}
+
+void testIsMate()
+{
+   {
+      const std::string caseLabel = "Game::isMate";
+
+      VERIFY(Game(Position("Kbf2 bb4 Bbf6"), White).isMate(White), caseLabel);
+      VERIFY(Game(Position("Kbf2 bb4 Bbf6"), Black).isMate(White), caseLabel);
+      VERIFY(Game(Position("Kwe3 Qwh3"), Black).isMate(Black), caseLabel);
+      VERIFY(!Game(Position("Kwe3 Kbf2 bb4 Bbf6"), White).isMate(White), caseLabel);
+      VERIFY(!Game(Position("Kbf2 Kwe3 Qwh3"), Black).isMate(Black), caseLabel);
+      VERIFY(!Game(StartPos, White).isMate(White), caseLabel);
+      VERIFY(!Game(StartPos, Black).isMate(Black), caseLabel);
+   }
+}
+
 void testCurrent()
 {
    {
@@ -488,6 +516,8 @@ void testGame()
    testNextTurn();
    testCalcNextMove();
    testEnterNextMove();
+   testCanMove();
+   testIsMate();
    testCurrent();
    testForwardAndBackward();
    testCountMoves();

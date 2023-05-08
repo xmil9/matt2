@@ -41,5 +41,13 @@ double score(const Position& pos, Color side,
 double score(const Position& pos,
              const std::optional<PieceValueTable>& values = std::nullopt);
 
+// Calculate score for a mate.
+double scoreMate(const Position& pos, size_t atDepth, Color side,
+                 const std::optional<PieceValueTable>& values = std::nullopt);
+
+// Calculate score for a tie.
+double scoreTie(const Position& pos, Color side,
+                const std::optional<PieceValueTable>& values = std::nullopt);
+
 } // namespace pvs
 } // namespace matt2

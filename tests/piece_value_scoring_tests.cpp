@@ -5,6 +5,7 @@
 #include "piece_value_scoring_tests.h"
 #include "piece_value_scoring.h"
 #include "position.h"
+#include "scoring.h"
 #include "test_util.h"
 #include <stdexcept>
 
@@ -19,7 +20,7 @@ namespace
 void testLookupValue()
 {
    {
-      const std::string caseLabel = "lookupValue returns correct value";
+      const std::string caseLabel = "pvs::lookupValue returns correct value";
 
       constexpr PieceValueTable values{1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12.};
 
@@ -38,11 +39,11 @@ void testLookupValue()
    }
 }
 
-void testCalcPieceValueScoreForPiece()
+void testScoreForPiece()
 {
    {
       const std::string caseLabel =
-         "score(Position, Piece) for pawns with default piece values";
+         "pvs::score(Position, Piece) for pawns with default piece values";
 
       VERIFY(score(Position("wa2 wb2"), Pw) > 0., caseLabel);
       VERIFY(score(Position("wa2 wb2"), Pw) > score(Position("wa2"), Pw), caseLabel);
@@ -50,7 +51,7 @@ void testCalcPieceValueScoreForPiece()
       VERIFY(score(Position("bc7 bd4"), Pb) > score(Position("bd4"), Pb), caseLabel);
    }
    {
-      const std::string caseLabel = "score(Position, Piece, "
+      const std::string caseLabel = "pvs::score(Position, Piece, "
                                     "PieceValueTable) for pawns with custom piece values";
 
       constexpr PieceValueTable PieceValues{1., 1., 1., 1., 1., 20.,
@@ -63,7 +64,7 @@ void testCalcPieceValueScoreForPiece()
    }
    {
       const std::string caseLabel =
-         "score(Position, Piece) for knights with default piece values";
+         "pvs::score(Position, Piece) for knights with default piece values";
 
       VERIFY(score(Position("Nwa2 Nwb2"), Nw) > 0., caseLabel);
       VERIFY(score(Position("Nwa2 Nwb2"), Nw) > score(Position("Nwa2"), Nw), caseLabel);
@@ -72,7 +73,7 @@ void testCalcPieceValueScoreForPiece()
    }
    {
       const std::string caseLabel =
-         "score(Position, Piece, "
+         "pvs::score(Position, Piece, "
          "PieceValueTable) for knights with custom piece values";
 
       constexpr PieceValueTable PieceValues{1., 1., 1., 1., 20., 1.,
@@ -85,7 +86,7 @@ void testCalcPieceValueScoreForPiece()
    }
    {
       const std::string caseLabel =
-         "score(Position, Piece) for bishops with default piece values";
+         "pvs::score(Position, Piece) for bishops with default piece values";
 
       VERIFY(score(Position("Bwa2 Bwb2"), Bw) > 0., caseLabel);
       VERIFY(score(Position("Bwa2 Bwb2"), Bw) > score(Position("Bwa2"), Bw), caseLabel);
@@ -94,7 +95,7 @@ void testCalcPieceValueScoreForPiece()
    }
    {
       const std::string caseLabel =
-         "score(Position, Piece, "
+         "pvs::score(Position, Piece, "
          "PieceValueTable) for bishops with custom piece values";
 
       constexpr PieceValueTable PieceValues{1., 1., 1., 20., 1., 1.,
@@ -107,7 +108,7 @@ void testCalcPieceValueScoreForPiece()
    }
    {
       const std::string caseLabel =
-         "score(Position, Piece) for rook with default piece values";
+         "pvs::score(Position, Piece) for rook with default piece values";
 
       VERIFY(score(Position("Rwa2 Rwb2"), Rw) > 0., caseLabel);
       VERIFY(score(Position("Rwa2 Rwb2"), Rw) > score(Position("Rwa2"), Rw), caseLabel);
@@ -115,7 +116,7 @@ void testCalcPieceValueScoreForPiece()
       VERIFY(score(Position("Rbc7 Rbd4"), Rb) > score(Position("Rbd4"), Rb), caseLabel);
    }
    {
-      const std::string caseLabel = "score(Position, Piece, "
+      const std::string caseLabel = "pvs::score(Position, Piece, "
                                     "PieceValueTable) for rook with custom piece values";
 
       constexpr PieceValueTable PieceValues{1., 1., 20., 1., 1., 1.,
@@ -128,7 +129,7 @@ void testCalcPieceValueScoreForPiece()
    }
    {
       const std::string caseLabel =
-         "score(Position, Piece) for queen with default piece values";
+         "pvs::score(Position, Piece) for queen with default piece values";
 
       VERIFY(score(Position("Qwa2 Qwb2"), Qw) > 0., caseLabel);
       VERIFY(score(Position("Qwa2 Qwb2"), Qw) > score(Position("Qwa2"), Qw), caseLabel);
@@ -136,7 +137,7 @@ void testCalcPieceValueScoreForPiece()
       VERIFY(score(Position("Qbc7 Qbd4"), Qb) > score(Position("Qbd4"), Qw), caseLabel);
    }
    {
-      const std::string caseLabel = "score(Position, Piece, "
+      const std::string caseLabel = "pvs::score(Position, Piece, "
                                     "PieceValueTable) for queen with custom piece values";
 
       constexpr PieceValueTable PieceValues{1., 20., 1., 1., 1., 1.,
@@ -149,13 +150,13 @@ void testCalcPieceValueScoreForPiece()
    }
    {
       const std::string caseLabel =
-         "score(Position, Piece) for king with default piece values";
+         "pvs::score(Position, Piece) for king with default piece values";
 
       VERIFY(score(Position("Kwb2"), Kw) > 0., caseLabel);
       VERIFY(score(Position("Kbc7"), Kb) > 0., caseLabel);
    }
    {
-      const std::string caseLabel = "score(Position, Piece, "
+      const std::string caseLabel = "pvs::score(Position, Piece, "
                                     "PieceValueTable) for king with custom piece values";
 
       constexpr PieceValueTable PieceValues{20., 1., 1., 1., 1., 1.,
@@ -166,10 +167,11 @@ void testCalcPieceValueScoreForPiece()
    }
 }
 
-void testCalcPieceValueScoreForSide()
+void testScoreForSide()
 {
    {
-      const std::string caseLabel = "score(Position, Color) for default piece values";
+      const std::string caseLabel =
+         "pvs::score(Position, Color) for default piece values";
 
       VERIFY(score(Position(""), White) == 0., caseLabel);
       VERIFY(score(Position("Kwa2 Qwd1"), White) > 0., caseLabel);
@@ -179,7 +181,7 @@ void testCalcPieceValueScoreForSide()
    }
    {
       const std::string caseLabel =
-         "score(Position, Color, PieceValueTable) with custom piece values";
+         "pvs::score(Position, Color, PieceValueTable) with custom piece values";
 
       constexpr PieceValueTable PieceValues{10., 9., 8., 7., 6., 5.,
                                             10., 9., 8., 7., 6., 5.};
@@ -190,10 +192,10 @@ void testCalcPieceValueScoreForSide()
    }
 }
 
-void testCalcPieceValueScoreForPosition()
+void testScoreForPosition()
 {
    {
-      const std::string caseLabel = "score(Position) for default piece values";
+      const std::string caseLabel = "pvs::score(Position) for default piece values";
 
       VERIFY(score(Position("")) == 0., caseLabel);
       VERIFY(score(Position("Kwa2 Qwd1 Kba6 be3")) > 0., caseLabel);
@@ -201,7 +203,7 @@ void testCalcPieceValueScoreForPosition()
    }
    {
       const std::string caseLabel =
-         "score(Position, PieceValueTable) with custom piece values";
+         "pvs::score(Position, PieceValueTable) with custom piece values";
 
       constexpr PieceValueTable PieceValues{10., 9., 8., 7., 6., 5.,
                                             10., 9., 8., 7., 6., 5.};
@@ -212,6 +214,71 @@ void testCalcPieceValueScoreForPosition()
    }
 }
 
+void testScoreForMate()
+{
+   {
+      const std::string caseLabel = "pvs::scoreMate for default piece values";
+
+      const Position& _ = StartPos;
+      VERIFY(cmp(scoreMate(_, 0, White), 0., White) == -1, caseLabel);
+      VERIFY(cmp(scoreMate(_, 5, Black), 0., Black) == -1, caseLabel);
+   }
+   {
+      const std::string caseLabel = "pvs::scoreMate for custom piece values";
+
+      constexpr PieceValueTable PieceValues{10., 9., 8., 7., 6., 5.,
+                                            10., 9., 8., 7., 6., 5.};
+
+      const Position& _ = StartPos;
+      VERIFY(cmp(scoreMate(_, 10, White), 0., White) == -1, caseLabel);
+      VERIFY(cmp(scoreMate(_, 0, Black), 0., Black) == -1, caseLabel);
+   }
+   {
+      const std::string caseLabel = "pvs::scoreMate is worse for quicker mates";
+
+      const Position& _ = StartPos;
+      VERIFY(cmp(scoreMate(_, 0, White), scoreMate(_, 1, White), White) == -1, caseLabel);
+      VERIFY(cmp(scoreMate(_, 5, Black), scoreMate(_, 10, Black), Black) == -1,
+             caseLabel);
+   }
+}
+
+void testScoreForTie()
+{
+   {
+      const std::string caseLabel =
+         "pvs::scoreTie with white in better position should be "
+         "bad for white and good for black";
+
+      VERIFY(cmp(scoreTie(Position("Kwe3 wf7 Kba1"), White), 0., White) == -1, caseLabel);
+      VERIFY(cmp(scoreTie(Position("Kwe3 wf7 Kba1"), Black), 0., Black) == 1, caseLabel);
+
+      constexpr PieceValueTable PieceValues{10., 9., 8., 7., 6., 5.,
+                                            10., 9., 8., 7., 6., 5.};
+      VERIFY(cmp(scoreTie(Position("Kwe3 wf7 Kba1"), White, PieceValues), 0., White) ==
+                -1,
+             caseLabel);
+      VERIFY(cmp(scoreTie(Position("Kwe3 wf7 Kba1"), Black, PieceValues), 0., Black) == 1,
+             caseLabel);
+   }
+   {
+      const std::string caseLabel =
+         "pvs::scoreTie with white in worse position should be "
+         "good for white and bad for black";
+
+      VERIFY(cmp(scoreTie(Position("Kwe3 bf7 Kba1"), White), 0., White) == 1, caseLabel);
+      VERIFY(cmp(scoreTie(Position("Kwe3 bf7 Kba1"), Black), 0., Black) == -1, caseLabel);
+
+      constexpr PieceValueTable PieceValues{10., 9., 8., 7., 6., 5.,
+                                            10., 9., 8., 7., 6., 5.};
+      VERIFY(cmp(scoreTie(Position("Kwe3 bf7 Kba1"), White, PieceValues), 0., White) == 1,
+             caseLabel);
+      VERIFY(cmp(scoreTie(Position("Kwe3 bf7 Kba1"), Black, PieceValues), 0., Black) ==
+                -1,
+             caseLabel);
+   }
+}
+
 } // namespace
 
 ///////////////////
@@ -219,7 +286,9 @@ void testCalcPieceValueScoreForPosition()
 void testPieceValueScoring()
 {
    testLookupValue();
-   testCalcPieceValueScoreForPiece();
-   testCalcPieceValueScoreForSide();
-   testCalcPieceValueScoreForPosition();
+   testScoreForPiece();
+   testScoreForSide();
+   testScoreForPosition();
+   testScoreForMate();
+   testScoreForTie();
 }
