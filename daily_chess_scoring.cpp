@@ -626,12 +626,11 @@ static bool isPawnDiagonalNeighbor(Square sq, const Position& pos)
 static double calcAdjacentPawnBishopPenalty(Color side, const Position& pos)
 {
    const Piece p = bishop(side);
-   return std::accumulate(pos.begin(p), pos.end(p), 0.,
-                          [&pos](double val, Square sq) {
-                             return val + isPawnDiagonalNeighbor(sq, pos)
-                                       ? BishopAdjacentPawnPenality
-                                       : 0.;
-                          });
+   return std::accumulate(
+      pos.begin(p), pos.end(p), 0.,
+      [&pos](double val, Square sq) {
+         return val + (isPawnDiagonalNeighbor(sq, pos) ? BishopAdjacentPawnPenality : 0.);
+      });
 }
 
 double Score::calcBishopScore()

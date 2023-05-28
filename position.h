@@ -43,7 +43,7 @@ class Position
       // members) but for scoring.
       bool hasCastled = false;
 
-      static friend bool operator==(const CastlingState& a, const CastlingState& b)
+      friend bool operator==(const CastlingState& a, const CastlingState& b)
       {
          return a.hasKingMoved == b.hasKingMoved &&
                 a.hasKingsideRookMoved == b.hasKingsideRookMoved &&
@@ -51,7 +51,7 @@ class Position
                 a.hasCastled == b.hasCastled;
       }
 
-      static friend bool operator!=(const CastlingState& a, const CastlingState& b)
+      friend bool operator!=(const CastlingState& a, const CastlingState& b)
       {
          return !(a == b);
       }
