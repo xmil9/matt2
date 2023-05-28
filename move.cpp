@@ -3,10 +3,30 @@
 // MIT license
 //
 #include "move.h"
+#include "build_env.h"
 #include "piece.h"
 #include "rules.h"
 #include "square.h"
 #include <format>
+
+using namespace matt2;
+
+///////////////////
+
+static std::string formatPieceAtError(Piece piece, Square at)
+{
+   const std::string colorStr = toString(color(piece));
+   const std::string pieceStr = toString(piece);
+   const std::string atStr = toString(at);
+
+#ifdef HAVE_STD_FORMAT
+   return std::format("The position doesn't have a {} {} on {}.", colorStr, pieceStr,
+                      atStr);
+#else
+   return std::string{"The position doesn't have a "} + colorStr + " " + pieceStr +
+          " on " + atStr;
+#endif // HAVE_STD_FORMAT
+}
 
 namespace matt2
 {
@@ -16,9 +36,7 @@ std::pair<bool, std::string> BasicMove::isValid(const Position& pos, Color turn)
 {
    // Check some general conditions.
    if (pos[from()] != piece())
-      return {false,
-              std::format("The position doesn't have a {} {} on {}.",
-                          toString(color(piece())), toString(piece()), toString(from()))};
+      return {false, formatPieceAtError(piece(), from())};
 
    if (color(piece()) != turn)
       return {false, "The moved piece is not on the side whose turn it is."};
@@ -40,9 +58,7 @@ std::pair<bool, std::string> Castling::isValid(const Position& pos, Color turn) 
 {
    // Check some general conditions.
    if (pos[from()] != piece())
-      return {false,
-              std::format("The position doesn't have a {} {} on {}.",
-                          toString(color(piece())), toString(piece()), toString(from()))};
+      return {false, formatPieceAtError(piece(), from())};
 
    if (color(piece()) != turn)
       return {false, "The moved piece is not on the side whose turn it is."};
@@ -67,9 +83,7 @@ std::pair<bool, std::string> EnPassant::isValid(const Position& pos, Color turn)
 {
    // Check some general conditions.
    if (pos[from()] != piece())
-      return {false,
-              std::format("The position doesn't have a {} {} on {}.",
-                          toString(color(piece())), toString(piece()), toString(from()))};
+      return {false, formatPieceAtError(piece(), from())};
 
    if (color(piece()) != turn)
       return {false, "The moved piece is not on the side whose turn it is."};
@@ -95,9 +109,7 @@ std::pair<bool, std::string> Promotion::isValid(const Position& pos, Color turn)
 {
    // Check some general conditions.
    if (pos[from()] != piece())
-      return {false,
-              std::format("The position doesn't have a {} {} on {}.",
-                          toString(color(piece())), toString(piece()), toString(from()))};
+      return {false, formatPieceAtError(piece(), from())};
 
    if (color(piece()) != turn)
       return {false, "The moved piece is not on the side whose turn it is."};
