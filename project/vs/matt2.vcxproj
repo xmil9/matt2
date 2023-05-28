@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\build_env.h" />
     <ClInclude Include="..\..\console.h" />
     <ClInclude Include="..\..\daily_chess_scoring.h" />
     <ClInclude Include="..\..\game.h" />

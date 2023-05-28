@@ -14,6 +14,7 @@
     <ClInclude Include="..\..\notation.h" />
     <ClInclude Include="..\..\piece_value_scoring.h" />
     <ClInclude Include="..\..\daily_chess_scoring.h" />
+    <ClInclude Include="..\..\build_env.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\position.cpp" />

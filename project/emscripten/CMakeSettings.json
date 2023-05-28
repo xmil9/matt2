@@ -1,0 +1,26 @@
+﻿{
+  "configurations": [
+    {
+      "name": "Release",
+      "configurationType": "Release",
+      "cmakeToolchain": "${env.EMSDK}\\upstream\\emscripten\\cmake\\Modules\\Platform\\Emscripten.cmake",
+      "inheritEnvironments": [ "linux_x64" ],
+      "generator": "Ninja",
+      "buildCommandArgs": "",
+      "buildRoot": "${projectDir}\\build\\${name}",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": ""
+    },
+    {
+      "name": "Debug",
+      "configurationType": "Debug",
+      "cmakeToolchain": "${env.EMSDK}\\upstream\\emscripten\\cmake\\Modules\\Platform\\Emscripten.cmake",
+      "inheritEnvironments": [ "linux_x64" ],
+      "generator": "Ninja",
+      "buildCommandArgs": "",
+      "buildRoot": "${projectDir}\\build\\${name}",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": ""
+    }
+  ]
+}
