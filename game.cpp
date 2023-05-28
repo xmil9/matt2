@@ -13,17 +13,12 @@
 
 using namespace matt2;
 
-// #define ENABLE_PRINTING
+//#define ENABLE_PRINTING
 
 
 namespace
 {
 ///////////////////
-
-std::string toString(Color c)
-{
-   return c == White ? "white" : "black";
-}
 
 std::string toString(const Move& m)
 {
@@ -49,27 +44,27 @@ std::string toString(const std::optional<Move>& move, double score)
    return s;
 }
 
+#ifdef ENABLE_PRINTING
 void printCalculatingStatus(Color side, size_t plyDepth, const Position& pos)
 {
-#ifdef ENABLE_PRINTING
    std::string s = "Calculating move for ";
-   s += ::toString(side);
+   s += toString(side);
    s += " with depth ";
    s += std::to_string(plyDepth);
    s += " at position ";
    printPosition(s, pos);
    consoleOut(s);
-#else
-   side;
-   plyDepth;
-   pos;
-#endif
 }
+#else
+void printCalculatingStatus(Color /*side*/, size_t /*plyDepth*/, const Position& /*pos*/)
+{
+}
+#endif // ENABLE_PRINTING
 
+#ifdef ENABLE_PRINTING
 void printCalculatedStatus(Color side, size_t plyDepth, const std::optional<Move>& move,
                            double score)
 {
-#ifdef ENABLE_PRINTING
    std::string s = "Calculated move for ";
    s += ::toString(side);
    s += " with depth ";
@@ -77,18 +72,18 @@ void printCalculatedStatus(Color side, size_t plyDepth, const std::optional<Move
    s += " ==> ";
    s += toString(move, score);
    consoleOut(s);
-#else
-   side;
-   plyDepth;
-   move;
-   score;
-#endif
 }
+#else
+void printCalculatedStatus(Color /*side*/, size_t /*plyDepth*/,
+                           const std::optional<Move>& /*move*/, double /*score*/)
+{
+}
+#endif // ENABLE_PRINTING
 
+#ifdef ENABLE_PRINTING
 void printEvaluatingStatus(Color side, size_t plyDepth, size_t moveIdx_0based,
                            size_t numMoves, const Move& move, const Position& pos)
 {
-#ifdef ENABLE_PRINTING
    std::string s = "Evaluating move #";
    s += std::to_string(moveIdx_0based + 1);
    s += "/";
@@ -101,21 +96,20 @@ void printEvaluatingStatus(Color side, size_t plyDepth, size_t moveIdx_0based,
    s += ::toString(move);
    printPosition(s, pos);
    consoleOut(s);
-#else
-   side;
-   plyDepth;
-   moveIdx_0based;
-   numMoves;
-   move;
-   pos;
-#endif
 }
+#else
+void printEvaluatingStatus(Color /*side*/, size_t /*plyDepth*/, size_t /*moveIdx_0based*/,
+                           size_t /*numMoves*/, const Move& /*move*/,
+                           const Position& /*pos*/)
+{
+}
+#endif // ENABLE_PRINTING
 
+#ifdef ENABLE_PRINTING
 void printEvaluatedStatus(Color side, size_t plyDepth, size_t moveIdx_0based,
                           size_t numMoves, const Move& move, double score,
                           bool isBetterMove)
 {
-#ifdef ENABLE_PRINTING
    std::string s = "Evaluated move #";
    s += std::to_string(moveIdx_0based + 1);
    s += "/";
@@ -133,22 +127,20 @@ void printEvaluatedStatus(Color side, size_t plyDepth, size_t moveIdx_0based,
    else
       s += " ==> no improvement";
    consoleOut(s);
-#else
-   side;
-   plyDepth;
-   moveIdx_0based;
-   numMoves;
-   move;
-   score;
-   isBetterMove;
-#endif
 }
+#else
+void printEvaluatedStatus(Color /*side*/, size_t /*plyDepth*/, size_t /*moveIdx_0based*/,
+                          size_t /*numMoves*/, const Move& /*move*/, double /*score*/,
+                          bool /*isBetterMove*/)
+{
+}
+#endif // ENABLE_PRINTING
 
+#ifdef ENABLE_PRINTING
 void printPruningStatus(Color side, size_t plyDepth, size_t moveIdx_0based,
                         size_t numMoves, const Move& move, double score,
                         double bestOpposingScore)
 {
-#ifdef ENABLE_PRINTING
    std::string s = "Pruning after move #";
    s += std::to_string(moveIdx_0based + 1);
    s += "/";
@@ -164,16 +156,14 @@ void printPruningStatus(Color side, size_t plyDepth, size_t moveIdx_0based,
    s += ", best known opponent score=";
    s += std::to_string(bestOpposingScore);
    consoleOut(s);
-#else
-   side;
-   plyDepth;
-   moveIdx_0based;
-   numMoves;
-   move;
-   score;
-   bestOpposingScore;
-#endif
 }
+#else
+void printPruningStatus(Color /*side*/, size_t /*plyDepth*/, size_t /*moveIdx_0based*/,
+                        size_t /*numMoves*/, const Move& /*move*/, double /*score*/,
+                        double /*bestOpposingScore*/)
+{
+}
+#endif // ENABLE_PRINTING
 
 ///////////////////
 
@@ -243,10 +233,10 @@ MoveCalculator::MoveResult MoveCalculator::next(Color side, size_t plyDepth, boo
 
    // Find best move.
    MoveScore bestMove{std::nullopt, getWorstScoreValue(calcMax)};
-   
+
    // Track move index for debugging.
    size_t moveIdx = 0;
-   
+
    for (auto& m : moves)
    {
       makeMove(m_pos, m);
